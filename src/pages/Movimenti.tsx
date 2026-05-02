@@ -2,11 +2,12 @@ import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { loadTransactions, deleteTransaction, deleteTransactionsByGroupId, loadSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
-import { MOVIMENTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '../shared/labels'
+import { MOVIMENTI, PRODOTTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
 import AddTransactionForm from '../components/AddTransactionForm'
 import ReceiptDetailModal from '../components/ReceiptDetailModal'
+import ProductsCatalog from '../components/ProductsCatalog'
 import { PageHeader } from '../components/ui'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -55,6 +56,7 @@ function Movimenti() {
   const [dateTo, setDateTo] = useState(searchParams.get('to') ?? defaultPeriod.end)
   const [editingTx, setEditingTx] = useState<Transaction | null>(null)
   const [receiptDetailTx, setReceiptDetailTx] = useState<Transaction | null>(null)
+  const [activeTab, setActiveTab] = useState<'movimenti' | 'prodotti'>('movimenti')
 
   // Sincronizza lo stato dai searchParams quando cambiano (navigazione esterna)
   useEffect(() => {
@@ -147,6 +149,55 @@ function Movimenti() {
 
       {/* ─── Titolo ─── */}
       <PageHeader title={MOVIMENTI.titolo} />
+
+      {/* ─── Tabs Movimenti / Prodotti ─── */}
+      <div style={{ padding: '0 16px 12px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '6px',
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border)',
+          borderRadius: '14px',
+          padding: '4px',
+        }}>
+          <button
+            onClick={() => setActiveTab('movimenti')}
+            style={{
+              border: 'none',
+              borderRadius: '10px',
+              padding: '9px 10px',
+              fontSize: '13px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              background: activeTab === 'movimenti' ? 'var(--accent)' : 'transparent',
+              color: activeTab === 'movimenti' ? 'var(--fab-text)' : 'var(--text-secondary)',
+            }}
+          >
+            {PRODOTTI.tabMovimenti}
+          </button>
+          <button
+            onClick={() => setActiveTab('prodotti')}
+            style={{
+              border: 'none',
+              borderRadius: '10px',
+              padding: '9px 10px',
+              fontSize: '13px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              background: activeTab === 'prodotti' ? 'var(--accent)' : 'transparent',
+              color: activeTab === 'prodotti' ? 'var(--fab-text)' : 'var(--text-secondary)',
+            }}
+          >
+            {PRODOTTI.tabProdotti}
+          </button>
+        </div>
+      </div>
+
+      {activeTab === 'prodotti' && <ProductsCatalog />}
+
+      {activeTab === 'movimenti' && (
+      <>
 
       {/* ─── Banner filtro categoria (da navigazione Dashboard) ─── */}
       {filterCategory && (
@@ -405,6 +456,9 @@ function Movimenti() {
           transaction={receiptDetailTx}
           onClose={() => setReceiptDetailTx(null)}
         />
+      )}
+
+      </>
       )}
     </div>
   )

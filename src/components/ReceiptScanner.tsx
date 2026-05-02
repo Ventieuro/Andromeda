@@ -13,8 +13,9 @@
 import { useReducer, useRef, useEffect, useState } from 'react'
 import { createWorker } from 'tesseract.js'
 import { processImage, parseReceiptText, type ReceiptItem } from '../shared/receiptUtils'
-import { addTransaction, generateId } from '../shared/storage'
-import { OCR, getCanonicalCategories } from '../shared/labels'
+import { addTransaction, generateId, findMatchingProduct, upsertProductFromReceipt } from '../shared/storage'
+import type { ProductEntry } from '../shared/types'
+import { OCR, PRODOTTI, getCanonicalCategories } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 
 // ─── Stato con useReducer ─────────────────────────────────
@@ -157,6 +158,8 @@ interface ReceiptScannerProps {
 function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   const [state, dispatch] = useReducer(scanReducer, STATO_INIZIALE)
   const [fotoLightbox, setFotoLightbox] = useState<number | null>(null)
+  // Match prodotti nel catalogo per ogni articolo (calcolati quando si entra in fase 'risultati')
+  const [catalogMatches, setCatalogMatches] = useState<Map<string, ProductEntry>>(new Map())
   // Cache URL oggetti per file: creazione sincrona → zero render extra
   const urlCacheRef = useRef<Map<File, string>>(new Map())
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -196,6 +199,17 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   useEffect(() => {
     return () => { streamRef.current?.getTracks().forEach(t => t.stop()) }
   }, [])
+
+  // ── Match catalogo prodotti quando entro in risultati ──
+  useEffect(() => {
+    if (state.fase !== 'risultati') return
+    const matches = new Map<string, ProductEntry>()
+    for (const item of state.articoli) {
+      const match = findMatchingProduct(item.name)
+      if (match) matches.set(item.id, match)
+    }
+    setCatalogMatches(matches)
+  }, [state.fase, state.articoli])
 
   // ── Revoca URL per file rimossi ───────────────────
   useEffect(() => {
@@ -337,6 +351,12 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
       isReceipt: true,
       receiptItems: detailItems,
     })
+
+    // Aggiorna catalogo prodotti per suggerimenti OCR futuri
+    for (const item of detailItems) {
+      upsertProductFromReceipt(item.name, item.price, today, state.categoriaSelezionata)
+    }
+
     onDone()
     onClose()
   }
@@ -731,67 +751,95 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                   </div>
 
                   {/* Righe articoli */}
-                  {state.articoli.map((item, idx) => (
-                    <div
-                      key={item.id}
-                      className="grid items-center"
-                      style={{
-                        gridTemplateColumns: '1fr 80px 32px',
-                        padding: '5px 8px',
-                        borderBottom: idx < state.articoli.length - 1 ? '1px solid var(--border)' : 'none',
-                        gap: '6px',
-                      }}
-                    >
-                      {/* Nome articolo */}
-                      <input
-                        type="text"
-                        value={item.name}
-                        onChange={(e) => dispatch({ type: 'MODIFICA_NOME', id: item.id, valore: e.target.value })}
-                        style={{
-                          fontSize: '13px',
-                          background: 'var(--input-bg)',
-                          border: '1px solid var(--input-border)',
-                          borderRadius: '8px',
-                          padding: '4px 8px',
-                          outline: 'none',
-                          color: 'var(--text-primary)',
-                          width: '100%',
-                          minWidth: 0,
-                        }}
-                      />
-                      {/* Prezzo */}
-                      <input
-                        type="text"
-                        inputMode="decimal"
+                  {state.articoli.map((item, idx) => {
+                    const catalogMatch = catalogMatches.get(item.id)
+                    const knownPrice = catalogMatch
+                      ? catalogMatch.priceHistory[catalogMatch.priceHistory.length - 1]?.price
+                      : null
+                    const priceDiffers = knownPrice !== null && Math.abs(knownPrice - item.price) > 0.01
+
+                    return (
+                      <div
                         key={item.id}
-                        defaultValue={item.price.toFixed(2).replace('.', ',')}
-                        onBlur={(e) => dispatch({ type: 'MODIFICA_PREZZO', id: item.id, valore: e.target.value })}
-                        title={item.confidence === 'uncertain' ? OCR.prezzoIncerto : undefined}
+                        className="grid items-start"
                         style={{
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          textAlign: 'right',
-                          background: 'var(--input-bg)',
-                          border: item.confidence === 'uncertain' ? '1px solid #f59e0b' : '1px solid var(--input-border)',
-                          borderRadius: '8px',
-                          padding: '4px 6px',
-                          outline: 'none',
-                          color: item.confidence === 'uncertain' ? '#d97706' : 'var(--text-primary)',
-                          width: '100%',
+                          gridTemplateColumns: '1fr 80px 32px',
+                          padding: '5px 8px',
+                          borderBottom: idx < state.articoli.length - 1 ? '1px solid var(--border)' : 'none',
+                          gap: '6px',
                         }}
-                      />
-                      {/* Elimina riga */}
-                      <button
-                        onClick={() => dispatch({ type: 'RIMUOVI_ARTICOLO', id: item.id })}
-                        style={{
-                          background: 'none', border: 'none', cursor: 'pointer',
-                          fontSize: '14px', color: 'var(--text-muted)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}
-                        aria-label="Rimuovi articolo"
-                      >🗑</button>
-                    </div>
-                  ))}
+                      >
+                        {/* Nome articolo + badge prezzo noto */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <input
+                            type="text"
+                            value={item.name}
+                            onChange={(e) => dispatch({ type: 'MODIFICA_NOME', id: item.id, valore: e.target.value })}
+                            style={{
+                              fontSize: '13px',
+                              background: 'var(--input-bg)',
+                              border: '1px solid var(--input-border)',
+                              borderRadius: '8px',
+                              padding: '4px 8px',
+                              outline: 'none',
+                              color: 'var(--text-primary)',
+                              width: '100%',
+                              minWidth: 0,
+                            }}
+                          />
+                          {catalogMatch && knownPrice !== null && (
+                            <span style={{
+                              fontSize: '10px',
+                              fontWeight: 600,
+                              padding: '1px 6px',
+                              borderRadius: '6px',
+                              background: priceDiffers ? 'rgba(251,191,36,0.15)' : 'rgba(34,197,94,0.12)',
+                              color: priceDiffers ? '#d97706' : '#16a34a',
+                              border: `1px solid ${priceDiffers ? 'rgba(251,191,36,0.4)' : 'rgba(34,197,94,0.3)'}`,
+                              display: 'inline-block',
+                              alignSelf: 'flex-start',
+                            }}>
+                              {PRODOTTI.prezzoNotoLabel(formatEuro(knownPrice))}
+                              {priceDiffers ? ' ⚠️' : ''}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Prezzo */}
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          key={item.id}
+                          defaultValue={item.price.toFixed(2).replace('.', ',')}
+                          onBlur={(e) => dispatch({ type: 'MODIFICA_PREZZO', id: item.id, valore: e.target.value })}
+                          title={item.confidence === 'uncertain' ? OCR.prezzoIncerto : undefined}
+                          style={{
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            textAlign: 'right',
+                            background: 'var(--input-bg)',
+                            border: item.confidence === 'uncertain' ? '1px solid #f59e0b' : '1px solid var(--input-border)',
+                            borderRadius: '8px',
+                            padding: '4px 6px',
+                            outline: 'none',
+                            color: item.confidence === 'uncertain' ? '#d97706' : 'var(--text-primary)',
+                            width: '100%',
+                          }}
+                        />
+
+                        {/* Elimina riga */}
+                        <button
+                          onClick={() => dispatch({ type: 'RIMUOVI_ARTICOLO', id: item.id })}
+                          style={{
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            fontSize: '14px', color: 'var(--text-muted)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}
+                          aria-label="Rimuovi articolo"
+                        >🗑</button>
+                      </div>
+                    )
+                  })}
 
                   {/* Riga totale calcolato (+ totale letto se diversi) */}
                   <div

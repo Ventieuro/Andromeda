@@ -6,6 +6,17 @@
 
 ## [02/05/2026] — Sessione 10
 
+### TASK-084: Nuova tab Prodotti + integrazione OCR catalogo
+**File modificati:** `src/shared/types.ts`, `src/shared/storage.ts`, `src/shared/labels.ts`, `src/components/ProductsCatalog.tsx`, `src/components/ReceiptScanner.tsx`, `src/pages/Movimenti.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Aggiunta nuova tab `Prodotti` in Movimenti con catalogo prodotti derivato dagli scontrini
+- Nuovo modello `ProductEntry` con `priceHistory`, alias OCR, categoria, ultima lettura
+- Nuovo storage `hermes-products` su layer IndexedDB con API: load/save/update/delete + upsert da scontrino
+- Introdotto matching fuzzy per nomi OCR (`normalizeProductName` + token overlap)
+- Scanner OCR ora mostra badge "prezzo noto" quando trova un match in catalogo
+- In import scontrino, ogni articolo aggiorna/crea automaticamente il prodotto nel catalogo
+- **Build check:** `npx tsc -b` ✅
+
 ### TASK-083: Fix progress OCR bloccato a 0%
 **File modificati:** `src/components/ReceiptScanner.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
 

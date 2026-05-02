@@ -5,6 +5,20 @@ export interface ReceiptDetailItem {
   price: number
 }
 
+export interface ProductPriceEntry {
+  price: number
+  date: string // ISO yyyy-mm-dd
+}
+
+export interface ProductEntry {
+  id: string
+  name: string               // nome canonico (scelto dall'utente o dal primo OCR)
+  aliases: string[]          // varianti OCR conosciute
+  priceHistory: ProductPriceEntry[]
+  category?: string
+  lastSeen: string           // ISO yyyy-mm-dd ultima lettura
+}
+
 export interface Transaction {
   id: string
   syncId?: string

@@ -268,6 +268,49 @@ const STRINGS = {
     chiudi:         t('Chiudi',                          'Close',                       'Cerrar'),
   },
 
+  // ── Catalogo Prodotti ────────────────────────────────
+  prodotti: {
+    titolo:          t('Prodotti',                        'Products',                    'Productos'),
+    tabMovimenti:    t('Movimenti',                       'Transactions',                'Movimientos'),
+    tabProdotti:     t('Prodotti',                        'Products',                    'Productos'),
+    cerca:           t('Cerca prodotto…',                 'Search product…',             'Buscar producto…'),
+    nessunProdotto:  t('Nessun prodotto ancora.\nI prodotti vengono aggiunti automaticamente quando importi uno scontrino.', 'No products yet.\nProducts are added automatically when you import a receipt.', 'Ningún producto aún.\nLos productos se añaden automáticamente al importar un ticket.'),
+    ultimoPrezzo:    t('Ultimo prezzo',                   'Latest price',                'Último precio'),
+    prezzoNoto:      t('Prezzo noto',                     'Known price',                 'Precio conocido'),
+    prezzoNotoLabel: tf(
+      (p: string) => `Noto: ${p}`,
+      (p: string) => `Known: ${p}`,
+      (p: string) => `Conocido: ${p}`,
+    ),
+    elimina:         t('Elimina',                         'Delete',                      'Eliminar'),
+    eliminaConferma: tf(
+      (n: string) => `Eliminare "${n}" dal catalogo?`,
+      (n: string) => `Delete "${n}" from catalog?`,
+      (n: string) => `¿Eliminar "${n}" del catálogo?`,
+    ),
+    storia:          t('Storico prezzi',                  'Price history',               'Historial de precios'),
+    visto:           t('Visto',                           'Last seen',                   'Visto'),
+    occorrenze:      tf(
+      (n: number) => `${n} vol${n === 1 ? 'ta' : 'te'}`,
+      (n: number) => `${n} time${n === 1 ? '' : 's'}`,
+      (n: number) => `${n} vez${n === 1 ? '' : 'es'}`,
+    ),
+    modifica:        t('Modifica nome',                   'Edit name',                   'Editar nombre'),
+    salva:           t('Salva',                           'Save',                        'Guardar'),
+    annulla:         t('Annulla',                         'Cancel',                      'Cancelar'),
+    variantiOcr:     t('Varianti OCR',                    'OCR aliases',                 'Variantes OCR'),
+    rimuoviAliasAria: tf(
+      (alias: string) => `Rimuovi alias ${alias}`,
+      (alias: string) => `Remove alias ${alias}`,
+      (alias: string) => `Eliminar alias ${alias}`,
+    ),
+    prezzoVariato: tf(
+      (old: string, nuovo: string) => `Prezzo cambiato: ${old} → ${nuovo}`,
+      (old: string, nuovo: string) => `Price changed: ${old} → ${nuovo}`,
+      (old: string, nuovo: string) => `Precio cambiado: ${old} → ${nuovo}`,
+    ),
+  },
+
   // ── Settings ───────────────────────────────────────────
   settings: {
     impostazioni:      t('Impostazioni',                  'Settings',                    'Configuración'),
@@ -529,3 +572,4 @@ export const PWA:       Labels['pwa']       = localize(STRINGS.pwa)
 export const AUTO_BACKUP: Labels['autoBackup'] = localize(STRINGS.autoBackup)
 export const OCR:         Labels['ocr']         = localize(STRINGS.ocr)
 export const RECEIPT_DETAIL: Labels['receiptDetail'] = localize(STRINGS.receiptDetail)
+export const PRODOTTI: Labels['prodotti'] = localize(STRINGS.prodotti)

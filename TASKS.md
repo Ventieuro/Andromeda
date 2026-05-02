@@ -38,6 +38,14 @@
 
 ## Completati
 
+### ✅ TASK-084 — Nuova tab Prodotti con catalogo da scontrini (02/05/2026)
+- [x] Aggiunta tab `Prodotti` dentro pagina Movimenti
+- [x] Creato catalogo prodotti con ricerca, modifica nome, storico prezzi, alias OCR, eliminazione
+- [x] Nuovo storage prodotti su IndexedDB (`hermes-products`) con funzioni load/save/update/delete
+- [x] OCR ora confronta articoli con catalogo (match fuzzy) e mostra badge "prezzo noto" in revisione
+- [x] Import scontrino aggiorna automaticamente il catalogo prodotti con price history
+- [x] Build tecnica verificata ✅
+
 ### ✅ TASK-082 — OCR app: fix duplicati + velocita fallback (02/05/2026)
 - [x] Rimosso merge testi tra passata originale e pre-processata (causava righe duplicate)
 - [x] Fallback reso meno aggressivo: seconda passata solo se prima incompleta (pochi articoli o totale assente)

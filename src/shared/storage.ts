@@ -1,4 +1,4 @@
-import type { Transaction, AppSettings } from './types'
+import type { Transaction, AppSettings, ProductEntry } from './types'
 import { normalizeCategoryKey } from './labels'
 
 const STORAGE_KEY = 'hermes-transactions'
@@ -6,6 +6,7 @@ const SETTINGS_KEY = 'hermes-settings'
 const CUSTOM_CAT_KEY = 'hermes-custom-categories'
 const CUSTOM_ICONS_KEY = 'hermes-custom-icons'
 const NOTIFICATIONS_KEY = 'hermes-notifications'
+const PRODUCTS_KEY = 'hermes-products'
 
 const QR_TRANSFER_PREFIX = 'hermes-xfer-session-'
 const QR_TRANSFER_READY_KEY = 'hermes-xfer-ready-payload'
@@ -20,6 +21,7 @@ const MANAGED_KEYS = [
   CUSTOM_CAT_KEY,
   CUSTOM_ICONS_KEY,
   NOTIFICATIONS_KEY,
+  PRODUCTS_KEY,
 ] as const
 
 type ManagedKey = (typeof MANAGED_KEYS)[number]
@@ -317,7 +319,136 @@ export function generateId(): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')
 }
 
-// ─── PIN Lock ────────────────────────────────────────────
+// ─── Catalogo Prodotti ───────────────────────────────────
+
+/** Normalizza il nome di un prodotto per il confronto fuzzy */
+export function normalizeProductName(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\b(kg|gr|ml|cl|lt?|pz|nr|x|\d+[\.,]?\d*g?)\b/g, '')
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/** Restituisce il punteggio di somiglianza (0-1) tra due nomi normalizzati */
+function tokenOverlap(a: string, b: string): number {
+  const ta = new Set(a.split(' ').filter((t) => t.length > 1))
+  const tb = new Set(b.split(' ').filter((t) => t.length > 1))
+  if (ta.size === 0 || tb.size === 0) return 0
+  let common = 0
+  for (const tok of ta) if (tb.has(tok)) common++
+  return common / Math.min(ta.size, tb.size)
+}
+
+export function loadProducts(): ProductEntry[] {
+  try {
+    const raw = getManagedItem(PRODUCTS_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed as ProductEntry[]
+  } catch {
+    return []
+  }
+}
+
+export function saveProducts(products: ProductEntry[]) {
+  setManagedItem(PRODUCTS_KEY, JSON.stringify(products))
+}
+
+/**
+ * Cerca un prodotto corrispondente al nome OCR.
+ * Restituisce il prodotto se la somiglianza è ≥ 0.6, altrimenti null.
+ */
+export function findMatchingProduct(name: string): ProductEntry | null {
+  const products = loadProducts()
+  const norm = normalizeProductName(name)
+  let bestMatch: ProductEntry | null = null
+  let bestScore = 0.59 // soglia minima
+
+  for (const p of products) {
+    // Controlla il nome canonico
+    const score = tokenOverlap(norm, normalizeProductName(p.name))
+    if (score > bestScore) { bestScore = score; bestMatch = p }
+    // Controlla anche gli alias
+    for (const alias of p.aliases) {
+      const aliasScore = tokenOverlap(norm, normalizeProductName(alias))
+      if (aliasScore > bestScore) { bestScore = aliasScore; bestMatch = p }
+    }
+  }
+
+  return bestMatch
+}
+
+/**
+ * Aggiunge o aggiorna un prodotto nel catalogo dopo l'importazione di uno scontrino.
+ * Se esiste un match fuzzy, aggiunge l'alias e inserisce il nuovo prezzo nella history.
+ * Altrimenti crea una nuova voce.
+ */
+export function upsertProductFromReceipt(
+  name: string,
+  price: number,
+  date: string,
+  category?: string,
+) {
+  if (!name.trim() || !Number.isFinite(price) || price <= 0) return
+  const products = loadProducts()
+  const norm = normalizeProductName(name)
+  let found: ProductEntry | undefined
+
+  // Cerca match fuzzy
+  let bestScore = 0.59
+  for (const p of products) {
+    const score = tokenOverlap(norm, normalizeProductName(p.name))
+    if (score > bestScore) { bestScore = score; found = p }
+    for (const alias of p.aliases) {
+      const s = tokenOverlap(norm, normalizeProductName(alias))
+      if (s > bestScore) { bestScore = s; found = p }
+    }
+  }
+
+  if (found) {
+    // Aggiorna prodotto esistente
+    if (!found.aliases.includes(name) && name !== found.name) {
+      found.aliases.push(name)
+    }
+    found.priceHistory.push({ price, date })
+    // Mantieni max 50 voci nella history
+    if (found.priceHistory.length > 50) {
+      found.priceHistory = found.priceHistory.slice(-50)
+    }
+    found.lastSeen = date
+    if (category) found.category = category
+    saveProducts(products)
+  } else {
+    // Crea nuova voce
+    const newProduct: ProductEntry = {
+      id: generateId(),
+      name: name.trim(),
+      aliases: [],
+      priceHistory: [{ price, date }],
+      category,
+      lastSeen: date,
+    }
+    products.push(newProduct)
+    saveProducts(products)
+  }
+}
+
+export function deleteProduct(id: string) {
+  saveProducts(loadProducts().filter((p) => p.id !== id))
+}
+
+export function updateProductName(id: string, newName: string) {
+  const products = loadProducts().map((p) =>
+    p.id === id ? { ...p, name: newName.trim() } : p,
+  )
+  saveProducts(products)
+}
+
+
 const PIN_KEY = 'hermes-pin'
 const PIN_SESSION_KEY = 'hermes-unlocked'
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
