@@ -6,6 +6,15 @@
 
 ## [02/05/2026] — Sessione 10
 
+### TASK-089: Camera scontrino — fix multi-click su scatto
+**File modificati:** `src/components/ReceiptScanner.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Risolto race condition sul pulsante scatto: tap multipli rapidi potevano generare più foto prima della chiusura camera
+- Introdotto lock sincrono (`captureLockRef`) durante la fase asincrona `canvas.toBlob(...)`
+- Pulsante scatto ora disabilitato durante la cattura con feedback visivo (`cursor: wait`, stato busy)
+- Risultato: un solo click produce una sola foto, eliminando caricamenti duplicati involontari
+- **Check:** `npx tsc -b` ✅, `npm test` ✅ (`36 passed`, `5 skipped`)
+
 ### TASK-088: Prodotti — filtro ordinamento con icona
 **File modificati:** `src/components/ProductsCatalog.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`, `package.json`
 

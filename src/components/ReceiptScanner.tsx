@@ -169,6 +169,8 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   const [state, dispatch] = useReducer(scanReducer, STATO_INIZIALE)
   const [fotoLightbox, setFotoLightbox] = useState<number | null>(null)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [isCapturingPhoto, setIsCapturingPhoto] = useState(false)
+  const captureLockRef = useRef(false)
   // Match prodotti nel catalogo per ogni articolo (calcolati quando si entra in fase 'risultati')
   const [catalogMatches, setCatalogMatches] = useState<Map<string, ProductEntry>>(new Map())
   // Cache URL oggetti per file: creazione sincrona → zero render extra
@@ -258,25 +260,48 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   function chiudiCamera() {
     streamRef.current?.getTracks().forEach(t => t.stop())
     streamRef.current = null
+    captureLockRef.current = false
+    setIsCapturingPhoto(false)
     dispatch({ type: 'CHIUDI_CAMERA' })
   }
 
   function scattaFoto() {
+    if (captureLockRef.current) return
+    captureLockRef.current = true
+    setIsCapturingPhoto(true)
+
     const video = videoRef.current
-    if (!video) return
+    if (!video) {
+      captureLockRef.current = false
+      setIsCapturingPhoto(false)
+      return
+    }
+
     const canvas = document.createElement('canvas')
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx) {
+      captureLockRef.current = false
+      setIsCapturingPhoto(false)
+      return
+    }
+
     ctx.drawImage(video, 0, 0)
     canvas.toBlob(blob => {
-      if (!blob) return
+      if (!blob) {
+        captureLockRef.current = false
+        setIsCapturingPhoto(false)
+        return
+      }
+
       const file = new File([blob], `scontrino-${Date.now()}.jpg`, { type: 'image/jpeg' })
       streamRef.current?.getTracks().forEach(t => t.stop())
       streamRef.current = null
       dispatch({ type: 'AGGIUNGI_FOTO', files: [file] })
       dispatch({ type: 'CHIUDI_CAMERA' })
+      captureLockRef.current = false
+      setIsCapturingPhoto(false)
     }, 'image/jpeg', 0.92)
   }
 
@@ -503,10 +528,41 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
             {OCR.chiudiCamera}
           </button>
           {/* Pulsante scatto */}
-          <button onClick={scattaFoto}
-            style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#fff', border: '5px solid rgba(255,255,255,0.35)', cursor: 'pointer', outline: 'none', boxShadow: '0 0 0 4px rgba(255,255,255,0.2)' }}
+          <button
+            onClick={scattaFoto}
+            disabled={isCapturingPhoto}
+            style={{
+              width: '72px',
+              height: '72px',
+              borderRadius: '50%',
+              background: isCapturingPhoto ? 'rgba(255,255,255,0.6)' : '#fff',
+              border: '5px solid rgba(255,255,255,0.35)',
+              cursor: isCapturingPhoto ? 'wait' : 'pointer',
+              outline: 'none',
+              boxShadow: '0 0 0 4px rgba(255,255,255,0.2)',
+              opacity: isCapturingPhoto ? 0.75 : 1,
+              position: 'relative',
+            }}
             aria-label={OCR.scatta}
-          />
+            aria-busy={isCapturingPhoto}
+          >
+            {isCapturingPhoto && (
+              <span
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  color: '#111',
+                }}
+              >
+                ...
+              </span>
+            )}
+          </button>
           <div style={{ width: '60px' }} />
         </div>
       </div>

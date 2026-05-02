@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-089 — Camera scontrino: fix multi-click su scatto (02/05/2026)
+- [x] Aggiunto lock anti-doppio-click durante `canvas.toBlob` nello scanner camera
+- [x] Pulsante scatto disabilitato con feedback visivo (stato `wait`) durante cattura
+- [x] Garantito 1 tap = 1 foto, evitando upload multipli involontari
+- [x] Build e test verificati (`npx tsc -b`, `npm test`) ✅
+
 ### ✅ TASK-088 — Filtro ordinamento prodotti con icona (02/05/2026)
 - [x] Aggiunta UI filtro ordinamento nella sezione Prodotti con icona funnel
 - [x] Ordinamento supportato: Nome A-Z, Nome Z-A, Prezzo crescente, Prezzo decrescente
