@@ -154,6 +154,195 @@
         "price": 1.6,
         "parserMissing": true
       }
+    ],
+    "productsTest": [
+      {
+        "name": "S.BENEDETTO NATURA",
+        "occurrences": 1,
+        "latestPrice": 3.78,
+        "prices": [
+          3.78
+        ]
+      },
+      {
+        "name": "SEDANO VERDE",
+        "occurrences": 1,
+        "latestPrice": 0.14,
+        "prices": [
+          0.14
+        ]
+      },
+      {
+        "name": "SHOPPER CASSA MAXI",
+        "occurrences": 1,
+        "latestPrice": 0.18,
+        "prices": [
+          0.18
+        ]
+      },
+      {
+        "name": "BANANE CHIQUITA",
+        "occurrences": 1,
+        "latestPrice": 2.17,
+        "prices": [
+          2.17
+        ]
+      },
+      {
+        "name": "SHOPPER BIO ORTOFRUT",
+        "occurrences": 3,
+        "latestPrice": 0.02,
+        "prices": [
+          0.02,
+          0.02,
+          0.02
+        ]
+      },
+      {
+        "name": "SHOPPER BI0 ORTOFRUT",
+        "occurrences": 1,
+        "latestPrice": 0.02,
+        "prices": [
+          0.02
+        ]
+      },
+      {
+        "name": "GRAMIX GRATTUGIATO 1",
+        "occurrences": 2,
+        "latestPrice": 1.85,
+        "prices": [
+          1.85,
+          1.85
+        ]
+      },
+      {
+        "name": "BRESAOLA VALTEL, 1",
+        "occurrences": 1,
+        "latestPrice": 3.99,
+        "prices": [
+          3.99
+        ]
+      },
+      {
+        "name": "ZUCCHE TONDE",
+        "occurrences": 1,
+        "latestPrice": 1.89,
+        "prices": [
+          1.89
+        ]
+      },
+      {
+        "name": "CIPOLLOTTI BIANCHI",
+        "occurrences": 1,
+        "latestPrice": 0.62,
+        "prices": [
+          0.62
+        ]
+      },
+      {
+        "name": "CAROTE GR.500 IL GIG",
+        "occurrences": 1,
+        "latestPrice": 0.98,
+        "prices": [
+          0.98
+        ]
+      },
+      {
+        "name": "LATTUGHINO 6.90",
+        "occurrences": 1,
+        "latestPrice": 1.38,
+        "prices": [
+          1.38
+        ]
+      },
+      {
+        "name": "ARANCE NAVEL",
+        "occurrences": 1,
+        "latestPrice": 2.41,
+        "prices": [
+          2.41
+        ]
+      },
+      {
+        "name": "FUSILLI 98 !",
+        "occurrences": 1,
+        "latestPrice": 0.99,
+        "prices": [
+          0.99
+        ]
+      },
+      {
+        "name": "MUL. Y0G. 02 BCO X2 !",
+        "occurrences": 1,
+        "latestPrice": 0.9,
+        "prices": [
+          0.9
+        ]
+      },
+      {
+        "name": "CUB. PANC.DOLC. IL G !",
+        "occurrences": 1,
+        "latestPrice": 2.09,
+        "prices": [
+          2.09
+        ]
+      },
+      {
+        "name": "LATTE UHT PS PARN. 1",
+        "occurrences": 1,
+        "latestPrice": 1.05,
+        "prices": [
+          1.05
+        ]
+      },
+      {
+        "name": "PESTO ALLA GENOVES !",
+        "occurrences": 1,
+        "latestPrice": 2.91,
+        "prices": [
+          2.91
+        ]
+      },
+      {
+        "name": "FRUCTIS SHAMPOO KERA",
+        "occurrences": 1,
+        "latestPrice": 5.34,
+        "prices": [
+          5.34
+        ]
+      },
+      {
+        "name": "BAVETTE N 13",
+        "occurrences": 1,
+        "latestPrice": 0.99,
+        "prices": [
+          0.99
+        ]
+      },
+      {
+        "name": "DOVE CARE COCCO",
+        "occurrences": 1,
+        "latestPrice": 4.19,
+        "prices": [
+          4.19
+        ]
+      },
+      {
+        "name": "FRUCTIS SHAMPOO CURL",
+        "occurrences": 1,
+        "latestPrice": 5.34,
+        "prices": [
+          5.34
+        ]
+      },
+      {
+        "name": "BUSTA SEMI H",
+        "occurrences": 1,
+        "latestPrice": 1.6,
+        "prices": [
+          1.6
+        ]
+      }
     ]
   }
 }

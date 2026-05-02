@@ -38,6 +38,11 @@
 
 ## Completati
 
+### ✅ TASK-085 — Sezione prodotti test negli expected OCR (02/05/2026)
+- [x] Aggiunta sezione `expected.productsTest` in tutte le fixture `expected.json`
+- [x] Sezione derivata automaticamente dagli item attesi (nome, occorrenze, latestPrice, prices)
+- [x] Mantiene intatti i campi esistenti usati dai test OCR correnti
+
 ### ✅ TASK-084 — Nuova tab Prodotti con catalogo da scontrini (02/05/2026)
 - [x] Aggiunta tab `Prodotti` dentro pagina Movimenti
 - [x] Creato catalogo prodotti con ricerca, modifica nome, storico prezzi, alias OCR, eliminazione

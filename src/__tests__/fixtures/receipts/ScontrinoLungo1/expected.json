@@ -1,7 +1,11 @@
 {
   "stable": true,
   "description": "Scontrino supermercato lungo (3 foto reali con sovrapposizione)",
-  "source": ["foto_1.jpeg", "foto_2.jpeg", "foto_3.jpeg"],
+  "source": [
+    "foto_1.jpeg",
+    "foto_2.jpeg",
+    "foto_3.jpeg"
+  ],
   "notes": "Le 3 foto si sovrappongono → alcuni articoli duplicati nel merged OCR. ARTICOLI 31 sul receipt ma parser ne estrae 20. IMPORTO PAGATO (ground truth) è 39.10.",
   "knownIssues": [
     "Parser legge TOTALE COMPLESSIVO (30.10) invece di IMPORTO PAGATO (39.10)",
@@ -15,40 +19,332 @@
   ],
   "expected": {
     "itemCount": 20,
-    "parserReadTotal": 39.10,
+    "parserReadTotal": 39.1,
     "isValid": false,
     "parserReadDate": "2006-04-26",
-    "total": 39.10,
+    "total": 39.1,
     "date": "2026-04-26",
     "items": [
-      { "name": "S.BENEDETTO NATURA",       "price": 3.78, "parserMissing": true },
-      { "name": "SEDANO VERDE",              "price": 0.14, "parserMissing": true },
-      { "name": "CIPOLLOTTI BIANCHI",        "price": 0.62, "parserMissing": true },
-      { "name": "SHOPPER BIO ORTOFRUT",     "price": 0.02, "parserMissing": true, "note": "tra CIPOLLOTTI e SHOPPER CASSA MAXI, non letto dal parser" },
-      { "name": "SHOPPER CASSA MAXI",       "price": 0.18, "parserMissing": true },
-      { "name": "BANANE CHIQUITA",           "price": 2.17, "parserReadPrice": 2.18, "note": "OCR misread 2.17 come 2.18" },
-      { "name": "SHOPPER BIO ORTOFRUT",     "price": 0.02 },
-      { "name": "SHOPPER BI0 ORTOFRUT",     "price": 0.02, "note": "OCR B→10 in SHOPPER BIO" },
-      { "name": "GRAMIX GRATTUGIATO 1",     "price": 1.85, "parserReadPrice": 1.89, "discount": 0.56, "discountType": "SCONTO BLUCARD 30%", "note": "OCR misread 1.85 come 1.89 su questa riga" },
-      { "name": "GRAMIX GRATTUGIATO 1",     "price": 1.85, "discount": 0.56, "discountType": "SCONTO BLUCARD 30%" },
-      { "name": "BRESAOLA VALTEL, 1",       "price": 3.99, "discount": 1.60, "discountType": "SCONTO BLUCARD 40%" },
-      { "name": "ZUCCHE TONDE",             "price": 1.89 },
-      { "name": "CAROTE GR.500 IL GIG",     "price": 0.98 },
-      { "name": "LATTUGHINO 6.90",          "price": 1.38, "note": "6.90 è prefisso barcode finito nel nome" },
-      { "name": "ARANCE NAVEL",             "price": 2.41, "parserReadPrice": 2.42, "note": "OCR misread 2.41 come 2.42" },
-      { "name": "SHOPPER BIO ORTOFRUT",     "price": 0.02 },
-      { "name": "FUSILLI 98 !",             "price": 0.99 },
-      { "name": "MUL. Y0G. 02 BCO X2 !",   "price": 0.90 },
-      { "name": "CUB. PANC.DOLC. IL G !",   "price": 2.09 },
-      { "name": "LATTE UHT PS PARN. 1",    "price": 1.05 },
-      { "name": "PESTO ALLA GENOVES !",    "price": 2.91 },
-      { "name": "FRUCTIS SHAMPOO KERA",    "price": 5.34, "discount": 1.61, "discountType": "SCONTO BLUCARD 30%" },
-      { "name": "BAVETTE N13 a I",         "price": 0.99 },
-      { "name": "DOVE CARE COCCO",         "price": 4.19, "discount": 1.68, "discountType": "SCONTO BLUCARD 40%", "parserMissing": true },
-      { "name": "FRUCTIS SHAMPOO CURL",    "price": 5.34, "discount": 1.61, "discountType": "SCONTO BLUCARD 30%" },
-      { "name": "BUSTA SEMI H",            "price": 1.60 }
+      {
+        "name": "S.BENEDETTO NATURA",
+        "price": 3.78,
+        "parserMissing": true
+      },
+      {
+        "name": "SEDANO VERDE",
+        "price": 0.14,
+        "parserMissing": true
+      },
+      {
+        "name": "CIPOLLOTTI BIANCHI",
+        "price": 0.62,
+        "parserMissing": true
+      },
+      {
+        "name": "SHOPPER BIO ORTOFRUT",
+        "price": 0.02,
+        "parserMissing": true,
+        "note": "tra CIPOLLOTTI e SHOPPER CASSA MAXI, non letto dal parser"
+      },
+      {
+        "name": "SHOPPER CASSA MAXI",
+        "price": 0.18,
+        "parserMissing": true
+      },
+      {
+        "name": "BANANE CHIQUITA",
+        "price": 2.17,
+        "parserReadPrice": 2.18,
+        "note": "OCR misread 2.17 come 2.18"
+      },
+      {
+        "name": "SHOPPER BIO ORTOFRUT",
+        "price": 0.02
+      },
+      {
+        "name": "SHOPPER BI0 ORTOFRUT",
+        "price": 0.02,
+        "note": "OCR B→10 in SHOPPER BIO"
+      },
+      {
+        "name": "GRAMIX GRATTUGIATO 1",
+        "price": 1.85,
+        "parserReadPrice": 1.89,
+        "discount": 0.56,
+        "discountType": "SCONTO BLUCARD 30%",
+        "note": "OCR misread 1.85 come 1.89 su questa riga"
+      },
+      {
+        "name": "GRAMIX GRATTUGIATO 1",
+        "price": 1.85,
+        "discount": 0.56,
+        "discountType": "SCONTO BLUCARD 30%"
+      },
+      {
+        "name": "BRESAOLA VALTEL, 1",
+        "price": 3.99,
+        "discount": 1.6,
+        "discountType": "SCONTO BLUCARD 40%"
+      },
+      {
+        "name": "ZUCCHE TONDE",
+        "price": 1.89
+      },
+      {
+        "name": "CAROTE GR.500 IL GIG",
+        "price": 0.98
+      },
+      {
+        "name": "LATTUGHINO 6.90",
+        "price": 1.38,
+        "note": "6.90 è prefisso barcode finito nel nome"
+      },
+      {
+        "name": "ARANCE NAVEL",
+        "price": 2.41,
+        "parserReadPrice": 2.42,
+        "note": "OCR misread 2.41 come 2.42"
+      },
+      {
+        "name": "SHOPPER BIO ORTOFRUT",
+        "price": 0.02
+      },
+      {
+        "name": "FUSILLI 98 !",
+        "price": 0.99
+      },
+      {
+        "name": "MUL. Y0G. 02 BCO X2 !",
+        "price": 0.9
+      },
+      {
+        "name": "CUB. PANC.DOLC. IL G !",
+        "price": 2.09
+      },
+      {
+        "name": "LATTE UHT PS PARN. 1",
+        "price": 1.05
+      },
+      {
+        "name": "PESTO ALLA GENOVES !",
+        "price": 2.91
+      },
+      {
+        "name": "FRUCTIS SHAMPOO KERA",
+        "price": 5.34,
+        "discount": 1.61,
+        "discountType": "SCONTO BLUCARD 30%"
+      },
+      {
+        "name": "BAVETTE N13 a I",
+        "price": 0.99
+      },
+      {
+        "name": "DOVE CARE COCCO",
+        "price": 4.19,
+        "discount": 1.68,
+        "discountType": "SCONTO BLUCARD 40%",
+        "parserMissing": true
+      },
+      {
+        "name": "FRUCTIS SHAMPOO CURL",
+        "price": 5.34,
+        "discount": 1.61,
+        "discountType": "SCONTO BLUCARD 30%"
+      },
+      {
+        "name": "BUSTA SEMI H",
+        "price": 1.6
+      }
+    ],
+    "productsTest": [
+      {
+        "name": "S.BENEDETTO NATURA",
+        "occurrences": 1,
+        "latestPrice": 3.78,
+        "prices": [
+          3.78
+        ]
+      },
+      {
+        "name": "SEDANO VERDE",
+        "occurrences": 1,
+        "latestPrice": 0.14,
+        "prices": [
+          0.14
+        ]
+      },
+      {
+        "name": "CIPOLLOTTI BIANCHI",
+        "occurrences": 1,
+        "latestPrice": 0.62,
+        "prices": [
+          0.62
+        ]
+      },
+      {
+        "name": "SHOPPER BIO ORTOFRUT",
+        "occurrences": 3,
+        "latestPrice": 0.02,
+        "prices": [
+          0.02,
+          0.02,
+          0.02
+        ]
+      },
+      {
+        "name": "SHOPPER CASSA MAXI",
+        "occurrences": 1,
+        "latestPrice": 0.18,
+        "prices": [
+          0.18
+        ]
+      },
+      {
+        "name": "BANANE CHIQUITA",
+        "occurrences": 1,
+        "latestPrice": 2.18,
+        "prices": [
+          2.18
+        ]
+      },
+      {
+        "name": "SHOPPER BI0 ORTOFRUT",
+        "occurrences": 1,
+        "latestPrice": 0.02,
+        "prices": [
+          0.02
+        ]
+      },
+      {
+        "name": "GRAMIX GRATTUGIATO 1",
+        "occurrences": 2,
+        "latestPrice": 1.85,
+        "prices": [
+          1.89,
+          1.85
+        ]
+      },
+      {
+        "name": "BRESAOLA VALTEL, 1",
+        "occurrences": 1,
+        "latestPrice": 3.99,
+        "prices": [
+          3.99
+        ]
+      },
+      {
+        "name": "ZUCCHE TONDE",
+        "occurrences": 1,
+        "latestPrice": 1.89,
+        "prices": [
+          1.89
+        ]
+      },
+      {
+        "name": "CAROTE GR.500 IL GIG",
+        "occurrences": 1,
+        "latestPrice": 0.98,
+        "prices": [
+          0.98
+        ]
+      },
+      {
+        "name": "LATTUGHINO 6.90",
+        "occurrences": 1,
+        "latestPrice": 1.38,
+        "prices": [
+          1.38
+        ]
+      },
+      {
+        "name": "ARANCE NAVEL",
+        "occurrences": 1,
+        "latestPrice": 2.42,
+        "prices": [
+          2.42
+        ]
+      },
+      {
+        "name": "FUSILLI 98 !",
+        "occurrences": 1,
+        "latestPrice": 0.99,
+        "prices": [
+          0.99
+        ]
+      },
+      {
+        "name": "MUL. Y0G. 02 BCO X2 !",
+        "occurrences": 1,
+        "latestPrice": 0.9,
+        "prices": [
+          0.9
+        ]
+      },
+      {
+        "name": "CUB. PANC.DOLC. IL G !",
+        "occurrences": 1,
+        "latestPrice": 2.09,
+        "prices": [
+          2.09
+        ]
+      },
+      {
+        "name": "LATTE UHT PS PARN. 1",
+        "occurrences": 1,
+        "latestPrice": 1.05,
+        "prices": [
+          1.05
+        ]
+      },
+      {
+        "name": "PESTO ALLA GENOVES !",
+        "occurrences": 1,
+        "latestPrice": 2.91,
+        "prices": [
+          2.91
+        ]
+      },
+      {
+        "name": "FRUCTIS SHAMPOO KERA",
+        "occurrences": 1,
+        "latestPrice": 5.34,
+        "prices": [
+          5.34
+        ]
+      },
+      {
+        "name": "BAVETTE N13 a I",
+        "occurrences": 1,
+        "latestPrice": 0.99,
+        "prices": [
+          0.99
+        ]
+      },
+      {
+        "name": "DOVE CARE COCCO",
+        "occurrences": 1,
+        "latestPrice": 4.19,
+        "prices": [
+          4.19
+        ]
+      },
+      {
+        "name": "FRUCTIS SHAMPOO CURL",
+        "occurrences": 1,
+        "latestPrice": 5.34,
+        "prices": [
+          5.34
+        ]
+      },
+      {
+        "name": "BUSTA SEMI H",
+        "occurrences": 1,
+        "latestPrice": 1.6,
+        "prices": [
+          1.6
+        ]
+      }
     ]
   }
 }
-
-

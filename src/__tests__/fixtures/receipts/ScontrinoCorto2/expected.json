@@ -34,6 +34,33 @@
         "name": "BRIOCHES RIPIENA",
         "price": 1.4
       }
+    ],
+    "productsTest": [
+      {
+        "name": "CAPPUCCINO",
+        "occurrences": 2,
+        "latestPrice": 1.6,
+        "prices": [
+          1.6,
+          1.6
+        ]
+      },
+      {
+        "name": "KRAPFEN CREA 4g",
+        "occurrences": 1,
+        "latestPrice": 2,
+        "prices": [
+          2
+        ]
+      },
+      {
+        "name": "BRIOCHES RIPIENA",
+        "occurrences": 1,
+        "latestPrice": 1.4,
+        "prices": [
+          1.4
+        ]
+      }
     ]
   }
 }

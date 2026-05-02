@@ -6,6 +6,14 @@
 
 ## [02/05/2026] — Sessione 10
 
+### TASK-085: Fixture OCR — aggiunta sezione productsTest negli expected
+**File modificati:** `src/__tests__/fixtures/receipts/ScontrinoCorto1/expected.json`, `src/__tests__/fixtures/receipts/ScontrinoCorto2/expected.json`, `src/__tests__/fixtures/receipts/ScontrinoGigante1/expected.json`, `src/__tests__/fixtures/receipts/ScontrinoLungo1/expected.json`, `src/__tests__/fixtures/receipts/ScontrinoLungo2/expected.json`, `src/__tests__/fixtures/receipts/synthetic/expected.json`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Aggiunta nuova sezione `expected.productsTest` in tutte le fixture OCR
+- `productsTest` è derivata dagli item attesi esistenti e include: `name`, `occurrences`, `latestPrice`, `prices`
+- Obiettivo: preparare dataset prodotti dedicato ai test catalogo senza alterare la struttura usata dai test OCR attuali
+- **Build check:** `npx tsc -b && npx vite build` ✅
+
 ### TASK-084: Nuova tab Prodotti + integrazione OCR catalogo
 **File modificati:** `src/shared/types.ts`, `src/shared/storage.ts`, `src/shared/labels.ts`, `src/components/ProductsCatalog.tsx`, `src/components/ReceiptScanner.tsx`, `src/pages/Movimenti.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
 

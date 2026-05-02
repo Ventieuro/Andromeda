@@ -5,6 +5,19 @@
     "itemCount": 20,
     "total": 55.69,
     "isValid": true,
-    "firstItem": { "name": "PASTA BARILLA", "price": 1.29 }
+    "firstItem": {
+      "name": "PASTA BARILLA",
+      "price": 1.29
+    },
+    "productsTest": [
+      {
+        "name": "PASTA BARILLA",
+        "occurrences": 1,
+        "latestPrice": 1.29,
+        "prices": [
+          1.29
+        ]
+      }
+    ]
   }
 }

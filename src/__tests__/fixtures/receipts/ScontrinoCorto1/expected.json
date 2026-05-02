@@ -1,21 +1,94 @@
 {
   "stable": true,
   "description": "Scontrino ristorante Trattoria I Giganti (Cabras) — preconto non fiscale",
-  "source": ["foto_1.jpg"],
+  "source": [
+    "foto_1.jpg"
+  ],
   "notes": "Preconto non fiscale. Contiene righe moltiplicatore (3X2,00 e 22X1,50) associate agli articoli successivi.",
   "expected": {
     "itemCount": 6,
-    "total": 90.00,
+    "total": 90,
     "isValid": true,
     "date": "2016-05-22",
     "items": [
-      { "name": "COPERTÒ",                  "price": 6.00,  "qty": 3,  "unitPrice": 2.00 },
-      { "name": "DEGUSTAZIONE 8 PORTATE",  "price": 33.00, "qty": 22, "unitPrice": 1.50 },
-      { "name": "GRIGLIATA MISTA DI PESCE","price": 30.00 },
-      { "name": "GAMB. ALLA GRIGLIA O VERN","price": 15.00 },
-      { "name": "VINO B.SFUSO 1/21",        "price": 4.00 },
-      { "name": "BIBITE LATTINA",           "price": 2.00 }
+      {
+        "name": "COPERTÒ",
+        "price": 6,
+        "qty": 3,
+        "unitPrice": 2
+      },
+      {
+        "name": "DEGUSTAZIONE 8 PORTATE",
+        "price": 33,
+        "qty": 22,
+        "unitPrice": 1.5
+      },
+      {
+        "name": "GRIGLIATA MISTA DI PESCE",
+        "price": 30
+      },
+      {
+        "name": "GAMB. ALLA GRIGLIA O VERN",
+        "price": 15
+      },
+      {
+        "name": "VINO B.SFUSO 1/21",
+        "price": 4
+      },
+      {
+        "name": "BIBITE LATTINA",
+        "price": 2
+      }
+    ],
+    "productsTest": [
+      {
+        "name": "COPERTÒ",
+        "occurrences": 1,
+        "latestPrice": 6,
+        "prices": [
+          6
+        ]
+      },
+      {
+        "name": "DEGUSTAZIONE 8 PORTATE",
+        "occurrences": 1,
+        "latestPrice": 33,
+        "prices": [
+          33
+        ]
+      },
+      {
+        "name": "GRIGLIATA MISTA DI PESCE",
+        "occurrences": 1,
+        "latestPrice": 30,
+        "prices": [
+          30
+        ]
+      },
+      {
+        "name": "GAMB. ALLA GRIGLIA O VERN",
+        "occurrences": 1,
+        "latestPrice": 15,
+        "prices": [
+          15
+        ]
+      },
+      {
+        "name": "VINO B.SFUSO 1/21",
+        "occurrences": 1,
+        "latestPrice": 4,
+        "prices": [
+          4
+        ]
+      },
+      {
+        "name": "BIBITE LATTINA",
+        "occurrences": 1,
+        "latestPrice": 2,
+        "prices": [
+          2
+        ]
+      }
     ]
   }
 }
-
