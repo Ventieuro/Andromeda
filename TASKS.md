@@ -38,6 +38,11 @@
 
 ## Completati
 
+### ✅ TASK-086 — Fix suite test locale (02/05/2026)
+- [x] Aggiunto localStorage shim stabile in setup test per evitare ambienti incompleti
+- [x] Resi i test OCR real opt-in tramite `RUN_OCR_REAL=1` (default skip)
+- [x] Suite principale di test ora verde in locale
+
 ### ✅ TASK-085 — Sezione prodotti test negli expected OCR (02/05/2026)
 - [x] Aggiunta sezione `expected.productsTest` in tutte le fixture `expected.json`
 - [x] Sezione derivata automaticamente dagli item attesi (nome, occorrenze, latestPrice, prices)

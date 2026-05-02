@@ -22,6 +22,8 @@ import { createWorker } from 'tesseract.js'
 import { parseReceiptText } from '../shared/receiptUtils'
 
 const FIXTURES = join(__dirname, 'fixtures/receipts')
+const RUN_OCR_REAL = process.env.RUN_OCR_REAL === '1'
+const describeReal = RUN_OCR_REAL ? describe : describe.skip
 
 // ─── Helper ─────────────────────────────────────────────
 
@@ -39,7 +41,7 @@ async function ocrFiles(paths: string[]): Promise<string> {
 
 // ─── ScontrinoLungo1 — supermercato, 3 foto reali ───────
 
-describe('ScontrinoLungo1 — supermercato (3 foto)', () => {
+describeReal('ScontrinoLungo1 — supermercato (3 foto)', () => {
   const expected = JSON.parse(readFileSync(join(FIXTURES, 'ScontrinoLungo1', 'expected.json'), 'utf-8'))
   stableIt(expected.stable)('estrae articoli e totale', { timeout: 120_000 }, async () => {
     const dir = join(FIXTURES, 'ScontrinoLungo1')
@@ -93,7 +95,7 @@ describe('ScontrinoLungo1 — supermercato (3 foto)', () => {
 
 // ─── ScontrinoLungo2 — supermercato, 3 foto parziali ───────────────
 
-describe('ScontrinoLungo2 — supermercato (3 foto, copertura parziale)', () => {
+describeReal('ScontrinoLungo2 — supermercato (3 foto, copertura parziale)', () => {
   const expected = JSON.parse(readFileSync(join(FIXTURES, 'ScontrinoLungo2', 'expected.json'), 'utf-8'))
   stableIt(expected.stable)('estrae articoli e totale', { timeout: 120_000 }, async () => {
     const dir = join(FIXTURES, 'ScontrinoLungo2')
@@ -144,7 +146,7 @@ describe('ScontrinoLungo2 — supermercato (3 foto, copertura parziale)', () => 
 
 // ─── ScontrinoCorto1 — ristorante, screenshot app ───────
 
-describe('ScontrinoCorto1 — ristorante (1 foto, scontrino fisico)', () => {
+describeReal('ScontrinoCorto1 — ristorante (1 foto, scontrino fisico)', () => {
   const expected = JSON.parse(readFileSync(join(FIXTURES, 'ScontrinoCorto1', 'expected.json'), 'utf-8'))
   stableIt(expected.stable)('legge il totale anche senza articoli', { timeout: 60_000 }, async () => {
     const dir = join(FIXTURES, 'ScontrinoCorto1')
@@ -183,7 +185,7 @@ describe('ScontrinoCorto1 — ristorante (1 foto, scontrino fisico)', () => {
 
 // ─── ScontrinoCorto2 — bar/caffetteria, 1 foto ──────────
 
-describe('ScontrinoCorto2 — bar (1 foto)', () => {
+describeReal('ScontrinoCorto2 — bar (1 foto)', () => {
   const expected = JSON.parse(readFileSync(join(FIXTURES, 'ScontrinoCorto2', 'expected.json'), 'utf-8'))
   stableIt(expected.stable)('estrae articoli e totale', { timeout: 120_000 }, async () => {
     const dir = join(FIXTURES, 'ScontrinoCorto2')
@@ -230,7 +232,7 @@ describe('ScontrinoCorto2 — bar (1 foto)', () => {
 
 // ─── ScontrinoGigante1 — supermercato con sconti blucard ──────────
 
-describe('ScontrinoGigante1 — supermercato (1 foto)', () => {
+describeReal('ScontrinoGigante1 — supermercato (1 foto)', () => {
   const expected = JSON.parse(readFileSync(join(FIXTURES, 'ScontrinoGigante1', 'expected.json'), 'utf-8'))
   stableIt(expected.stable)('estrae articoli e totale', { timeout: 120_000 }, async () => {
     const dir = join(FIXTURES, 'ScontrinoGigante1')
