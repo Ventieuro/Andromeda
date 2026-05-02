@@ -31,6 +31,7 @@ interface ScanState {
   totale: number | null
   totaleValido: boolean
   categoriaSelezionata: string
+  descrizione: string
   errore: string | null
 }
 
@@ -46,11 +47,14 @@ type ScanAction =
   | { type: 'SET_ERRORE'; errore: string }
   | { type: 'MODIFICA_NOME'; id: string; valore: string }
   | { type: 'MODIFICA_PREZZO'; id: string; valore: string }
+  | { type: 'MODIFICA_SCONTO_IMPORTO'; id: string; valore: string }
+  | { type: 'MODIFICA_SCONTO_TIPO'; id: string; valore: string }
   | { type: 'RIMUOVI_ARTICOLO'; id: string }
   | { type: 'SPOSTA_ARTICOLO'; fromIndex: number; toIndex: number }
   | { type: 'AGGIUNGI_ARTICOLO_MANUALE' }
   | { type: 'SET_CATEGORIA'; categoria: string }
   | { type: 'MODIFICA_TOTALE'; valore: string }
+  | { type: 'SET_DESCRIZIONE'; descrizione: string }
   | { type: 'RESET' }
 
 const STATO_INIZIALE: ScanState = {
@@ -62,6 +66,7 @@ const STATO_INIZIALE: ScanState = {
   totale: null,
   totaleValido: false,
   categoriaSelezionata: 'Spesa',
+  descrizione: 'Scontrino',
   errore: null,
 }
 
@@ -142,6 +147,27 @@ function scanReducer(state: ScanState, action: ScanAction): ScanState {
 
     case 'SET_CATEGORIA':
       return { ...state, categoriaSelezionata: action.categoria }
+
+    case 'MODIFICA_SCONTO_IMPORTO': {
+      const amount = parseFloat(action.valore.replace(',', '.'))
+      return {
+        ...state,
+        articoli: state.articoli.map((a) =>
+          a.id === action.id ? { ...a, discountAmount: isNaN(amount) ? undefined : amount } : a,
+        ),
+      }
+    }
+
+    case 'MODIFICA_SCONTO_TIPO':
+      return {
+        ...state,
+        articoli: state.articoli.map((a) =>
+          a.id === action.id ? { ...a, discountType: action.valore || undefined } : a,
+        ),
+      }
+
+    case 'SET_DESCRIZIONE':
+      return { ...state, descrizione: action.descrizione }
 
     case 'RESET':
       return STATO_INIZIALE
@@ -389,7 +415,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
     addTransaction({
       id: generateId(),
       type: 'uscita',
-      description: 'Scontrino',
+      description: state.descrizione.trim() || 'Scontrino',
       amount: state.totale ?? sommaArticoli,
       date: today,
       category: state.categoriaSelezionata,
@@ -820,7 +846,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                   <div
                     className="grid text-xs font-semibold uppercase"
                     style={{
-                      gridTemplateColumns: '1fr 80px 32px',
+                      gridTemplateColumns: '1fr 70px 70px 32px',
                       padding: '8px 12px',
                       background: 'var(--bg-secondary)',
                       color: 'var(--text-muted)',
@@ -829,6 +855,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                   >
                     <span>{OCR.colonnaArticolo}</span>
                     <span style={{ textAlign: 'right' }}>{OCR.colonnaPrezzo}</span>
+                    <span style={{ textAlign: 'center' }}>Sconto</span>
                     <span />
                   </div>
 
@@ -855,7 +882,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                         }}
                         onDragEnd={() => setDraggedIndex(null)}
                         style={{
-                          gridTemplateColumns: '1fr 80px 32px',
+                          gridTemplateColumns: '1fr 70px 70px 32px',
                           padding: '5px 8px',
                           borderBottom: idx < state.articoli.length - 1 ? '1px solid var(--border)' : 'none',
                           gap: '6px',
@@ -930,6 +957,46 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                           }}
                         />
 
+                        {/* Sconto (importo + tipo) */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            placeholder="€"
+                            defaultValue={item.discountAmount ? item.discountAmount.toFixed(2).replace('.', ',') : ''}
+                            onBlur={(e) => dispatch({ type: 'MODIFICA_SCONTO_IMPORTO', id: item.id, valore: e.target.value })}
+                            title="Importo sconto"
+                            style={{
+                              fontSize: '11px',
+                              textAlign: 'right',
+                              background: 'var(--input-bg)',
+                              border: '1px solid var(--input-border)',
+                              borderRadius: '6px',
+                              padding: '3px 4px',
+                              outline: 'none',
+                              color: 'var(--text-primary)',
+                              width: '100%',
+                            }}
+                          />
+                          <input
+                            type="text"
+                            placeholder="tipo"
+                            defaultValue={item.discountType || ''}
+                            onBlur={(e) => dispatch({ type: 'MODIFICA_SCONTO_TIPO', id: item.id, valore: e.target.value })}
+                            title="Tipo sconto (es: 30%, BLUCARD)"
+                            style={{
+                              fontSize: '11px',
+                              background: 'var(--input-bg)',
+                              border: '1px solid var(--input-border)',
+                              borderRadius: '6px',
+                              padding: '3px 4px',
+                              outline: 'none',
+                              color: 'var(--text-primary)',
+                              width: '100%',
+                            }}
+                          />
+                        </div>
+
                         {/* Elimina riga */}
                         <button
                           onClick={() => dispatch({ type: 'RIMUOVI_ARTICOLO', id: item.id })}
@@ -948,7 +1015,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                   <div
                     className="grid items-center font-bold"
                     style={{
-                      gridTemplateColumns: '1fr 80px 32px',
+                      gridTemplateColumns: '1fr 70px 70px 32px',
                       padding: '8px 12px',
                       background: 'var(--bg-secondary)',
                       borderTop: '1px solid var(--border)',
@@ -959,12 +1026,13 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                     <span>{state.totale !== null && !approvatoScontrino ? OCR.totaleCalcolato : 'Totale'}</span>
                     <span style={{ textAlign: 'right' }}>{formatEuro(sommaArticoli)}</span>
                     <span />
+                    <span />
                   </div>
                   {state.totale !== null && !approvatoScontrino && (
                     <div
                       className="grid items-center font-bold"
                       style={{
-                        gridTemplateColumns: '1fr 80px 32px',
+                        gridTemplateColumns: '1fr 70px 70px 32px',
                         padding: '6px 12px',
                         background: 'var(--bg-secondary)',
                         borderTop: '1px solid var(--border)',
@@ -989,6 +1057,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                           width: '100%',
                         }}
                       />
+                      <span />
                       <span />
                     </div>
                   )}
@@ -1030,6 +1099,31 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                       </button>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Campo descrizione personalizzata */}
+              {state.articoli.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase" style={{ color: 'var(--text-muted)' }}>
+                    Nome Transazione
+                  </p>
+                  <input
+                    type="text"
+                    value={state.descrizione}
+                    onChange={(e) => dispatch({ type: 'SET_DESCRIZIONE', descrizione: e.target.value })}
+                    placeholder="es: Scontrino gigante 2, Spesa Carrefour..."
+                    style={{
+                      width: '100%',
+                      fontSize: '13px',
+                      background: 'var(--input-bg)',
+                      border: '1px solid var(--input-border)',
+                      borderRadius: '8px',
+                      padding: '8px 12px',
+                      outline: 'none',
+                      color: 'var(--text-primary)',
+                    }}
+                  />
                 </div>
               )}
 

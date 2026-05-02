@@ -4,6 +4,66 @@
 
 ---
 
+## [02/05/2026] — Sessione 12
+
+### TASK-091: Ordinamento per inserimento nei filtri (prodotti + movimenti)
+**File modificati:** `src/components/ProductsCatalog.tsx`, `src/pages/Movimenti.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- ✅ **ProductsCatalog — Nuovo ordinamento per inserimento:**
+  - Aggiunta opzione `'insertion'` al sortBy type (insieme a name-asc, name-desc, price-asc, price-desc)
+  - Default cambiato da `'name-asc'` a `'insertion'` (i prodotti più recenti per ultimi, ordinati per `lastSeen` decrescente)
+  - Logica di sorting: `b.lastSeen.localeCompare(a.lastSeen)` per ordinamento decrescente (più recenti primo)
+  - Select dropdown aggiornato: aggiunta nuova opzione `ordinaInserimento`
+  
+- ✅ **Movimenti — Nuovo filtro ordinamento con 6 opzioni:**
+  - Aggiunto state `sortBy` con valori: `'insertion'`, `'insertion-asc'`, `'date-desc'`, `'date-asc'`, `'amount-asc'`, `'amount-desc'`
+  - Default: `'insertion'` (più recenti per primi, usando `createdAt ?? date`)
+  - Logica di sorting nel useMemo:
+    - `insertion`: `(b.createdAt ?? b.date).localeCompare(a.createdAt ?? a.date)` (decrescente)
+    - `insertion-asc`: `(a.createdAt ?? a.date).localeCompare(b.createdAt ?? b.date)` (crescente)
+    - `date-desc`: `b.date.localeCompare(a.date)` (più recenti)
+    - `date-asc`: `a.date.localeCompare(b.date)` (più antichi)
+    - `amount-asc`: `a.amount - b.amount` (importo crescente)
+    - `amount-desc`: `b.amount - a.amount` (importo decrescente)
+  - Dependenza aggiunta al useMemo: `sortBy`
+  
+- ✅ **UI — Filtro ordinamento in Movimenti:**
+  - Nuovo select con icona funnel (svg 16x16, path from ProductsCatalog)
+  - Posizionato tra filtri tipo/ricorrenti e filtro categoria
+  - Layout: flex row con gap 8px, select flex 1, icona flexShrink 0
+  - Styling coerente con altri filtri (input-bg, input-border, text-primary)
+  
+- ✅ **i18n — Nuove label in PRODOTTI e MOVIMENTI:**
+  - PRODOTTI: aggiunto `ordinaInserimento: t('Inserimento (più recenti)', 'Insertion (newest)', 'Inserción (más recientes)')`
+  - MOVIMENTI: aggiunti 6 label per ordinamenti
+    - `ordinaPer`, `ordinaInserimento`, `ordinaInserimentoAntichi`
+    - `ordinaData`, `ordinaDataAntichi`, `ordinaImporto`, `ordinaImportoDesc`
+  - Tutte le label supportano IT, EN, ES
+  
+- ✅ **Test e Build:** `npm run build` ✅ (`36 passed`, `5 skipped`), ready to deploy
+
+## [02/05/2026] — Sessione 11
+
+### TASK-090: Modifica scontrino — sconto editabile + nome transazione personalizzato
+**File modificati:** `src/components/ReceiptScanner.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- ✅ **Sconto editabile in tabella risultati:** aggiunti due input in colonna "Sconto" per ogni articolo
+  - Input 1: importo sconto in € (es. `0,56`)
+  - Input 2: tipo sconto (es. `30%`, `BLUCARD`, `SCONTO CLIENTE`)
+  - Dispatch actions: `MODIFICA_SCONTO_IMPORTO` e `MODIFICA_SCONTO_TIPO` aggiornano lo state
+  - Grid layout tabella allargato: da `1fr 80px 32px` a `1fr 70px 70px 32px`
+  
+- ✅ **Nome transazione personalizzato:** aggiunto text input nella fase "risultati"
+  - Label: "Nome Transazione" (uppercase)
+  - Default: `"Scontrino"`
+  - Placeholder: `"es: Scontrino gigante 2, Spesa Carrefour..."`
+  - Dispatch action: `SET_DESCRIZIONE` aggiorna `state.descrizione`
+  - `handleCreaTotale()` usa `state.descrizione` (con fallback a `"Scontrino"` se vuota)
+  
+- ✅ **State management:** aggiunto campo `descrizione: string` in `ScanState` (default `'Scontrino'`)
+- ✅ **Validazione:** import transazione preserva metadati sconto editati e nome personalizzato
+- **Check:** `npx tsc -b` ✅, `npm run build` ✅ (`36 passed`, `5 skipped`), deploy ready
+
 ## [02/05/2026] — Sessione 10
 
 ### TASK-089: Camera scontrino — fix multi-click su scatto

@@ -41,7 +41,7 @@ function ProductsCatalog() {
   const { showConfirm } = useDialog()
   const [products, setProducts] = useState<ProductEntry[]>(() => loadProducts())
   const [search, setSearch] = useState('')
-  const [sortBy, setSortBy] = useState<'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'>('name-asc')
+  const [sortBy, setSortBy] = useState<'insertion' | 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'>('insertion')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
@@ -56,6 +56,7 @@ function ProductsCatalog() {
       .filter((p) => !q || p.name.toLowerCase().includes(q) || p.aliases.some((a) => a.toLowerCase().includes(q)))
 
     return [...base].sort((a, b) => {
+      if (sortBy === 'insertion') return b.lastSeen.localeCompare(a.lastSeen)
       if (sortBy === 'name-asc') return a.name.localeCompare(b.name, 'it')
       if (sortBy === 'name-desc') return b.name.localeCompare(a.name, 'it')
 
@@ -168,7 +169,7 @@ function ProductsCatalog() {
         </div>
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc')}
+          onChange={(e) => setSortBy(e.target.value as 'insertion' | 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc')}
           style={{
             width: '100%',
             boxSizing: 'border-box',
@@ -182,6 +183,7 @@ function ProductsCatalog() {
           }}
           aria-label={PRODOTTI.ordinaPer}
         >
+          <option value="insertion">{PRODOTTI.ordinaInserimento}</option>
           <option value="name-asc">{PRODOTTI.ordinaNomeAsc}</option>
           <option value="name-desc">{PRODOTTI.ordinaNomeDesc}</option>
           <option value="price-asc">{PRODOTTI.ordinaPrezzoAsc}</option>

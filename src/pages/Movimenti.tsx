@@ -48,6 +48,7 @@ function Movimenti() {
   const [filterType, setFilterType] = useState<'all' | 'entrata' | 'uscita'>('all')
   const [filterRecurring, setFilterRecurring] = useState(false)
   const [filterCategory, setFilterCategory] = useState(searchParams.get('category') ?? '')
+  const [sortBy, setSortBy] = useState<'insertion' | 'insertion-asc' | 'date-desc' | 'date-asc' | 'amount-asc' | 'amount-desc'>('insertion')
 
   const { payDay } = loadSettings()
   const defaultPeriod = getCurrentPeriod(payDay)
@@ -97,8 +98,15 @@ function Movimenti() {
         }
         return true
       })
-      .sort((a, b) => b.date.localeCompare(a.date))
-  }, [allTx, filterType, filterRecurring, filterCategory, dateFrom, dateTo, search, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+      .sort((a, b) => {
+        if (sortBy === 'insertion') return (b.createdAt ?? b.date).localeCompare(a.createdAt ?? a.date)
+        if (sortBy === 'insertion-asc') return (a.createdAt ?? a.date).localeCompare(b.createdAt ?? b.date)
+        if (sortBy === 'date-desc') return b.date.localeCompare(a.date)
+        if (sortBy === 'date-asc') return a.date.localeCompare(b.date)
+        if (sortBy === 'amount-asc') return a.amount - b.amount
+        return b.amount - a.amount
+      })
+  }, [allTx, filterType, filterRecurring, filterCategory, dateFrom, dateTo, search, sortBy, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function clearPeriodFilter() {
     const { start, end } = getCurrentPeriod(payDay)
@@ -328,6 +336,53 @@ function Movimenti() {
         <button style={chipStyle(filterRecurring)} onClick={() => setFilterRecurring((v) => !v)}>
           🔁 {MOVIMENTI.filtroRicorrenti}
         </button>
+      </div>
+
+      {/* ─── Filtro categoria ─── */}
+      <div style={{ padding: '0 16px 12px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div
+          style={{
+            width: '34px',
+            height: '34px',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border)',
+            color: 'var(--text-secondary)',
+            flexShrink: 0,
+          }}
+          aria-hidden="true"
+          title={MOVIMENTI.ordinaPer}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 5h18l-7 8v5l-4 2v-7L3 5z" />
+          </svg>
+        </div>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+          style={{
+            flex: 1,
+            boxSizing: 'border-box',
+            padding: '9px 12px',
+            borderRadius: '12px',
+            border: '1px solid var(--input-border)',
+            background: 'var(--input-bg)',
+            color: 'var(--text-primary)',
+            fontSize: '13px',
+            outline: 'none',
+          }}
+          aria-label={MOVIMENTI.ordinaPer}
+        >
+          <option value="insertion">{MOVIMENTI.ordinaInserimento}</option>
+          <option value="insertion-asc">{MOVIMENTI.ordinaInserimentoAntichi}</option>
+          <option value="date-desc">{MOVIMENTI.ordinaData}</option>
+          <option value="date-asc">{MOVIMENTI.ordinaDataAntichi}</option>
+          <option value="amount-asc">{MOVIMENTI.ordinaImporto}</option>
+          <option value="amount-desc">{MOVIMENTI.ordinaImportoDesc}</option>
+        </select>
       </div>
 
       {/* ─── Filtro categoria ─── */}

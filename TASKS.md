@@ -190,7 +190,24 @@
 
 ## Completati
 
-### ✅ TASK-063 — Convertitore backup MoneyPlus → Hermes (26/04/2026)
+### ✅ TASK-091 — Ordinamento per inserimento nei filtri (prodotti + movimenti)
+- [x] ProductsCatalog: aggiunto 'insertion' come opzione di ordinamento (default, ordina per lastSeen decrescente)
+- [x] Movimenti: aggiunto select "Ordina per" con opzioni: inserimento (più recenti/antichi), data (più recenti/antichi), importo (crescente/decrescente)
+- [x] Label i18n aggiunte in PRODOTTI (ordinaInserimento) e MOVIMENTI (ordinaInserimento, ordinaInserimentoAntichi, ordinaData, ordinaDataAntichi, ordinaImporto, ordinaImportoDesc)
+- [x] ProductsCatalog: sortBy state esteso da 4 a 5 opzioni, default cambiato da 'name-asc' a 'insertion'
+- [x] Movimenti: sortBy state aggiunto con 6 opzioni (insertion, insertion-asc, date-desc, date-asc, amount-asc, amount-desc)
+- [x] UI: filtro ordinamento con icona funnel aggiunto anche in Movimenti (dopo filtri tipo/ricorrenti, prima filtro categoria)
+- [x] Build e test verificati (`npm run build` ✅, `36 passed` `5 skipped`)
+
+### ✅ TASK-090 — Modifica scontrino — sconto editabile + nome transazione personalizzato (02/05/2026)
+- [x] Sconto editabile: aggiunti input per importo (€) e tipo sconto in colonna "Sconto" della tabella risultati
+- [x] Actions reducer: `MODIFICA_SCONTO_IMPORTO` e `MODIFICA_SCONTO_TIPO` aggiornano metadati articolo
+- [x] Nome transazione personalizzato: text input "Nome Transazione" in fase risultati con default "Scontrino"
+- [x] State: aggiunto campo `descrizione` e action `SET_DESCRIZIONE` nel reducer
+- [x] handleCreaTotale(): usa `state.descrizione` per creare transazione (fallback "Scontrino")
+- [x] Build e test verificati (`npx tsc -b` ✅, `npm run build` ✅, `36 passed` `5 skipped`)
+
+### ✅ TASK-089: Camera scontrino — fix multi-click su scatto
 - [x] Installate dipendenze `fflate` e `sql.js` per unzip + SQLite WASM
 - [x] Copiato `sql-wasm.wasm` in `/public/`
 - [x] Creato `src/components/MoneyPlusImporter.tsx` con auto-detection schema DB
