@@ -4,6 +4,19 @@
 
 ---
 
+## [02/05/2026] — Sessione 10
+
+### TASK-076: Scontrino come transazione unica con dettaglio
+**File modificati:** `src/shared/types.ts`, `src/shared/storage.ts`, `src/components/ReceiptScanner.tsx`, `src/components/ReceiptDetailModal.tsx`, `src/pages/Dashboard.tsx`, `src/pages/Movimenti.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Modello transazione esteso con `isReceipt?: boolean` e `receiptItems?: { name, price }[]`
+- OCR import ora salva sempre **una sola transazione** (`isReceipt: true`) con lista articoli nel campo dettaglio
+- Rimossa la modalità "N transazioni" dallo scanner per rispettare il nuovo flusso
+- Aggiunta azione `Dettaglio` su Dashboard e Movimenti (visibile solo per transazioni con `isReceipt: true`)
+- Creato modal dedicato con righe articolo + totale transazione
+- Aggiornata validazione storage per accettare i nuovi campi receipt in import/export
+- **Build check:** `tsc -b && vite build` ✅
+
 ## [26/04/2026] — Sessione 9
 
 ### TASK-068: Sistema confidence prezzi OCR incerti

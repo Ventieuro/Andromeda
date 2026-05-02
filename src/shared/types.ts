@@ -1,5 +1,10 @@
 export type TransactionType = 'entrata' | 'uscita'
 
+export interface ReceiptDetailItem {
+  name: string
+  price: number
+}
+
 export interface Transaction {
   id: string
   syncId?: string
@@ -13,6 +18,8 @@ export interface Transaction {
   recurringMonths: number // 0 = non ricorrente, N = quanti mesi
   recurringGroupId?: string // ID condiviso fra le occorrenze della stessa serie
   category: string
+  isReceipt?: boolean
+  receiptItems?: ReceiptDetailItem[]
 }
 
 export interface AppSettings {

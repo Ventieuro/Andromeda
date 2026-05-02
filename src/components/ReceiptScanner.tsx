@@ -295,26 +295,12 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
     }
   }
 
-  // ── Crea una transazione per ogni articolo ───────────
-  function handleCreaArticoli() {
-    state.articoli.forEach((item) => {
-      addTransaction({
-        id: generateId(),
-        type: 'uscita',
-        description: item.name || state.categoriaSelezionata,
-        amount: item.price,
-        date: today,
-        category: state.categoriaSelezionata,
-        recurring: false,
-        recurringMonths: 0,
-      })
-    })
-    onDone()
-    onClose()
-  }
-
   // ── Crea un'unica transazione con il totale ──────────
   function handleCreaTotale() {
+    const detailItems = state.articoli
+      .map((item) => ({ name: item.name.trim(), price: item.price }))
+      .filter((item) => item.name.length > 0 && item.price >= 0)
+
     addTransaction({
       id: generateId(),
       type: 'uscita',
@@ -324,6 +310,8 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
       category: state.categoriaSelezionata,
       recurring: false,
       recurringMonths: 0,
+      isReceipt: true,
+      receiptItems: detailItems,
     })
     onDone()
     onClose()
@@ -872,24 +860,16 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
 
               {/* Pulsanti azione */}
               {state.articoli.length > 0 && (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3">
                   <button
                     onClick={handleCreaTotale}
-                    className="py-3 rounded-xl text-sm font-semibold transition active:scale-95"
+                    className="py-3 rounded-xl text-sm font-bold transition active:scale-95"
                     style={{
-                      background: 'var(--bg-secondary)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--text-primary)',
+                      background: 'var(--accent)',
+                      color: 'var(--fab-text)',
                     }}
                   >
                     {OCR.creaTotale}
-                  </button>
-                  <button
-                    onClick={handleCreaArticoli}
-                    className="py-3 rounded-xl text-sm font-bold transition active:scale-95"
-                    style={{ background: 'var(--accent)', color: 'var(--fab-text)' }}
-                  >
-                    {OCR.creaArticoli(state.articoli.length)}
                   </button>
                 </div>
               )}

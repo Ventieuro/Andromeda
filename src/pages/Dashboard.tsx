@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
+import ReceiptDetailModal from '../components/ReceiptDetailModal'
 import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import ExpensePieChart from '../components/ExpensePieChart'
@@ -57,6 +58,7 @@ function Dashboard() {
   const [monthOffset, setMonthOffset] = useState(0)
   const [showForm, setShowForm] = useState(false)
   const [editingTx, setEditingTx] = useState<Transaction | null>(null)
+  const [receiptDetailTx, setReceiptDetailTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [chartView, setChartView] = useState<'pie' | 'solar' | 'comet'>('pie')
 
@@ -275,6 +277,24 @@ function Dashboard() {
                     : `-${formatEuro(tx.amount)}`}
                 </span>
                 <button onClick={() => setEditingTx(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px', padding: '4px', color: 'var(--text-muted)' }} aria-label="Modifica">✏️</button>
+                {tx.isReceipt && (
+                  <button
+                    onClick={() => setReceiptDetailTx(tx)}
+                    style={{
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                      padding: '4px 8px',
+                      color: 'var(--text-secondary)',
+                      fontWeight: 600,
+                    }}
+                    aria-label={DASHBOARD.dettaglioScontrino}
+                  >
+                    {DASHBOARD.dettaglioScontrino}
+                  </button>
+                )}
                 <button onClick={() => handleDelete(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px', padding: '4px', color: 'var(--text-muted)' }} aria-label={DASHBOARD.eliminaLabel}>🗑</button>
               </div>
             ))}
@@ -288,6 +308,9 @@ function Dashboard() {
       )}
       {editingTx && (
         <AddTransactionForm onClose={() => setEditingTx(null)} onSaved={refresh} editTransaction={editingTx} />
+      )}
+      {receiptDetailTx && (
+        <ReceiptDetailModal transaction={receiptDetailTx} onClose={() => setReceiptDetailTx(null)} />
       )}
     </div>
   )

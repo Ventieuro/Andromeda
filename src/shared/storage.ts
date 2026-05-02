@@ -185,8 +185,19 @@ function isValidTransaction(data: unknown): data is Transaction {
     typeof t.recurring === 'boolean' &&
     typeof t.recurringMonths === 'number' &&
     (t.recurringGroupId === undefined || typeof t.recurringGroupId === 'string') &&
-    typeof t.category === 'string'
+    typeof t.category === 'string' &&
+    (t.isReceipt === undefined || typeof t.isReceipt === 'boolean') &&
+    (t.receiptItems === undefined || isValidReceiptItems(t.receiptItems))
   )
+}
+
+function isValidReceiptItems(value: unknown): boolean {
+  if (!Array.isArray(value)) return false
+  return value.every((item) => {
+    if (typeof item !== 'object' || item === null) return false
+    const row = item as Record<string, unknown>
+    return typeof row.name === 'string' && typeof row.price === 'number' && row.price >= 0
+  })
 }
 
 export function saveTransactions(transactions: Transaction[]) {

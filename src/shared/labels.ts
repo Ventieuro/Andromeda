@@ -81,6 +81,7 @@ const STRINGS = {
     eliminaRicorrenteScope:       t('Eliminare solo questa o tutte le collegate?',      'Delete just this one or all linked?',    '¿Eliminar solo esta o todas?'),
     eliminaTutte:                 t('Tutte le collegate',                               'All linked',                             'Todas'),
     eliminaSoloQuesta:            t('Solo questa',                                      'Just this one',                          'Solo esta'),
+    dettaglioScontrino:           t('Dettaglio',                                        'Details',                                'Detalle'),
     aggiungiMovimento:            t('Aggiungi movimento',                              'Add transaction',                        'Añadir movimiento'),
     graficoSpese:                 t('Come spendi i tuoi soldi',                        'How you spend your money',               'Cómo gastas tu dinero'),
     nessunGrafico:                t('Nessuna uscita in questo periodo.',               'No expenses in this period.',            'No hay gastos en este período.'),
@@ -254,6 +255,17 @@ const STRINGS = {
     eliminaRicorrenteScope: t('Eliminare solo questa o tutte le collegate?', 'Delete just this one or all linked?', '¿Eliminar solo esta o todas?'),
     eliminaTutte:    t('Tutte le collegate',           'All linked',                  'Todas'),
     eliminaSoloQuesta: t('Solo questa',                'Just this one',               'Solo esta'),
+    dettaglioScontrino: t('Dettaglio',                 'Details',                     'Detalle'),
+  },
+
+  // ── Dettaglio Scontrino ──────────────────────────────
+  receiptDetail: {
+    titolo:         t('Dettaglio scontrino',             'Receipt details',             'Detalle del ticket'),
+    colonnaArticolo: t('Articolo',                       'Item',                        'Artículo'),
+    colonnaPrezzo:  t('Prezzo',                          'Price',                       'Precio'),
+    totale:         t('Totale transazione',              'Transaction total',           'Total de la transacción'),
+    nessunDettaglio: t('Nessun articolo salvato per questo scontrino.', 'No items saved for this receipt.', 'No hay artículos guardados para este ticket.'),
+    chiudi:         t('Chiudi',                          'Close',                       'Cerrar'),
   },
 
   // ── Settings ───────────────────────────────────────────
@@ -516,3 +528,4 @@ export const NOTIFICHE: Labels['notifiche'] = localize(STRINGS.notifiche)
 export const PWA:       Labels['pwa']       = localize(STRINGS.pwa)
 export const AUTO_BACKUP: Labels['autoBackup'] = localize(STRINGS.autoBackup)
 export const OCR:         Labels['ocr']         = localize(STRINGS.ocr)
+export const RECEIPT_DETAIL: Labels['receiptDetail'] = localize(STRINGS.receiptDetail)

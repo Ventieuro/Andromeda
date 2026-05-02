@@ -28,7 +28,20 @@
 - [ ] Definire soglia operativa (es. warning 70-80%) e flusso guidato utente
 - [ ] Considerare eventuale migrazione a IndexedDB se la crescita dati continua
 
+### 🔜 TASK-077 — Suggerimento: immagini scontrino locali (NON ESEGUIRE finché non richiesto) (02/05/2026)
+- [ ] Valutare salvataggio opzionale immagini scontrino in IndexedDB come Blob compressi
+- [ ] Definire retention (es. 30/60/90 giorni) e cleanup automatico
+- [ ] Salvare sempre miniatura + metadata, originale opzionale per ridurre peso
+- [ ] Progettare impatto su backup/sync/export prima di attivare in produzione
+
 ## Completati
+
+### ✅ TASK-076 — Scontrino come transazione unica con dettaglio (02/05/2026)
+- [x] Aggiunti campi `isReceipt` e `receiptItems` al modello transazione
+- [x] Scanner scontrino aggiornato: import solo come spesa unica marcata `isReceipt: true`
+- [x] Aggiunta azione `Dettaglio` per movimenti scontrino in Dashboard e Movimenti
+- [x] Creato modal dettaglio con lista articoli e totale transazione
+- [x] Build tecnica (`tsc -b && vite build`) ✅
 
 ### ✅ TASK-075 — Fix lightbox foto: blob URL → overlay inline (26/04/2026)
 - [x] Rimosso `window.open(blob:...)` su tap foto — causava ERR_UPLOAD_FILE_CHANGED su mobile

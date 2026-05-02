@@ -6,6 +6,7 @@ import { MOVIMENTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '.
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
 import AddTransactionForm from '../components/AddTransactionForm'
+import ReceiptDetailModal from '../components/ReceiptDetailModal'
 import { PageHeader } from '../components/ui'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -53,6 +54,7 @@ function Movimenti() {
   const [dateFrom, setDateFrom] = useState(searchParams.get('from') ?? defaultPeriod.start)
   const [dateTo, setDateTo] = useState(searchParams.get('to') ?? defaultPeriod.end)
   const [editingTx, setEditingTx] = useState<Transaction | null>(null)
+  const [receiptDetailTx, setReceiptDetailTx] = useState<Transaction | null>(null)
 
   // Sincronizza lo stato dai searchParams quando cambiano (navigazione esterna)
   useEffect(() => {
@@ -352,6 +354,24 @@ function Movimenti() {
 
               {/* Azioni */}
               <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                {tx.isReceipt && (
+                  <button
+                    onClick={() => setReceiptDetailTx(tx)}
+                    style={{
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                      padding: '4px 8px',
+                      color: 'var(--text-secondary)',
+                      fontWeight: 600,
+                    }}
+                    aria-label={MOVIMENTI.dettaglioScontrino}
+                  >
+                    {MOVIMENTI.dettaglioScontrino}
+                  </button>
+                )}
                 <button
                   onClick={() => setEditingTx(tx)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', color: 'var(--text-muted)' }}
@@ -378,6 +398,12 @@ function Movimenti() {
           onClose={() => setEditingTx(null)}
           onSaved={refresh}
           editTransaction={editingTx}
+        />
+      )}
+      {receiptDetailTx && (
+        <ReceiptDetailModal
+          transaction={receiptDetailTx}
+          onClose={() => setReceiptDetailTx(null)}
         />
       )}
     </div>
