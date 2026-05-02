@@ -23,6 +23,8 @@
 
 ## Da Fare
 
+<!-- TASK-083 completato: vedi sezione Completati -->
+
 ### 🔜 TASK-054 — Promemoria gestione spazio dati (non implementare ora)
 - [ ] Valutare strategia archiviazione storica (es. export annuale + pulizia dati vecchi)
 - [ ] Definire soglia operativa (es. warning 70-80%) e flusso guidato utente

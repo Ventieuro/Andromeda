@@ -6,6 +6,15 @@
 
 ## [02/05/2026] — Sessione 10
 
+### TASK-083: Fix progress OCR bloccato a 0%
+**File modificati:** `src/components/ReceiptScanner.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Aggiunto logger callback a `createWorker` per ricevere aggiornamenti reali dallo scanner Tesseract durante il riconoscimento
+- Introdotto `ocrPhotoRef` per tracciare l'indice foto corrente all'interno del logger (closure stabile)
+- Il progresso ora avanza in tempo reale da 0% a 100% durante l'analisi invece di rimanere fisso a 0% e saltare al risultato
+- **Build check:** `npx tsc -b && npx vite build` ✅
+
+
 ### TASK-082: OCR app — fix duplicati e lentezza
 **File modificati:** `src/components/ReceiptScanner.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
 

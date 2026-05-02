@@ -257,6 +257,9 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
     e.target.value = '' // Permette di selezionare di nuovo lo stesso file
   }
 
+  // Ref per passare l'indice foto corrente al logger (stabile durante tutto l'OCR)
+  const ocrPhotoRef = useRef({ index: 0, total: 1 })
+
   // ── Avvia OCR su tutte le foto ───────────────────────
   async function handleAnalizza() {
     if (state.foto.length === 0) return
@@ -265,10 +268,20 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
     try {
       let testoCompleto = ''
       const n = state.foto.length
-      const worker = await createWorker('ita+eng')
+      ocrPhotoRef.current = { index: 0, total: n }
+
+      const worker = await createWorker('ita+eng', 1, {
+        logger: (m: { status: string; progress: number }) => {
+          if (m.status === 'recognizing text') {
+            const { index, total } = ocrPhotoRef.current
+            const overall = Math.round(((index + m.progress) / total) * 100)
+            dispatch({ type: 'AGGIORNA_PROGRESS', progress: overall, fotoCorrente: index })
+          }
+        },
+      })
 
       for (let i = 0; i < n; i++) {
-        dispatch({ type: 'AGGIORNA_PROGRESS', progress: Math.round((i / n) * 100), fotoCorrente: i })
+        ocrPhotoRef.current = { index: i, total: n }
 
         const { data: { text } } = await worker.recognize(state.foto[i])
         let textBest = text
