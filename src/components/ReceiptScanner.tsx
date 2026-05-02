@@ -265,28 +265,36 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
     try {
       let testoCompleto = ''
       const n = state.foto.length
+      const worker = await createWorker('ita+eng')
 
       for (let i = 0; i < n; i++) {
         dispatch({ type: 'AGGIORNA_PROGRESS', progress: Math.round((i / n) * 100), fotoCorrente: i })
 
-        // Pre-processing canvas: scala di grigi + contrasto
-        const dataUrl = await processImage(state.foto[i])
+        const { data: { text } } = await worker.recognize(state.foto[i])
+        let textBest = text
 
-        // Riconoscimento OCR (italiano + inglese per fallback)
-        const worker = await createWorker(['ita', 'eng'], 1, {
-          logger: (m) => {
-            if (m.status === 'recognizing text') {
-              const p = Math.round(((i + m.progress) / n) * 100)
-              dispatch({ type: 'AGGIORNA_PROGRESS', progress: p, fotoCorrente: i })
-            }
-          },
-        })
-        const { data: { text } } = await worker.recognize(dataUrl)
-        await worker.terminate()
+        // Fallback: se la prima passata sembra incompleta, prova anche versione pre-processata.
+        const firstParse = parseReceiptText(text)
+        const shouldFallback = firstParse.items.length < 4 || (firstParse.total !== null && !firstParse.isValid)
+        if (shouldFallback) {
+          const processed = await processImage(state.foto[i])
+          const { data: { text: textProcessed } } = await worker.recognize(processed)
+          const merged = `${text}\n${textProcessed}`
+          const mergedParse = parseReceiptText(merged)
+
+          if (mergedParse.items.length > firstParse.items.length || mergedParse.isValid) {
+            textBest = merged
+          }
+        }
 
         // Concatena i testi delle varie foto (merge)
-        testoCompleto += '\n' + text
+        testoCompleto += '\n' + textBest
+
+        const p = Math.round(((i + 1) / n) * 100)
+        dispatch({ type: 'AGGIORNA_PROGRESS', progress: p, fotoCorrente: i })
       }
+
+      await worker.terminate()
 
       const { items, total, isValid } = parseReceiptText(testoCompleto)
       dispatch({ type: 'SET_RISULTATI', articoli: items, totale: total, totaleValido: isValid })
@@ -299,7 +307,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   function handleCreaTotale() {
     const detailItems = state.articoli
       .map((item) => ({ name: item.name.trim(), price: item.price }))
-      .filter((item) => item.name.length > 0 && item.price >= 0)
+      .filter((item) => item.name.length > 0 && Number.isFinite(item.price))
 
     addTransaction({
       id: generateId(),

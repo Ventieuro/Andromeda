@@ -36,6 +36,28 @@
 
 ## Completati
 
+### ✅ TASK-081 — OCR app robusto: fallback doppia passata (02/05/2026)
+- [x] OCR in app allineato a config test (`createWorker('ita+eng')`)
+- [x] Aggiunta seconda passata su immagine pre-processata quando la prima è incompleta/non valida
+- [x] Merge automatico dei testi e scelta risultato migliore per recuperare righe mancanti (es. Coca Cola)
+- [x] Build tecnica verificata ✅
+
+### ✅ TASK-080 — Fix OCR app: allineamento lettura con test (02/05/2026)
+- [x] Rimosso pre-processing obbligatorio in scanner app per OCR su file originali
+- [x] Corretto mismatch dove in app mancava una riga (es. Coca Cola) presente nei test
+- [x] Build tecnica verificata ✅
+
+### ✅ TASK-079 — OCR scontrini: calcolo sconti nel totale (02/05/2026)
+- [x] Parser aggiornato: riconosce righe sconto negative (es. BLUCARD -0,56)
+- [x] Sconto applicato all'articolo precedente nel totale calcolato
+- [x] Storage/receipt detail aggiornati per supportare importi negativi quando necessari
+- [x] Verifica su `ScontrinoGigante1` ✅ (totale 7.46, articoli con sconto applicato)
+
+### ✅ TASK-078 — Nuova sezione test OCR: ScontrinoGigante1 (02/05/2026)
+- [x] Creata fixture `src/__tests__/fixtures/receipts/ScontrinoGigante1/expected.json`
+- [x] Aggiunto blocco test dedicato in `src/__tests__/ocr_real.test.ts`
+- [x] Configurato `stable: false` finché non viene inserita `foto_1.jpg`
+
 ### ✅ TASK-076 — Scontrino come transazione unica con dettaglio (02/05/2026)
 - [x] Aggiunti campi `isReceipt` e `receiptItems` al modello transazione
 - [x] Scanner scontrino aggiornato: import solo come spesa unica marcata `isReceipt: true`

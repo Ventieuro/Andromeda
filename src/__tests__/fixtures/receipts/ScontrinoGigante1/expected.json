@@ -1,0 +1,43 @@
+{
+  "stable": true,
+  "description": "Scontrino Gigante 1 — supermercato con sconti blucard",
+  "source": [
+    "foto_1.jpg"
+  ],
+  "notes": "Caso attivo: parser applica righe sconto BLUCARD all'articolo precedente. Totale letto da PAGAMENTO ELETTRONICO/IMPORTO PAGATO.",
+  "knownIssues": [],
+  "expected": {
+    "itemCount": 4,
+    "total": 7.46,
+    "parserReadTotal": 7.46,
+    "isValid": true,
+    "date": "2026-05-02",
+    "parserReadDate": "2026-05-02",
+    "items": [
+      {
+        "name": "GRAMIX GRATTUGIATO !",
+        "price": 1.85,
+        "discount": 0.56,
+        "discountType": "SCONTO BLUCARD 30%",
+        "parserReadPrice": 1.3,
+        "note": "Prezzo netto parser dopo sconto: 1.30"
+      },
+      {
+        "name": "GRAMIX GRATTUGIATO !",
+        "price": 1.85,
+        "discount": 0.56,
+        "discountType": "SCONTO BLUCARD 30%",
+        "parserReadPrice": 1.29,
+        "note": "Prezzo netto parser dopo sconto: 1.29"
+      },
+      {
+        "name": "COCA COLA PET CL 1",
+        "price": 2.73
+      },
+      {
+        "name": "NERO AVOLA IGT SICIL",
+        "price": 2.15
+      }
+    ]
+  }
+}

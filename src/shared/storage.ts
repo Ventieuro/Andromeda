@@ -196,7 +196,7 @@ function isValidReceiptItems(value: unknown): boolean {
   return value.every((item) => {
     if (typeof item !== 'object' || item === null) return false
     const row = item as Record<string, unknown>
-    return typeof row.name === 'string' && typeof row.price === 'number' && row.price >= 0
+    return typeof row.name === 'string' && typeof row.price === 'number' && Number.isFinite(row.price)
   })
 }
 

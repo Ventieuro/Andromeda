@@ -130,6 +130,9 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
   // eventuale lettera IVA (A-D, inclusa D=22%), simbolo €, o OCR-misread (8 al posto di B)
   const priceRegex = /(\d{1,4}[,.]\d{2,3})\s*([ABCDabcd8€¢])?\s*$/
 
+  // Riga sconto: cattura importo negativo finale (es. "SCONTO BLUCARD 30% -0,56")
+  const discountRegex = /-(\d{1,4}[,.]\d{2,3})\s*$/
+
   // Parole chiave che identificano la riga TOTALE
   // PAGAMENTO ELETTRONICO: nei Documenti Commerciali il totale può stare solo su questa riga
   const totalKw = /\b(?:TOTALE?|TOT\.?|IMPORTO|TOTALE\s+EURO|PAGAMENTO\s+ELETTRONICO)\b/i
@@ -174,6 +177,39 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
       const earlyPrice = parseFloat(parseFloat(earlyMatch[1].replace(',', '.')).toFixed(2))
       if (!isNaN(earlyPrice) && earlyPrice > 0 && earlyPrice <= 9999) {
         if (total === null || earlyPrice > total) total = earlyPrice
+      }
+      pendingQty = undefined; pendingUnitPrice = undefined
+      continue
+    }
+
+    // ── Riga SCONTO (importo negativo) ──────────────────
+    // Applica lo sconto all'ultimo articolo riconosciuto; se manca, salva riga negativa dedicata.
+    const discountMatch = line.match(discountRegex)
+    if (discountMatch) {
+      const discountAbs = parseFloat(parseFloat(discountMatch[1].replace(',', '.')).toFixed(2))
+      if (!isNaN(discountAbs) && discountAbs > 0) {
+        const discountValue = -discountAbs
+        const label = line.slice(0, discountMatch.index ?? line.length)
+          .replace(/^[|\\/*~_^`#@_®©™]+/, '')
+          .replace(/[|\\/*~_^`#@_]+$/, '')
+          .replace(/\s{2,}/g, ' ')
+          .trim()
+
+        const lastIndex = items.length - 1
+        if (lastIndex >= 0) {
+          const last = items[lastIndex]
+          items[lastIndex] = {
+            ...last,
+            price: parseFloat((last.price + discountValue).toFixed(2)),
+          }
+        } else {
+          items.push({
+            id: crypto.randomUUID(),
+            name: label || 'SCONTO',
+            price: discountValue,
+            confidence: 'ok',
+          })
+        }
       }
       pendingQty = undefined; pendingUnitPrice = undefined
       continue

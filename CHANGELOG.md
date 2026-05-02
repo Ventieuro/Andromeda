@@ -6,6 +6,41 @@
 
 ## [02/05/2026] — Sessione 10
 
+### TASK-081: OCR app robusto — fallback doppia passata
+**File modificati:** `src/components/ReceiptScanner.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Scanner app ora usa la stessa configurazione OCR dei test (`createWorker('ita+eng')`)
+- Aggiunto fallback automatico: se prima lettura è incompleta/non valida, viene fatta una seconda passata su immagine pre-processata
+- Il testo della seconda passata viene unito al primo e viene scelto il risultato migliore
+- Obiettivo: recuperare righe mancanti intermittenti su mobile (es. `COCA COLA PET CL 1`)
+- **Build check:** `npx tsc -b && npx vite build` ✅
+
+### TASK-080: Fix OCR app — righe perse rispetto ai test
+**File modificati:** `src/components/ReceiptScanner.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Lo scanner in-app ora usa il file foto originale per `worker.recognize(...)` invece del dataURL pre-processato
+- Risolto mismatch in cui alcune righe articolo (es. `COCA COLA PET CL 1`) risultavano leggibili nei test ma perse in app
+- Mantenuta invariata la logica parser (sconti inclusi) e il flusso di import transazione unica con dettaglio
+- **Build check:** `npx tsc -b && npx vite build` ✅
+
+### TASK-079: OCR scontrini — calcolo sconti nel totale
+**File modificati:** `src/shared/receiptUtils.ts`, `src/shared/storage.ts`, `src/components/ReceiptScanner.tsx`, `src/__tests__/fixtures/receipts/ScontrinoGigante1/expected.json`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Parser OCR aggiornato con riconoscimento righe sconto negative (es. `SCONTO ... -0,56`)
+- Lo sconto viene applicato all'ultimo articolo letto, così il totale calcolato rispecchia il netto scontrino
+- Fallback: se non c'è articolo precedente, viene creata una riga negativa dedicata
+- Validazione storage aggiornata per consentire importi negativi nei dettagli scontrino
+- Scanner aggiorna `receiptItems` senza scartare importi negativi
+- Verifica reale su fixture `ScontrinoGigante1`: totale letto `7.46`, articoli netti `1.30 + 1.29 + 2.73 + 2.15` (test ✅)
+
+### TASK-078: Nuova sezione test OCR — ScontrinoGigante1
+**File modificati:** `src/__tests__/fixtures/receipts/ScontrinoGigante1/expected.json`, `src/__tests__/ocr_real.test.ts`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Creata nuova fixture `ScontrinoGigante1` con attesi: totale `7.46`, 4 articoli (inclusi 2 `GRANMIX GRATTUGGIATO` già scontati)
+- Aggiunto nuovo describe block in `ocr_real.test.ts` che legge `foto_1.jpg` dalla cartella fixture
+- Caso impostato con `stable: false` per evitare failure finché la foto reale non è stata inserita
+- Dopo inserimento foto, basta portare `stable` a `true` in `expected.json` per attivare il test in pipeline
+
 ### TASK-076: Scontrino come transazione unica con dettaglio
 **File modificati:** `src/shared/types.ts`, `src/shared/storage.ts`, `src/components/ReceiptScanner.tsx`, `src/components/ReceiptDetailModal.tsx`, `src/pages/Dashboard.tsx`, `src/pages/Movimenti.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`, `package.json`
 
