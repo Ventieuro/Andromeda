@@ -3,11 +3,17 @@ export type TransactionType = 'entrata' | 'uscita'
 export interface ReceiptDetailItem {
   name: string
   price: number
+  grossPrice?: number
+  discountAmount?: number
+  discountType?: string
 }
 
 export interface ProductPriceEntry {
   price: number
   date: string // ISO yyyy-mm-dd
+  grossPrice?: number
+  discountAmount?: number
+  discountType?: string
 }
 
 export interface ProductEntry {

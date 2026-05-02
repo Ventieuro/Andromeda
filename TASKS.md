@@ -38,6 +38,19 @@
 
 ## Completati
 
+### ✅ TASK-088 — Filtro ordinamento prodotti con icona (02/05/2026)
+- [x] Aggiunta UI filtro ordinamento nella sezione Prodotti con icona funnel
+- [x] Ordinamento supportato: Nome A-Z, Nome Z-A, Prezzo crescente, Prezzo decrescente
+- [x] Label i18n aggiunte per tutte le opzioni filtro
+- [x] Build e test verificati (`npx tsc -b`, `npm test`) ✅
+
+### ✅ TASK-087 — Modifica scontrino: drag&drop + sconti persistenti (02/05/2026)
+- [x] Riordino articoli scontrino in fase modifica tramite drag and drop
+- [x] Visualizzazione sconto sotto prodotto con tipo sconto e importo
+- [x] Parser aggiornato: salva metadati sconto (`grossPrice`, `discountAmount`, `discountType`)
+- [x] Catalogo prodotti aggiorna e mostra prezzo netto/pieno + tipo sconto storico
+- [x] Build e test verificati (`npx tsc -b`, `npm test`) ✅
+
 ### ✅ TASK-086 — Fix suite test locale (02/05/2026)
 - [x] Aggiunto localStorage shim stabile in setup test per evitare ambienti incompleti
 - [x] Resi i test OCR real opt-in tramite `RUN_OCR_REAL=1` (default skip)

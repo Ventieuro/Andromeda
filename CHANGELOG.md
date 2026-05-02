@@ -6,6 +6,25 @@
 
 ## [02/05/2026] — Sessione 10
 
+### TASK-088: Prodotti — filtro ordinamento con icona
+**File modificati:** `src/components/ProductsCatalog.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Aggiunto controllo filtro con icona funnel nella sezione Prodotti
+- Aggiunte opzioni ordinamento: Nome (A-Z), Nome (Z-A), Prezzo crescente, Prezzo decrescente
+- Ordinamento applicato lato client sul catalogo filtrato
+- Aggiunte label i18n dedicate al filtro ordinamento prodotti
+- **Check:** `npx tsc -b` ✅, `npm test` ✅ (`36 passed`, `5 skipped`)
+
+### TASK-087: Modifica scontrino — drag&drop articoli + metadati sconto persistenti
+**File modificati:** `src/shared/types.ts`, `src/shared/receiptUtils.ts`, `src/shared/storage.ts`, `src/components/ReceiptScanner.tsx`, `src/components/ReceiptDetailModal.tsx`, `src/components/ProductsCatalog.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- In modifica scontrino, articoli ora riordinabili con drag and drop
+- Righe con sconto mostrano sotto il prodotto il tipo sconto e importo (es. `SCONTO ... -€1,50`)
+- Parser OCR ora conserva metadati sconto per articolo: prezzo pieno (`grossPrice`), importo sconto (`discountAmount`), tipo sconto (`discountType`)
+- In import transazione e catalogo prodotti, i metadati sconto vengono salvati e mantenuti nello storico prezzi
+- Catalogo prodotti mostra storico arricchito con prezzo netto e, quando presente, prezzo pieno e sconto applicato
+- **Check:** `npx tsc -b` ✅, `npm test` ✅ (`36 passed`, `5 skipped`)
+
 ### TASK-086: Fix suite test locale (localStorage + OCR real opt-in)
 **File modificati:** `src/__tests__/setup.ts`, `src/__tests__/ocr_real.test.ts`, `TASKS.md`, `CHANGELOG.md`, `package.json`
 

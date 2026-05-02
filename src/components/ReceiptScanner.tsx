@@ -47,6 +47,7 @@ type ScanAction =
   | { type: 'MODIFICA_NOME'; id: string; valore: string }
   | { type: 'MODIFICA_PREZZO'; id: string; valore: string }
   | { type: 'RIMUOVI_ARTICOLO'; id: string }
+  | { type: 'SPOSTA_ARTICOLO'; fromIndex: number; toIndex: number }
   | { type: 'AGGIUNGI_ARTICOLO_MANUALE' }
   | { type: 'SET_CATEGORIA'; categoria: string }
   | { type: 'MODIFICA_TOTALE'; valore: string }
@@ -121,6 +122,15 @@ function scanReducer(state: ScanState, action: ScanAction): ScanState {
     case 'RIMUOVI_ARTICOLO':
       return { ...state, articoli: state.articoli.filter((a) => a.id !== action.id) }
 
+    case 'SPOSTA_ARTICOLO': {
+      if (action.fromIndex === action.toIndex) return state
+      const next = [...state.articoli]
+      const [moved] = next.splice(action.fromIndex, 1)
+      if (!moved) return state
+      next.splice(action.toIndex, 0, moved)
+      return { ...state, articoli: next }
+    }
+
     case 'AGGIUNGI_ARTICOLO_MANUALE':
       return { ...state, articoli: [...state.articoli, { id: crypto.randomUUID(), name: '', price: 0 }] }
 
@@ -158,6 +168,7 @@ interface ReceiptScannerProps {
 function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   const [state, dispatch] = useReducer(scanReducer, STATO_INIZIALE)
   const [fotoLightbox, setFotoLightbox] = useState<number | null>(null)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   // Match prodotti nel catalogo per ogni articolo (calcolati quando si entra in fase 'risultati')
   const [catalogMatches, setCatalogMatches] = useState<Map<string, ProductEntry>>(new Map())
   // Cache URL oggetti per file: creazione sincrona → zero render extra
@@ -178,6 +189,11 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
 
   // Articoli con prezzo incerto (segnalati dal parser OCR)
   const uncertainCount = state.articoli.filter((a) => a.confidence === 'uncertain').length
+
+  function formatDiscountLine(item: ReceiptItem): string | null {
+    if (!item.discountType || !item.discountAmount || item.discountAmount <= 0) return null
+    return `${item.discountType} -${formatEuro(item.discountAmount)}`
+  }
 
   // ── Setup camera quando la fase diventa 'camera' ──────
   useEffect(() => {
@@ -336,7 +352,13 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   // ── Crea un'unica transazione con il totale ──────────
   function handleCreaTotale() {
     const detailItems = state.articoli
-      .map((item) => ({ name: item.name.trim(), price: item.price }))
+      .map((item) => ({
+        name: item.name.trim(),
+        price: item.price,
+        grossPrice: item.grossPrice,
+        discountAmount: item.discountAmount,
+        discountType: item.discountType,
+      }))
       .filter((item) => item.name.length > 0 && Number.isFinite(item.price))
 
     addTransaction({
@@ -354,7 +376,11 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
 
     // Aggiorna catalogo prodotti per suggerimenti OCR futuri
     for (const item of detailItems) {
-      upsertProductFromReceipt(item.name, item.price, today, state.categoriaSelezionata)
+      upsertProductFromReceipt(item.name, item.price, today, state.categoriaSelezionata, {
+        grossPrice: item.grossPrice,
+        discountAmount: item.discountAmount,
+        discountType: item.discountType,
+      })
     }
 
     onDone()
@@ -757,16 +783,28 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                       ? catalogMatch.priceHistory[catalogMatch.priceHistory.length - 1]?.price
                       : null
                     const priceDiffers = knownPrice !== null && Math.abs(knownPrice - item.price) > 0.01
+                    const discountLine = formatDiscountLine(item)
 
                     return (
                       <div
                         key={item.id}
                         className="grid items-start"
+                        draggable
+                        onDragStart={() => setDraggedIndex(idx)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={() => {
+                          if (draggedIndex === null) return
+                          dispatch({ type: 'SPOSTA_ARTICOLO', fromIndex: draggedIndex, toIndex: idx })
+                          setDraggedIndex(null)
+                        }}
+                        onDragEnd={() => setDraggedIndex(null)}
                         style={{
                           gridTemplateColumns: '1fr 80px 32px',
                           padding: '5px 8px',
                           borderBottom: idx < state.articoli.length - 1 ? '1px solid var(--border)' : 'none',
                           gap: '6px',
+                          opacity: draggedIndex === idx ? 0.5 : 1,
+                          cursor: 'grab',
                         }}
                       >
                         {/* Nome articolo + badge prezzo noto */}
@@ -801,6 +839,15 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                             }}>
                               {PRODOTTI.prezzoNotoLabel(formatEuro(knownPrice))}
                               {priceDiffers ? ' ⚠️' : ''}
+                            </span>
+                          )}
+                          {discountLine && (
+                            <span style={{
+                              fontSize: '10px',
+                              color: '#d97706',
+                              paddingLeft: '6px',
+                            }}>
+                              {discountLine}
                             </span>
                           )}
                         </div>

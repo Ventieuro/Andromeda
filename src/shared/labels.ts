@@ -309,6 +309,11 @@ const STRINGS = {
       (old: string, nuovo: string) => `Price changed: ${old} → ${nuovo}`,
       (old: string, nuovo: string) => `Precio cambiado: ${old} → ${nuovo}`,
     ),
+    ordinaPer:        t('Ordina per',                       'Sort by',                     'Ordenar por'),
+    ordinaNomeAsc:    t('Nome (A-Z)',                       'Name (A-Z)',                  'Nombre (A-Z)'),
+    ordinaNomeDesc:   t('Nome (Z-A)',                       'Name (Z-A)',                  'Nombre (Z-A)'),
+    ordinaPrezzoAsc:  t('Prezzo (crescente)',               'Price (low to high)',         'Precio (ascendente)'),
+    ordinaPrezzoDesc: t('Prezzo (decrescente)',             'Price (high to low)',         'Precio (descendente)'),
   },
 
   // ── Settings ───────────────────────────────────────────

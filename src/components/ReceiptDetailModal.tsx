@@ -81,9 +81,18 @@ function ReceiptDetailModal({ transaction, onClose }: ReceiptDetailModalProps) {
                     borderBottom: idx < items.length - 1 ? '1px solid var(--border)' : 'none',
                   }}
                 >
-                  <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{item.name}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{item.name}</span>
+                    {item.discountType && item.discountAmount && item.discountAmount > 0 && (
+                      <span className="text-xs" style={{ color: '#d97706' }}>
+                        {item.discountType} -{formatEuro(item.discountAmount)}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                    {formatEuro(item.price)}
+                    {item.grossPrice && item.grossPrice > item.price
+                      ? `${formatEuro(item.price)} / ${formatEuro(item.grossPrice)}`
+                      : formatEuro(item.price)}
                   </span>
                 </div>
               ))}

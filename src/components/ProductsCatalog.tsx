@@ -41,6 +41,7 @@ function ProductsCatalog() {
   const { showConfirm } = useDialog()
   const [products, setProducts] = useState<ProductEntry[]>(() => loadProducts())
   const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState<'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'>('name-asc')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
@@ -51,10 +52,20 @@ function ProductsCatalog() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()
-    return products
+    const base = products
       .filter((p) => !q || p.name.toLowerCase().includes(q) || p.aliases.some((a) => a.toLowerCase().includes(q)))
-      .sort((a, b) => a.name.localeCompare(b.name, 'it'))
-  }, [products, search])
+
+    return [...base].sort((a, b) => {
+      if (sortBy === 'name-asc') return a.name.localeCompare(b.name, 'it')
+      if (sortBy === 'name-desc') return b.name.localeCompare(a.name, 'it')
+
+      const aPrice = latestPrice(a) ?? Number.POSITIVE_INFINITY
+      const bPrice = latestPrice(b) ?? Number.POSITIVE_INFINITY
+
+      if (sortBy === 'price-asc') return aPrice - bPrice
+      return bPrice - aPrice
+    })
+  }, [products, search, sortBy])
 
   async function handleDelete(p: ProductEntry) {
     const ok = await showConfirm({
@@ -132,6 +143,51 @@ function ProductsCatalog() {
       <p style={{ margin: '0 0 12px', fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         {filtered.length} / {products.length}
       </p>
+
+      {/* ─── Filtro ordinamento ─── */}
+      <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div
+          style={{
+            width: '34px',
+            height: '34px',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border)',
+            color: 'var(--text-secondary)',
+            flexShrink: 0,
+          }}
+          aria-hidden="true"
+          title={PRODOTTI.ordinaPer}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 5h18l-7 8v5l-4 2v-7L3 5z" />
+          </svg>
+        </div>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc')}
+          style={{
+            width: '100%',
+            boxSizing: 'border-box',
+            padding: '9px 12px',
+            borderRadius: '12px',
+            border: '1px solid var(--input-border)',
+            background: 'var(--input-bg)',
+            color: 'var(--text-primary)',
+            fontSize: '13px',
+            outline: 'none',
+          }}
+          aria-label={PRODOTTI.ordinaPer}
+        >
+          <option value="name-asc">{PRODOTTI.ordinaNomeAsc}</option>
+          <option value="name-desc">{PRODOTTI.ordinaNomeDesc}</option>
+          <option value="price-asc">{PRODOTTI.ordinaPrezzoAsc}</option>
+          <option value="price-desc">{PRODOTTI.ordinaPrezzoDesc}</option>
+        </select>
+      </div>
 
       {/* ─── Lista prodotti ─── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -275,18 +331,33 @@ function ProductsCatalog() {
                           <div
                             key={idx}
                             style={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
+                              display: 'grid',
+                              gridTemplateColumns: '1fr auto',
+                              gap: '8px',
                               padding: '5px 10px',
                               borderRadius: '8px',
                               background: idx === 0 ? 'var(--accent-light)' : 'var(--bg-secondary)',
                               fontSize: '13px',
                             }}
                           >
-                            <span style={{ color: 'var(--text-muted)' }}>{formatDate(entry.date)}</span>
-                            <span style={{ fontWeight: idx === 0 ? 700 : 400, color: idx === 0 ? 'var(--accent)' : 'var(--text-primary)' }}>
-                              {formatEuro(entry.price)}
-                            </span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ color: 'var(--text-muted)' }}>{formatDate(entry.date)}</span>
+                              {entry.discountType && entry.discountAmount && entry.discountAmount > 0 && (
+                                <span style={{ fontSize: '11px', color: '#d97706' }}>
+                                  {entry.discountType} -{formatEuro(entry.discountAmount)}
+                                </span>
+                              )}
+                            </div>
+                            <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontWeight: idx === 0 ? 700 : 400, color: idx === 0 ? 'var(--accent)' : 'var(--text-primary)' }}>
+                                {formatEuro(entry.price)}
+                              </span>
+                              {entry.grossPrice && entry.grossPrice > entry.price && (
+                                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                                  ({formatEuro(entry.grossPrice)})
+                                </span>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>

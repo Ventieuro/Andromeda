@@ -14,6 +14,12 @@ export interface ReceiptItem {
   id: string
   name: string
   price: number
+  /** Prezzo pieno prima di eventuale sconto (se disponibile) */
+  grossPrice?: number
+  /** Importo sconto applicato (valore positivo) */
+  discountAmount?: number
+  /** Descrizione sconto letta nello scontrino (es. "SCONTO BLUCARD 30%") */
+  discountType?: string
   /** Numero di pezzi, se la riga precedente era "N × prezzo_unitario" */
   qty?: number
   /** Prezzo unitario, se la riga precedente era "N × prezzo_unitario" */
@@ -198,9 +204,15 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
         const lastIndex = items.length - 1
         if (lastIndex >= 0) {
           const last = items[lastIndex]
+          const discountType = label || 'SCONTO'
+          const previousDiscount = last.discountAmount ?? 0
+          const grossPrice = last.grossPrice ?? last.price
           items[lastIndex] = {
             ...last,
             price: parseFloat((last.price + discountValue).toFixed(2)),
+            grossPrice,
+            discountAmount: parseFloat((previousDiscount + discountAbs).toFixed(2)),
+            discountType,
           }
         } else {
           items.push({

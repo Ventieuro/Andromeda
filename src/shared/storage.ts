@@ -392,6 +392,7 @@ export function upsertProductFromReceipt(
   price: number,
   date: string,
   category?: string,
+  meta?: { grossPrice?: number; discountAmount?: number; discountType?: string },
 ) {
   if (!name.trim() || !Number.isFinite(price) || price <= 0) return
   const products = loadProducts()
@@ -414,7 +415,13 @@ export function upsertProductFromReceipt(
     if (!found.aliases.includes(name) && name !== found.name) {
       found.aliases.push(name)
     }
-    found.priceHistory.push({ price, date })
+    found.priceHistory.push({
+      price,
+      date,
+      grossPrice: meta?.grossPrice,
+      discountAmount: meta?.discountAmount,
+      discountType: meta?.discountType,
+    })
     // Mantieni max 50 voci nella history
     if (found.priceHistory.length > 50) {
       found.priceHistory = found.priceHistory.slice(-50)
@@ -428,7 +435,13 @@ export function upsertProductFromReceipt(
       id: generateId(),
       name: name.trim(),
       aliases: [],
-      priceHistory: [{ price, date }],
+      priceHistory: [{
+        price,
+        date,
+        grossPrice: meta?.grossPrice,
+        discountAmount: meta?.discountAmount,
+        discountType: meta?.discountType,
+      }],
       category,
       lastSeen: date,
     }
