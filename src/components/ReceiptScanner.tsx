@@ -196,6 +196,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   const [fotoLightbox, setFotoLightbox] = useState<number | null>(null)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [isCapturingPhoto, setIsCapturingPhoto] = useState(false)
+  const [editingDiscountId, setEditingDiscountId] = useState<string | null>(null)
   const captureLockRef = useRef(false)
   // Match prodotti nel catalogo per ogni articolo (calcolati quando si entra in fase 'risultati')
   const [catalogMatches, setCatalogMatches] = useState<Map<string, ProductEntry>>(new Map())
@@ -351,9 +352,10 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
       const n = state.foto.length
       ocrPhotoRef.current = { index: 0, total: n }
 
+      let isFallback = false
       const worker = await createWorker('ita+eng', 1, {
         logger: (m: { status: string; progress: number }) => {
-          if (m.status === 'recognizing text') {
+          if (m.status === 'recognizing text' && !isFallback) {
             const { index, total } = ocrPhotoRef.current
             const overall = Math.round(((index + m.progress) / total) * 100)
             dispatch({ type: 'AGGIORNA_PROGRESS', progress: overall, fotoCorrente: index })
@@ -363,6 +365,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
 
       for (let i = 0; i < n; i++) {
         ocrPhotoRef.current = { index: i, total: n }
+        isFallback = false
 
         const { data: { text } } = await worker.recognize(state.foto[i])
         let textBest = text
@@ -371,6 +374,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
         const firstParse = parseReceiptText(text)
         const shouldFallback = firstParse.items.length < 4 || firstParse.total === null
         if (shouldFallback) {
+          isFallback = true
           const processed = await processImage(state.foto[i])
           const { data: { text: textProcessed } } = await worker.recognize(processed)
 
@@ -846,7 +850,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                   <div
                     className="grid text-xs font-semibold uppercase"
                     style={{
-                      gridTemplateColumns: '1fr 70px 70px 32px',
+                      gridTemplateColumns: '1fr 80px 32px',
                       padding: '8px 12px',
                       background: 'var(--bg-secondary)',
                       color: 'var(--text-muted)',
@@ -855,7 +859,6 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                   >
                     <span>{OCR.colonnaArticolo}</span>
                     <span style={{ textAlign: 'right' }}>{OCR.colonnaPrezzo}</span>
-                    <span style={{ textAlign: 'center' }}>Sconto</span>
                     <span />
                   </div>
 
@@ -882,7 +885,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                         }}
                         onDragEnd={() => setDraggedIndex(null)}
                         style={{
-                          gridTemplateColumns: '1fr 70px 70px 32px',
+                          gridTemplateColumns: '1fr 80px 32px',
                           padding: '5px 8px',
                           borderBottom: idx < state.articoli.length - 1 ? '1px solid var(--border)' : 'none',
                           gap: '6px',
@@ -924,14 +927,44 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                               {priceDiffers ? ' ⚠️' : ''}
                             </span>
                           )}
-                          {discountLine && (
-                            <span style={{
-                              fontSize: '10px',
-                              color: '#d97706',
-                              paddingLeft: '6px',
-                            }}>
+                          {editingDiscountId === item.id ? (
+                            <div style={{ display: 'flex', gap: '4px', alignItems: 'center', paddingLeft: '6px', marginTop: '2px' }}>
+                              <input
+                                autoFocus
+                                type="text"
+                                inputMode="decimal"
+                                placeholder="€"
+                                defaultValue={item.discountAmount ? item.discountAmount.toFixed(2).replace('.', ',') : ''}
+                                onBlur={(e) => dispatch({ type: 'MODIFICA_SCONTO_IMPORTO', id: item.id, valore: e.target.value })}
+                                style={{ fontSize: '11px', width: '44px', background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', padding: '2px 4px', outline: 'none', color: 'var(--text-primary)', textAlign: 'right' }}
+                              />
+                              <input
+                                type="text"
+                                placeholder="tipo (es: 30%, BLUCARD)"
+                                defaultValue={item.discountType || ''}
+                                onBlur={(e) => dispatch({ type: 'MODIFICA_SCONTO_TIPO', id: item.id, valore: e.target.value })}
+                                style={{ fontSize: '11px', flex: 1, background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', padding: '2px 4px', outline: 'none', color: 'var(--text-primary)' }}
+                              />
+                              <button
+                                onMouseDown={(e) => { e.preventDefault(); setEditingDiscountId(null) }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: 'var(--text-muted)', padding: '2px 3px', flexShrink: 0 }}
+                                aria-label="Chiudi modifica sconto"
+                              >✕</button>
+                            </div>
+                          ) : discountLine ? (
+                            <span
+                              onClick={() => setEditingDiscountId(item.id)}
+                              style={{ fontSize: '10px', color: '#d97706', paddingLeft: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                              title="Tocca per modificare lo sconto"
+                            >
                               {discountLine}
+                              <span style={{ fontSize: '9px', opacity: 0.6 }}>✎</span>
                             </span>
+                          ) : (
+                            <button
+                              onClick={() => setEditingDiscountId(item.id)}
+                              style={{ fontSize: '10px', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', paddingLeft: '6px', textAlign: 'left', opacity: 0.6 }}
+                            >+ sconto</button>
                           )}
                         </div>
 
@@ -957,45 +990,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                           }}
                         />
 
-                        {/* Sconto (importo + tipo) */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <input
-                            type="text"
-                            inputMode="decimal"
-                            placeholder="€"
-                            defaultValue={item.discountAmount ? item.discountAmount.toFixed(2).replace('.', ',') : ''}
-                            onBlur={(e) => dispatch({ type: 'MODIFICA_SCONTO_IMPORTO', id: item.id, valore: e.target.value })}
-                            title="Importo sconto"
-                            style={{
-                              fontSize: '11px',
-                              textAlign: 'right',
-                              background: 'var(--input-bg)',
-                              border: '1px solid var(--input-border)',
-                              borderRadius: '6px',
-                              padding: '3px 4px',
-                              outline: 'none',
-                              color: 'var(--text-primary)',
-                              width: '100%',
-                            }}
-                          />
-                          <input
-                            type="text"
-                            placeholder="tipo"
-                            defaultValue={item.discountType || ''}
-                            onBlur={(e) => dispatch({ type: 'MODIFICA_SCONTO_TIPO', id: item.id, valore: e.target.value })}
-                            title="Tipo sconto (es: 30%, BLUCARD)"
-                            style={{
-                              fontSize: '11px',
-                              background: 'var(--input-bg)',
-                              border: '1px solid var(--input-border)',
-                              borderRadius: '6px',
-                              padding: '3px 4px',
-                              outline: 'none',
-                              color: 'var(--text-primary)',
-                              width: '100%',
-                            }}
-                          />
-                        </div>
+
 
                         {/* Elimina riga */}
                         <button
@@ -1015,7 +1010,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                   <div
                     className="grid items-center font-bold"
                     style={{
-                      gridTemplateColumns: '1fr 70px 70px 32px',
+                      gridTemplateColumns: '1fr 80px 32px',
                       padding: '8px 12px',
                       background: 'var(--bg-secondary)',
                       borderTop: '1px solid var(--border)',
@@ -1025,7 +1020,6 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                   >
                     <span>{state.totale !== null && !approvatoScontrino ? OCR.totaleCalcolato : 'Totale'}</span>
                     <span style={{ textAlign: 'right' }}>{formatEuro(sommaArticoli)}</span>
-                    <span />
                     <span />
                   </div>
                   {state.totale !== null && !approvatoScontrino && (
