@@ -36,6 +36,12 @@
 
 ## Completati
 
+### ✅ TASK-082 — OCR app: fix duplicati + velocita fallback (02/05/2026)
+- [x] Rimosso merge testi tra passata originale e pre-processata (causava righe duplicate)
+- [x] Fallback reso meno aggressivo: seconda passata solo se prima incompleta (pochi articoli o totale assente)
+- [x] Selezione passata migliore via score, mantenendo un solo testo finale per foto
+- [x] Build tecnica verificata ✅
+
 ### ✅ TASK-081 — OCR app robusto: fallback doppia passata (02/05/2026)
 - [x] OCR in app allineato a config test (`createWorker('ita+eng')`)
 - [x] Aggiunta seconda passata su immagine pre-processata quando la prima è incompleta/non valida

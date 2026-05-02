@@ -273,21 +273,24 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
         const { data: { text } } = await worker.recognize(state.foto[i])
         let textBest = text
 
-        // Fallback: se la prima passata sembra incompleta, prova anche versione pre-processata.
+        // Fallback: seconda passata solo se la prima e chiaramente incompleta.
         const firstParse = parseReceiptText(text)
-        const shouldFallback = firstParse.items.length < 4 || (firstParse.total !== null && !firstParse.isValid)
+        const shouldFallback = firstParse.items.length < 4 || firstParse.total === null
         if (shouldFallback) {
           const processed = await processImage(state.foto[i])
           const { data: { text: textProcessed } } = await worker.recognize(processed)
-          const merged = `${text}\n${textProcessed}`
-          const mergedParse = parseReceiptText(merged)
 
-          if (mergedParse.items.length > firstParse.items.length || mergedParse.isValid) {
-            textBest = merged
+          const secondParse = parseReceiptText(textProcessed)
+          const firstScore = firstParse.items.length + (firstParse.total !== null ? 2 : 0) + (firstParse.isValid ? 4 : 0)
+          const secondScore = secondParse.items.length + (secondParse.total !== null ? 2 : 0) + (secondParse.isValid ? 4 : 0)
+
+          // Evita merge dei testi: sceglie solo la passata migliore per non duplicare righe.
+          if (secondScore > firstScore) {
+            textBest = textProcessed
           }
         }
 
-        // Concatena i testi delle varie foto (merge)
+        // Concatena il miglior testo per foto
         testoCompleto += '\n' + textBest
 
         const p = Math.round(((i + 1) / n) * 100)

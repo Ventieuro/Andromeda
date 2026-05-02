@@ -6,6 +6,15 @@
 
 ## [02/05/2026] — Sessione 10
 
+### TASK-082: OCR app — fix duplicati e lentezza
+**File modificati:** `src/components/ReceiptScanner.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- Eliminato merge tra testo OCR originale e testo OCR pre-processato (fonte dei duplicati in tabella)
+- Fallback reso meno aggressivo per ridurre tempi: seconda passata solo se la prima e chiaramente incompleta
+- Introdotta scelta della passata migliore tramite score (`items`, `total`, `isValid`) e uso di un solo testo per foto
+- Risultato atteso: meno righe duplicate, tempo medio di analisi ridotto, miglior coerenza su mobile
+- **Build check:** `npx tsc -b && npx vite build` ✅
+
 ### TASK-081: OCR app robusto — fallback doppia passata
 **File modificati:** `src/components/ReceiptScanner.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
 
