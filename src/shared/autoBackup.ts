@@ -15,6 +15,8 @@ import {
   loadCustomCategories,
   loadCustomIcons,
   loadNotificationSettings,
+  loadProducts,
+  loadGoals,
   encryptJson,
 } from './storage'
 
@@ -109,14 +111,26 @@ export function isFSASupported(): boolean {
 
 // ─── Dati backup ─────────────────────────────────────────
 async function buildBackupContent(password: string | null): Promise<string> {
+  // Raccogli chiavi MissionCard dinamiche (astrocoin-mc-colors-* e astrocoin-mc-launched-*)
+  const missionCardData: Record<string, string> = {}
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-'))) {
+      missionCardData[key] = localStorage.getItem(key) ?? ''
+    }
+  }
+
   const backup = {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     transactions: loadTransactions(),
     settings: loadSettings(),
     customCategories: loadCustomCategories(),
     customIcons: loadCustomIcons(),
     notificationSettings: loadNotificationSettings(),
+    products: loadProducts(),
+    goals: loadGoals(),
+    missionCardData,
   }
   if (password) {
     const encrypted = await encryptJson(JSON.stringify(backup), password)

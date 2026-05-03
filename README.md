@@ -1,21 +1,58 @@
 # 🚀 Hermes
 
-App personale per la gestione delle finanze a tema spaziale, costruita con React e pensata per il mobile.
+App personale per la gestione delle finanze personali a tema spaziale, costruita con React e pensata per il mobile.
 
 ## Funzionalità
 
-- **Dashboard** con saldo, entrate e uscite del periodo
-- **Grafici** — torta categorie, sistema solare, andamento annuale
-- **Transazioni ricorrenti** con gestione automatica per serie
-- **Mascotte astronauta** 🧑‍🚀 con messaggi a metafore spaziali
-- **Scanner scontrino** 📷 con OCR (Tesseract.js) per importare spese da foto
-- **Gestione categorie** personalizzate con icone
-- **Backup/Restore** — export/import JSON cifrato AES-256
-- **Trasferimento QR** — da PC a telefono senza cloud
-- **Blocco PIN** con hashing SHA-256
+### 💰 Finanze
+- **Dashboard** — saldo, entrate/uscite del periodo, riepilogo rapido
+- **Movimenti** — lista transazioni filtrabile per mese, ricerca, elimina
+- **Transazioni ricorrenti** — gestione automatica multi-mese con propagazione serie
+- **Importazione Money+** — importa storico da file CSV di Money+
+
+### 📊 Grafici
+- **Torta categorie** — distribuzione spese per categoria
+- **Sistema Solare** — spese come pianeti in orbita proporzionale
+- **Grafico Cometa** — andamento mensile entrate/uscite nell'anno
+
+### 🎯 Missioni (Savings Goals)
+- **Missioni di risparmio** — obiettivi con progresso percentuale
+- **Astronave assemblabile** — rocket SVG sbloccato pezzo per pezzo al raggiungimento delle soglie
+- **Color picker** — personalizzazione colore di ogni pezzo sbloccato
+- **Animazione lancio** — ignizione, fumo, fuoco, rotazione e liftoff al 100%
+
+### 🛒 Catalogo Prodotti
+- **Lista prodotti preferiti** — prezzi di riferimento, storico acquisti
+- **Associazione categoria** — ogni prodotto categorizzato con icona
+
+### 📷 Scanner Scontrino
+- **OCR via fotocamera** — scansiona uno scontrino e importa automaticamente gli articoli
+- **Parser intelligente** — estrae voci, prezzi e totale dal testo OCR
+- **Tesseract.js v7** — riconoscimento testo lato client, nessun dato inviato a server
+
+### 🔐 Sicurezza
+- **Blocco PIN** — 4 cifre, hashing SHA-256, sessione 30 minuti
+- **Biometrico** — impronta/face ID via WebAuthn (platform authenticator)
+- **Crittografia backup** — AES-256-GCM con password
+
+### 💾 Dati & Backup
+- **Storage locale** — IndexedDB (+ fallback localStorage), nessun backend
+- **Backup automatico** — pianificato, verso cartella o download
+- **Export/Import JSON** — backup cifrato con password
+- **Trasferimento QR** — sposta tutti i dati da PC a telefono senza cloud
+- **Backup completo** — include transazioni, impostazioni, categorie, prodotti, missioni
+
+### 🌍 Personalizzazione
 - **Multilingua** — Italiano, English, Español
-- **PWA offline-first** — tutti i dati in IndexedDB, nessun backend
-- **Temi** — Spazio (dark), NASA (light), Mission
+- **3 temi** — Spazio (dark), Mission (dark-accent), NASA (light)
+- **Categorie personalizzate** — aggiunta, rinomina, eliminazione con icone custom
+- **Mascotte astronauta** — messaggi motivazionali con metafore spaziali
+
+### 📱 App
+- **PWA offline-first** — installabile su Android/iOS, funziona senza connessione
+- **Notifiche** — promemoria pagamenti/transazioni
+- **What's New** — modale changelog aggiornamento automatico
+- **Responsive** — ottimizzata per mobile, utilizzabile da desktop
 
 ## Tech Stack
 

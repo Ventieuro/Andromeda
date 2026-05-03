@@ -6,9 +6,16 @@
 
 ## [03/05/2026] — Sessione 16
 
-## [03/05/2026] — Sessione 16
+### TASK-107 (feature): Backup include missioni e prodotti
+**File modificati:** `src/shared/autoBackup.ts`, `src/shared/storage.ts`, `package.json`
 
-## [03/05/2026] — Sessione 16
+- ✅ `buildBackupContent()` (autoBackup) ora include `products`, `goals`, `missionCardData` (chiavi `astrocoin-mc-colors-*` / `astrocoin-mc-launched-*`)
+- ✅ `AppBackup` interface aggiornata: `version: 1 | 2`, campi opzionali `products`, `goals`, `missionCardData`
+- ✅ `applyBackup()` ripristina products, goals e missionCardData (supporta sia v1 che v2)
+- ✅ `exportAllData`, `buildQrTransferLinks`, `buildTransferCode` aggiornati a version 2 con i nuovi campi
+- ✅ Versione bump → `0.7.12`
+
+---
 
 ### TASK-106 (fix): MissionCard — color picker sempre accessibile
 **File modificati:** `src/components/MissionCard.tsx`, `package.json`

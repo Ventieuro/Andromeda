@@ -759,13 +759,17 @@ export function saveNotificationSettings(settings: NotificationSettings) {
 // ─── Export / Import JSON ────────────────────────────────
 
 export interface AppBackup {
-  version: 1
+  version: 1 | 2
   exportedAt: string  // ISO timestamp
   transactions: Transaction[]
   settings: AppSettings
   customCategories: CustomCategories
   customIcons: Record<string, string>
   notificationSettings: NotificationSettings
+  // v2+
+  products?: ProductEntry[]
+  goals?: SavingsGoal[]
+  missionCardData?: Record<string, string>
 }
 
 // ─── Crypto helpers ──────────────────────────────────────
@@ -876,7 +880,7 @@ function mergeTransactions(existing: Transaction[], incoming: Transaction[]): Tr
 }
 
 function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok' | 'invalid' {
-  if (data.version !== 1) return 'invalid'
+  if (data.version !== 1 && data.version !== 2) return 'invalid'
   if (!Array.isArray(data.transactions)) return 'invalid'
   const incomingTransactions = data.transactions.filter(isValidTransaction)
   if (options.mode === 'merge') {
@@ -919,19 +923,57 @@ function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok
     }
   }
 
+  if (Array.isArray(data.products)) {
+    if (options.mode === 'merge') {
+      const local = loadProducts()
+      const existingIds = new Set(local.map((p) => p.id))
+      saveProducts([...local, ...data.products.filter((p) => !existingIds.has(p.id))])
+    } else {
+      saveProducts(data.products)
+    }
+  }
+
+  if (Array.isArray(data.goals)) {
+    if (options.mode === 'merge') {
+      const local = loadGoals()
+      const existingIds = new Set(local.map((g) => g.id))
+      saveGoals([...local, ...data.goals.filter((g) => !existingIds.has(g.id))])
+    } else {
+      saveGoals(data.goals)
+    }
+  }
+
+  if (data.missionCardData && typeof data.missionCardData === 'object') {
+    for (const [key, value] of Object.entries(data.missionCardData)) {
+      if (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-')) {
+        localStorage.setItem(key, value)
+      }
+    }
+  }
+
   return 'ok'
 }
 
 /** Scarica tutti i dati come file .json cifrato con AES-256-GCM */
 export async function exportAllData(password: string): Promise<void> {
+  const missionCardData: Record<string, string> = {}
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-'))) {
+      missionCardData[key] = localStorage.getItem(key) ?? ''
+    }
+  }
   const backup: AppBackup = {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     transactions: loadTransactions(),
     settings: loadSettings(),
     customCategories: loadCustomCategories(),
     customIcons: loadCustomIcons(),
     notificationSettings: loadNotificationSettings(),
+    products: loadProducts(),
+    goals: loadGoals(),
+    missionCardData,
   }
   const encrypted = await encryptJson(JSON.stringify(backup), password)
   const blob = new Blob([JSON.stringify(encrypted)], { type: 'application/json' })
@@ -973,14 +1015,24 @@ export async function importAllData(
 // ─── QR Transfer (PC -> telefono) ───────────────────────
 
 export async function buildQrTransferLinks(password: string): Promise<string[]> {
+  const missionCardData: Record<string, string> = {}
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-'))) {
+      missionCardData[key] = localStorage.getItem(key) ?? ''
+    }
+  }
   const backup: AppBackup = {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     transactions: loadTransactions(),
     settings: loadSettings(),
     customCategories: loadCustomCategories(),
     customIcons: loadCustomIcons(),
     notificationSettings: loadNotificationSettings(),
+    products: loadProducts(),
+    goals: loadGoals(),
+    missionCardData,
   }
 
   const encrypted = await encryptJson(JSON.stringify(backup), password)
@@ -1002,14 +1054,24 @@ export async function buildQrTransferLinks(password: string): Promise<string[]> 
 }
 
 export async function buildTransferCode(password: string): Promise<string> {
+  const missionCardData: Record<string, string> = {}
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-'))) {
+      missionCardData[key] = localStorage.getItem(key) ?? ''
+    }
+  }
   const backup: AppBackup = {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     transactions: loadTransactions(),
     settings: loadSettings(),
     customCategories: loadCustomCategories(),
     customIcons: loadCustomIcons(),
     notificationSettings: loadNotificationSettings(),
+    products: loadProducts(),
+    goals: loadGoals(),
+    missionCardData,
   }
 
   const encrypted = await encryptJson(JSON.stringify(backup), password)

@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-107 — Backup include missioni e prodotti (03/05/2026)
+- [x] `autoBackup.ts`: `buildBackupContent()` include `products`, `goals`, `missionCardData`
+- [x] `storage.ts`: `AppBackup` v1|2 con campi opzionali; `applyBackup()` ripristina i nuovi campi
+- [x] `exportAllData`, `buildQrTransferLinks`, `buildTransferCode` aggiornati a version 2
+- [x] Versione bump → `0.7.12`, deploy ✅
+
 ### ✅ TASK-098 — MissionCard: astronave SVG con assemblaggio progressivo (03/05/2026)
 - [x] Creato `src/components/MissionCard.tsx` con astronave SVG cartoon (5 pezzi)
 - [x] Soglie sblocco: motore 0%, corpo 15%, ali 35%, punta 55%, finestrino 75%
