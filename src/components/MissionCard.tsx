@@ -154,8 +154,6 @@ const STYLES = `
 .mc-blink-pad-b  { animation: blinkPad 1s ease-in-out infinite 0.5s; }
 .mc-pad-arm-l    { animation: padArmsOpen 0.8s ease-out 0.4s forwards; transform-origin: right center; }
 .mc-pad-arm-r    { animation: padArmsOpenR 0.8s ease-out 0.4s forwards; transform-origin: left center; }
-.mc-launch-ship  { animation: launchShip 4s cubic-bezier(0.3,0,0.1,1) forwards; transform-box: fill-box; transform-origin: 50% 50%; }
-.mc-stars-rotate { animation: launchShip 4s cubic-bezier(0.3,0,0.1,1) forwards; transform-origin: 100px 105px; }
 .mc-ship-float   { animation: spaceFloat 3.5s ease-in-out infinite; }
 .mc-pad-down     { animation: padSlideDown 2.5s ease-in forwards; }
 .mc-star-down    { animation: starScrollDown 1.8s linear infinite; }
@@ -538,13 +536,14 @@ export default function MissionCard({
           {/* Space background — always */}
           <rect x="0" y="0" width="200" height="210" fill="#060a1a"/>
 
-          {/* Stars: static build | scroll down + animate rotation during ignition | static 90° + scroll in travel */}
-          <g
-            className={inLaunchSequence ? 'mc-stars-rotate' : ''}
-            style={inTravel
+          {/* Stars: static build | rotate+scroll ignition | static 90°+scroll travel.
+               Rotation is pure inline CSS transition — no class swap, no flicker. */}
+          <g style={(inTravel
               ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px' }
-              : { transformOrigin: '100px 105px' }}
-          >
+              : inLaunchSequence
+              ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px', transition: 'transform 3s 1s cubic-bezier(0.3,0,0.1,1)' }
+              : { transform: 'rotate(0deg)', transformOrigin: '100px 105px' }
+          )}>
             <g className={(inLaunchSequence || inTravel) ? 'mc-star-down' : ''}>
               {STARS_LAYER_A.map(([cx, cy, r, op], i) => <circle key={i} cx={cx} cy={cy} r={r} fill="#ffffff" opacity={op}/>)}
             </g>
@@ -581,11 +580,14 @@ export default function MissionCard({
             <text x="100" y="114" textAnchor="middle" dominantBaseline="middle" fill="#534AB7" opacity="0.28" fontSize="22" fontFamily="sans-serif" fontWeight="700">?</text>
           )}
 
-          {/* Spaceship: animate rotation during ignition only; static 90° in travel (no wobble, no re-animation on refresh) */}
-          <g
-            className={inLaunchSequence ? 'mc-launch-ship' : ''}
-            style={inTravel ? { transform: 'rotate(90deg)', transformBox: 'fill-box', transformOrigin: '50% 50%' } : {}}
-          >
+          {/* Spaceship: rotation via inline CSS transition only — ignition ends at 90°,
+               travel keeps same 90° via inline style, no class swap, no wobble, no re-animation on refresh */}
+          <g style={(inTravel
+              ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px' }
+              : inLaunchSequence
+              ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px', transition: 'transform 3s 1s cubic-bezier(0.3,0,0.1,1)' }
+              : { transform: 'rotate(0deg)', transformOrigin: '100px 105px' }
+          )}>
             <g className={inTravel ? 'mc-ship-float' : ''}>
               <Spaceship
                 colors={colors}

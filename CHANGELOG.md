@@ -4,6 +4,18 @@
 
 ---
 
+## [03/05/2026] — Sessione 16
+
+### TASK-104 (fix): MissionCard — wobble finale + re-animazione su refresh
+**File modificati:** `src/components/MissionCard.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ **Rimossi** `.mc-launch-ship` e `.mc-stars-rotate` dal STYLES CSS (classe → inline style)
+- ✅ **Rotazione stelle e nave** ora usa solo `inline style` + CSS `transition`: durante `ignition` applica `transition: transform 3s 1s cubic-bezier(0.3,0,0.1,1)`, durante `travel` stesso valore `rotate(90deg)` senza `transition` → nessun class-swap, nessun recompositing browser, zero wobble
+- ✅ **Refresh in travel**: `rotate(90deg)` via inline style senza transition → appare istantaneo, nessuna re-animazione
+- ✅ Versione bump → `0.7.8`
+
+---
+
 ## [03/05/2026] — Sessione 15
 
 ### TASK-102: MissionCard — stelle sempre visibili + transizione fluida + rotazione lenta
