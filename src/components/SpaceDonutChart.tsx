@@ -20,6 +20,7 @@ interface SpaceDonutChartProps {
   size?: number
   hideIncome?: boolean
   onCategoryClick?: (canonicalKey: string) => void
+  savingsGoal?: number
 }
 
 // ─── Helpers ─────────────────────────────────────────────
@@ -75,15 +76,15 @@ function drawImportantNeedle(
   startAngle: number, sweep: number, importantRatio: number,
   time: number,
 ) {
-  // Arc = fixed max (36°) × importantRatio, capped to slice sweep so it never overflows
-  const importantSweep = Math.min(Math.PI / 5 * importantRatio, sweep)
+  // Arc proportional to the slice: 100% important = covers full slice
+  const importantSweep = importantRatio > 0 ? Math.min(Math.max(importantRatio * sweep, 0.15), sweep) : 0
   if (importantSweep <= 0.04) return
 
   const arcEnd = startAngle + importantSweep
   const midAngle = startAngle + importantSweep / 2
   const pulse = 0.5 + 0.5 * Math.sin(time * 2.5)
 
-  // Outer arc — only the important portion of the slice
+  // Outer arc — proportional to the important portion of the slice
   ctx.beginPath()
   ctx.arc(cx, cy, outerR + 4, startAngle + 0.03, arcEnd - 0.03)
   ctx.strokeStyle = `rgba(251,191,36,${0.5 + 0.3 * pulse})`
@@ -91,12 +92,54 @@ function drawImportantNeedle(
   ctx.setLineDash([])
   ctx.stroke()
 
-  // Tip dot at midpoint of arc
+  // Tip dot floating above the arc at midpoint
   const tx = cx + (outerR + 9) * Math.cos(midAngle)
   const ty = cy + (outerR + 9) * Math.sin(midAngle)
   ctx.beginPath()
   ctx.arc(tx, ty, 3, 0, Math.PI * 2)
   ctx.fillStyle = `rgba(251,191,36,${0.8 + 0.2 * pulse})`
+  ctx.fill()
+}
+
+// ─── Savings goal arc ────────────────────────────────────
+function drawSavingsGoalArc(
+  ctx: CanvasRenderingContext2D,
+  cx: number, cy: number,
+  outerR: number,
+  totalIncome: number,
+  actualSavings: number,
+  savingsGoal: number,
+  time: number,
+) {
+  if (savingsGoal <= 0) return
+  // Arc proportional to goal/income when income > 0, fixed size (60°) otherwise
+  const goalSweep = totalIncome > 0
+    ? Math.min((savingsGoal / totalIncome) * Math.PI * 2, Math.PI)
+    : Math.PI / 3
+  if (goalSweep < 0.05) return
+
+  const met = actualSavings >= savingsGoal
+  const pulse = 0.5 + 0.5 * Math.sin(time * 2.5)
+  const baseColor = met ? '34,197,94' : '239,68,68'
+
+  // Counter-clockwise from top: draw arc from (-π/2 - goalSweep) to (-π/2)
+  const startAngle = -Math.PI / 2
+  const endAngle = startAngle - goalSweep
+  const midAngle = startAngle - goalSweep / 2
+
+  ctx.beginPath()
+  ctx.arc(cx, cy, outerR + 4, endAngle, startAngle)
+  ctx.strokeStyle = `rgba(${baseColor},${0.55 + 0.3 * pulse})`
+  ctx.lineWidth = 3
+  ctx.setLineDash([])
+  ctx.stroke()
+
+  // Tip dot floating above the arc at the midpoint (same as important dot)
+  const tx = cx + (outerR + 9) * Math.cos(midAngle)
+  const ty = cy + (outerR + 9) * Math.sin(midAngle)
+  ctx.beginPath()
+  ctx.arc(tx, ty, 3, 0, Math.PI * 2)
+  ctx.fillStyle = `rgba(${baseColor},${0.8 + 0.2 * pulse})`
   ctx.fill()
 }
 
@@ -284,7 +327,7 @@ function drawCenter(
 }
 
 // ─── Component ───────────────────────────────────────────
-function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideIncome = false, onCategoryClick }: SpaceDonutChartProps) {
+function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideIncome = false, onCategoryClick, savingsGoal = 0 }: SpaceDonutChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const animRef = useRef<number>(0)
@@ -351,6 +394,11 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
       // Donut
       drawDonut(c, cx, cy, outerR, innerR, slices, elapsed)
 
+      // Savings goal arc (counter-clockwise from top, green = met, red = not met)
+      if (savingsGoal > 0) {
+        drawSavingsGoalArc(c, cx, cy, outerR, totalIncome, totalIncome - totalExpenses, savingsGoal, elapsed)
+      }
+
       // Planets
       slices.forEach((slice, i) => {
         const baseAngle = -Math.PI / 2 + (i * Math.PI * 2) / slices.length
@@ -368,7 +416,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     animRef.current = requestAnimationFrame(frame)
 
     return () => cancelAnimationFrame(animRef.current)
-  }, [slices, totalIncome, totalExpenses, size, hideIncome])
+  }, [slices, totalIncome, totalExpenses, size, hideIncome, savingsGoal])
 
   useEffect(() => {
     const cleanup = draw()
@@ -443,6 +491,25 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
             </div>
           )
         })}
+        {savingsGoal > 0 && totalIncome > 0 && (() => {
+          const actualSavings = totalIncome - totalExpenses
+          const met = actualSavings >= savingsGoal
+          return (
+            <div className="flex items-center gap-3 py-1 mt-1" style={{ borderTop: '1px solid var(--border)' }}>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', background: met ? '#22c55e' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#fff', flexShrink: 0, fontWeight: 700 }}>
+                {met ? '✓' : '✗'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="block text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                  {DASHBOARD.obiettivoRisparmio}
+                </span>
+                <span className="text-xs" style={{ color: met ? '#22c55e' : '#ef4444' }}>
+                  {formatEuro(actualSavings)} / {formatEuro(savingsGoal)}
+                </span>
+              </div>
+            </div>
+          )
+        })()}
       </div>
     </div>
   )

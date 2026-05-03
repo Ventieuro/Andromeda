@@ -87,6 +87,7 @@ const STRINGS = {
     graficoSpese:                 t('Come spendi i tuoi soldi',                        'How you spend your money',               'Cómo gastas tu dinero'),
     nessunGrafico:                t('Nessuna uscita in questo periodo.',               'No expenses in this period.',            'No hay gastos en este período.'),
     risparmiLabel:                t('Risparmi',                                        'Savings',                                'Ahorros'),
+    obiettivoRisparmio:           t('Obiettivo risparmio',                             'Savings goal',                           'Meta de ahorro'),
     categorieLabel:               t('Categorie',                                       'Categories',                             'Categorías'),
     spesaImportante:              t('importante',                                      'important',                              'importante'),
     ordinaPerImporto:             t('Dal più grande',                                  'Largest first',                          'Mayor primero'),

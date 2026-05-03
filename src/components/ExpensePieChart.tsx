@@ -1,10 +1,25 @@
 import { useState } from 'react'
-import type { Transaction } from '../shared/types'
+import type { Transaction, SavingsGoal } from '../shared/types'
 import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import SolarSystemChart from './SolarSystemChart'
 import SpaceDonutChart from './SpaceDonutChart'
 import CometChart from './CometChart'
 import { useAmounts } from '../shared/AmountsContext'
+import { loadGoals } from '../shared/storage'
+
+// ─── Calcolo rata mensile corrente per un goal ───────────
+function currentMonthlyAmount(g: SavingsGoal): number {
+  if (g.targetDate && g.targetAmount !== undefined) {
+    const now = new Date()
+    const target = new Date(g.targetDate + 'T00:00:00')
+    const months = Math.max(0,
+      (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth())
+    )
+    if (months > 0) return Math.max(0, (g.targetAmount - g.savedAmount) / months)
+    return 0
+  }
+  return g.monthlyAmount ?? 0
+}
 
 // ─── Colori per le categorie di uscita ───────────────────
 const EXPENSE_COLORS = [
@@ -30,6 +45,7 @@ interface Slice {
 
 interface ExpensePieChartProps {
   transactions: Transaction[]
+  periodEnd?: string   // ISO yyyy-mm-dd — filtra goal creati dopo questa data
   onCategoryClick?: (canonicalKey: string) => void
   onViewChange?: (view: 'pie' | 'solar' | 'comet') => void
 }
@@ -81,13 +97,16 @@ function buildSlices(transactions: Transaction[]): Slice[] {
   return [...expenseSlices, ...savingsSlices]
 }
 
-function ExpensePieChart({ transactions, onCategoryClick, onViewChange }: ExpensePieChartProps) {
+function ExpensePieChart({ transactions, periodEnd, onCategoryClick, onViewChange }: ExpensePieChartProps) {
   const rawSlices = buildSlices(transactions)
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
   const [view, setView] = useState<'pie' | 'solar' | 'comet'>('pie')
   const [sortMode, setSortMode] = useState<'amount' | 'important'>('amount')
   const { amountsVisible } = useAmounts()
+  const totalMonthlyGoal = loadGoals()
+    .filter((g) => !periodEnd || g.createdAt.slice(0, 10) <= periodEnd)
+    .reduce((s, g) => s + currentMonthlyAmount(g), 0)
 
   const hasAnyImportant = rawSlices.some((s) => (s.importantRatio ?? 0) > 0)
 
@@ -187,16 +206,19 @@ function ExpensePieChart({ transactions, onCategoryClick, onViewChange }: Expens
         </div>
       )}
 
-      {slices.length === 0 ? (
+      {slices.length === 0 && totalMonthlyGoal === 0 ? (
         <p className="text-sm text-center py-4" style={{ color: 'var(--text-muted)' }}>
           {DASHBOARD.nessunGrafico}
         </p>
+      ) : slices.length === 0 ? (
+        // Nessuna transazione ma ci sono obiettivi: mostra donut vuoto con arco obiettivo
+        <SpaceDonutChart slices={[]} totalIncome={0} totalExpenses={0} size={280} hideIncome={!amountsVisible} savingsGoal={totalMonthlyGoal} />
       ) : view === 'comet' ? (
         <CometChart />
       ) : view === 'solar' ? (
         <SolarSystemChart transactions={transactions} onCategoryClick={onCategoryClick} sortMode={sortMode} />
       ) : (
-        <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} size={280} hideIncome={!amountsVisible} onCategoryClick={onCategoryClick} />
+        <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} size={280} hideIncome={!amountsVisible} onCategoryClick={onCategoryClick} savingsGoal={totalMonthlyGoal} />
       )}
     </div>
   )

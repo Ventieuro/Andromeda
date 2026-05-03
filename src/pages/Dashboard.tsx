@@ -199,7 +199,7 @@ function Dashboard() {
 
       {/* ── 2. Grafico grande ─────────────────────────────── */}
       <div style={{ padding: '12px 16px 0' }}>
-        <ExpensePieChart transactions={periodTx} onCategoryClick={handleCategoryClick} onViewChange={setChartView} />
+        <ExpensePieChart transactions={periodTx} periodEnd={end.toISOString().slice(0, 10)} onCategoryClick={handleCategoryClick} onViewChange={setChartView} />
       </div>
 
       {/* ── 3. Riepilogo Entrate / Uscite / Risparmi ─────── */}
