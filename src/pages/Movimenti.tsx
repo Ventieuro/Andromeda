@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { ListFilter } from 'lucide-react'
 import { loadTransactions, deleteTransaction, deleteTransactionsByGroupId, loadSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import { MOVIMENTI, PRODOTTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '../shared/labels'
@@ -356,9 +357,7 @@ function Movimenti() {
           aria-hidden="true"
           title={MOVIMENTI.ordinaPer}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 5h18l-7 8v5l-4 2v-7L3 5z" />
-          </svg>
+          <ListFilter size={16} aria-hidden="true" />
         </div>
         <select
           value={sortBy}

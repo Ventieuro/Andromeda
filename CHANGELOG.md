@@ -4,6 +4,20 @@
 
 ---
 
+## [03/05/2026] — Sessione 15
+
+### TASK-097: Migrazione icone → lucide-react
+**File modificati:** `package.json`, `src/components/BottomNav.tsx`, `src/components/Layout.tsx`, `src/pages/SettingsPage.tsx`, `src/pages/Movimenti.tsx`, `src/components/ProductsCatalog.tsx`
+
+- ✅ Installato `lucide-react`
+- ✅ **BottomNav:** rimossi 4 componenti SVG inline (`HomeIcon`, `ListIcon`, `TargetIcon`, `SettingsIcon`) → `House`, `List`, `Target`, `Settings`
+- ✅ **Layout:** eye/eye-off inline SVG → `Eye`, `EyeOff`
+- ✅ **SettingsPage:** chevron SVG nel BackButton → `ChevronLeft`; chevron nel SettingsRow → `ChevronRight`
+- ✅ **Movimenti + ProductsCatalog:** funnel SVG inline → `ListFilter`
+- ✅ Versione bump → `0.7.1`
+
+---
+
 ## [03/05/2026] — Sessione 14 (cont.)
 
 ### TASK-096: Carryover shortfall obiettivi + messaggi mascotte cinematografici

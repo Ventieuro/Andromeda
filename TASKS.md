@@ -38,6 +38,14 @@
 
 ## Completati
 
+### ✅ TASK-097 — Migrazione icone → lucide-react (03/05/2026)
+- [x] Installato `lucide-react`
+- [x] `BottomNav.tsx`: rimossi 4 componenti SVG inline → `House`, `List`, `Target`, `Settings`
+- [x] `Layout.tsx`: eye/eye-off SVG inline → `Eye`, `EyeOff`
+- [x] `SettingsPage.tsx`: chevron SVG → `ChevronLeft` (BackButton) e `ChevronRight` (SettingsRow)
+- [x] `Movimenti.tsx` + `ProductsCatalog.tsx`: funnel SVG inline → `ListFilter`
+- [x] Versione bump → `0.7.1`, deploy ✅
+
 ### ✅ TASK-096 — Carryover shortfall + messaggi mascotte (03/05/2026)
 - [x] `effectiveMonthlyGoal` in ExpensePieChart con accumulo shortfall 24 mesi
 - [x] Nuovi prop `allTransactions`, `periodStart`, `payDay` in ExpensePieChart

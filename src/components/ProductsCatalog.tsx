@@ -6,6 +6,7 @@
  */
 
 import { useState, useMemo } from 'react'
+import { ListFilter } from 'lucide-react'
 import type { ProductEntry } from '../shared/types'
 import { loadProducts, saveProducts, deleteProduct, updateProductName } from '../shared/storage'
 import { PRODOTTI } from '../shared/labels'
@@ -163,9 +164,7 @@ function ProductsCatalog() {
           aria-hidden="true"
           title={PRODOTTI.ordinaPer}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 5h18l-7 8v5l-4 2v-7L3 5z" />
-          </svg>
+          <ListFilter size={16} aria-hidden="true" />
         </div>
         <select
           value={sortBy}

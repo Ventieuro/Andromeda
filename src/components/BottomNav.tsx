@@ -1,47 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { House, List, Target, Settings } from 'lucide-react'
 import { LAYOUT, DASHBOARD } from '../shared/labels'
-
-function HomeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 10.5 12 3l9 7.5" />
-      <path d="M5.5 9.7V21h13V9.7" />
-      <path d="M10 21v-6h4v6" />
-    </svg>
-  )
-}
-
-function ListIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="8" y1="6" x2="21" y2="6" />
-      <line x1="8" y1="12" x2="21" y2="12" />
-      <line x1="8" y1="18" x2="21" y2="18" />
-      <circle cx="3" cy="6" r="1" fill="currentColor" stroke="none" />
-      <circle cx="3" cy="12" r="1" fill="currentColor" stroke="none" />
-      <circle cx="3" cy="18" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  )
-}
-
-function TargetIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="6" />
-      <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
-    </svg>
-  )
-}
-
-function SettingsIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  )
-}
 
 function BottomNav() {
   const location = useLocation()
@@ -92,7 +51,7 @@ function BottomNav() {
             title={LAYOUT.navHome}
           >
             <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
-              <HomeIcon />
+              <House size={22} aria-hidden="true" />
             </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navHome}</span>
           </Link>
@@ -109,7 +68,7 @@ function BottomNav() {
             title={LAYOUT.navMovimenti}
           >
             <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/movimenti') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
-              <ListIcon />
+              <List size={22} aria-hidden="true" />
             </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navMovimenti}</span>
           </Link>
@@ -129,7 +88,7 @@ function BottomNav() {
             title={LAYOUT.navMissioni}
           >
             <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/missions') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
-              <TargetIcon />
+              <Target size={22} aria-hidden="true" />
             </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navMissioni}</span>
           </Link>
@@ -146,7 +105,7 @@ function BottomNav() {
             title={LAYOUT.navSettings}
           >
             <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: location.pathname.startsWith('/settings') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
-              <SettingsIcon />
+              <Settings size={22} aria-hidden="true" />
             </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navSettings}</span>
           </Link>
