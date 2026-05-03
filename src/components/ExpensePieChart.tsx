@@ -1,24 +1,67 @@
 import { useState } from 'react'
-import type { Transaction, SavingsGoal } from '../shared/types'
+import type { Transaction } from '../shared/types'
 import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import SolarSystemChart from './SolarSystemChart'
 import SpaceDonutChart from './SpaceDonutChart'
 import CometChart from './CometChart'
 import { useAmounts } from '../shared/AmountsContext'
-import { loadGoals } from '../shared/storage'
+import { loadGoals, getTransactionsInPeriod } from '../shared/storage'
 
-// ─── Calcolo rata mensile corrente per un goal ───────────
-function currentMonthlyAmount(g: SavingsGoal): number {
-  if (g.targetDate && g.targetAmount !== undefined) {
-    const now = new Date()
-    const target = new Date(g.targetDate + 'T00:00:00')
-    const months = Math.max(0,
-      (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth())
-    )
-    if (months > 0) return Math.max(0, (g.targetAmount - g.savedAmount) / months)
-    return 0
+// ─── Periodo a partire da payDay ─────────────────────
+function getPeriodDates(payDay: number, offset: number): { start: Date; end: Date } {
+  const today = new Date()
+  const baseMonth = today.getDate() >= payDay ? today.getMonth() : today.getMonth() - 1
+  const start = new Date(today.getFullYear(), baseMonth + offset, payDay)
+  const end = new Date(start.getFullYear(), start.getMonth() + 1, payDay - 1)
+  return { start, end }
+}
+
+function toIso(d: Date): string {
+  return d.toISOString().slice(0, 10)
+}
+
+// ─── Calcolo rata mensile con carryover shortfall ─────────
+function effectiveMonthlyGoal(
+  goals: ReturnType<typeof loadGoals>,
+  allTx: Transaction[],
+  payDay: number,
+  currentPeriodStart: Date,
+): number {
+  let total = 0
+  for (const g of goals) {
+    // Base rata mensile
+    let base: number
+    if (g.targetDate && g.targetAmount !== undefined) {
+      const now = new Date()
+      const target = new Date(g.targetDate + 'T00:00:00')
+      const months = Math.max(0,
+        (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth())
+      )
+      base = months > 0 ? Math.max(0, (g.targetAmount - g.savedAmount) / months) : 0
+    } else {
+      base = g.monthlyAmount ?? 0
+    }
+    if (base <= 0) { total += 0; continue }
+
+    // Accumula shortfall dai periodi passati da quando è stato creato il goal
+    const goalCreated = g.createdAt.slice(0, 10)
+    let shortfall = 0
+    // Risali di 24 mesi al massimo per trovare i periodi passati
+    for (let offset = -24; offset < 0; offset++) {
+      const { start, end } = getPeriodDates(payDay, offset)
+      // Salta periodi prima della creazione del goal
+      if (toIso(end) < goalCreated) continue
+      // Salta il periodo corrente e futuri
+      if (toIso(start) >= toIso(currentPeriodStart)) break
+      const periodTx = getTransactionsInPeriod(allTx, start, end)
+      const inc = periodTx.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
+      const exp = periodTx.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
+      const saved = inc - exp
+      shortfall += Math.max(0, base - saved)
+    }
+    total += base + shortfall
   }
-  return g.monthlyAmount ?? 0
+  return total
 }
 
 // ─── Colori per le categorie di uscita ───────────────────
@@ -45,7 +88,10 @@ interface Slice {
 
 interface ExpensePieChartProps {
   transactions: Transaction[]
-  periodEnd?: string   // ISO yyyy-mm-dd — filtra goal creati dopo questa data
+  allTransactions?: Transaction[]
+  periodEnd?: string
+  periodStart?: Date
+  payDay?: number
   onCategoryClick?: (canonicalKey: string) => void
   onViewChange?: (view: 'pie' | 'solar' | 'comet') => void
 }
@@ -97,16 +143,26 @@ function buildSlices(transactions: Transaction[]): Slice[] {
   return [...expenseSlices, ...savingsSlices]
 }
 
-function ExpensePieChart({ transactions, periodEnd, onCategoryClick, onViewChange }: ExpensePieChartProps) {
+function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart, payDay = 27, onCategoryClick, onViewChange }: ExpensePieChartProps) {
   const rawSlices = buildSlices(transactions)
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
   const [view, setView] = useState<'pie' | 'solar' | 'comet'>('pie')
   const [sortMode, setSortMode] = useState<'amount' | 'important'>('amount')
   const { amountsVisible } = useAmounts()
-  const totalMonthlyGoal = loadGoals()
-    .filter((g) => !periodEnd || g.createdAt.slice(0, 10) <= periodEnd)
-    .reduce((s, g) => s + currentMonthlyAmount(g), 0)
+
+  const activeGoals = loadGoals().filter((g) => !periodEnd || g.createdAt.slice(0, 10) <= periodEnd)
+  const totalMonthlyGoal = periodStart && allTransactions
+    ? effectiveMonthlyGoal(activeGoals, allTransactions, payDay, periodStart)
+    : activeGoals.reduce((s, g) => {
+        if (g.targetDate && g.targetAmount !== undefined) {
+          const now = new Date()
+          const target = new Date(g.targetDate + 'T00:00:00')
+          const months = Math.max(0, (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth()))
+          return s + (months > 0 ? Math.max(0, (g.targetAmount - g.savedAmount) / months) : 0)
+        }
+        return s + (g.monthlyAmount ?? 0)
+      }, 0)
 
   const hasAnyImportant = rawSlices.some((s) => (s.importantRatio ?? 0) > 0)
 

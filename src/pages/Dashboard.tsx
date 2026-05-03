@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
 import ReceiptDetailModal from '../components/ReceiptDetailModal'
-import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings } from '../shared/storage'
+import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings, loadGoals } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import ExpensePieChart from '../components/ExpensePieChart'
 import { DASHBOARD, MASCOTTE, translateCategory } from '../shared/labels'
@@ -41,8 +41,32 @@ function formatDay(iso: string) {
   return new Date(iso).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })
 }
 
-function getMascotMessage(saldo: number, count: number): { mood: 'happy' | 'sad' | 'neutral' | 'excited'; message: string } {
+function getMascotMessage(
+  saldo: number,
+  count: number,
+  monthlyGoal: number,
+  carryover: number,
+): { mood: 'happy' | 'sad' | 'neutral' | 'excited'; message: string } {
   if (count === 0) return { mood: 'neutral', message: MASCOTTE.messaggi.vuoto }
+
+  // Con obiettivo di risparmio attivo
+  if (monthlyGoal > 0) {
+    const shortfall = monthlyGoal - saldo
+    if (saldo >= monthlyGoal) {
+      return { mood: 'excited', message: MASCOTTE.messaggi.obiettivoRaggiunto }
+    }
+    if (shortfall > 0 && shortfall <= monthlyGoal * 0.2) {
+      return { mood: 'happy', message: MASCOTTE.messaggi.obiettivoVicino(formatEuro(shortfall)) }
+    }
+    if (carryover > 0) {
+      return { mood: 'neutral', message: MASCOTTE.messaggi.carryover(formatEuro(carryover)) }
+    }
+    if (saldo > 0) {
+      return { mood: 'neutral', message: MASCOTTE.messaggi.obiettivoMancato(formatEuro(shortfall)) }
+    }
+  }
+
+  // Senza obiettivo o fallback
   if (saldo > 500) return { mood: 'excited', message: MASCOTTE.messaggi.ottimo }
   if (saldo > 0) return { mood: 'happy', message: MASCOTTE.messaggi.bene(formatEuro(saldo)) }
   if (saldo === 0) return { mood: 'neutral', message: MASCOTTE.messaggi.pari }
@@ -81,7 +105,33 @@ function Dashboard() {
   const uscite = periodTx.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
   const saldo = entrate - uscite
 
-  const mascot = getMascotMessage(saldo, periodTx.length)
+  // Calcola obiettivo mensile con carryover per la mascotte
+  const periodEndIso = end.toISOString().slice(0, 10)
+  const activeGoals = loadGoals().filter((g) => g.createdAt.slice(0, 10) <= periodEndIso)
+  const baseGoal = activeGoals.reduce((s, g) => {
+    if (g.targetDate && g.targetAmount !== undefined) {
+      const now = new Date()
+      const target = new Date(g.targetDate + 'T00:00:00')
+      const months = Math.max(0, (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth()))
+      return s + (months > 0 ? Math.max(0, (g.targetAmount - g.savedAmount) / months) : 0)
+    }
+    return s + (g.monthlyAmount ?? 0)
+  }, 0)
+  const carryoverAmount = activeGoals.reduce((total, g) => {
+    const base = g.monthlyAmount ?? (g.targetDate && g.targetAmount ? Math.max(0, (g.targetAmount - g.savedAmount) / Math.max(1, (() => { const now = new Date(); const t = new Date(g.targetDate! + 'T00:00:00'); return Math.max(0, (t.getFullYear() - now.getFullYear()) * 12 + (t.getMonth() - now.getMonth())) })())): 0)
+    let co = 0
+    for (let offset = -24; offset < 0; offset++) {
+      const { start: ps, end: pe } = getPeriod(payDay, offset)
+      if (pe.toISOString().slice(0, 10) < g.createdAt.slice(0, 10)) continue
+      if (ps.toISOString().slice(0, 10) >= start.toISOString().slice(0, 10)) break
+      const ptx = getTransactionsInPeriod(allTx, ps, pe)
+      const saved = ptx.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0) - ptx.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
+      co += Math.max(0, base - saved)
+    }
+    return total + co
+  }, 0)
+
+  const mascot = getMascotMessage(saldo, periodTx.length, baseGoal, carryoverAmount)
 
   function handlePayDayChange(day: number) {
     setPayDay(day)
@@ -199,7 +249,15 @@ function Dashboard() {
 
       {/* ── 2. Grafico grande ─────────────────────────────── */}
       <div style={{ padding: '12px 16px 0' }}>
-        <ExpensePieChart transactions={periodTx} periodEnd={end.toISOString().slice(0, 10)} onCategoryClick={handleCategoryClick} onViewChange={setChartView} />
+        <ExpensePieChart
+          transactions={periodTx}
+          allTransactions={allTx}
+          periodEnd={end.toISOString().slice(0, 10)}
+          periodStart={start}
+          payDay={payDay}
+          onCategoryClick={handleCategoryClick}
+          onViewChange={setChartView}
+        />
       </div>
 
       {/* ── 3. Riepilogo Entrate / Uscite / Risparmi ─────── */}

@@ -4,6 +4,20 @@
 
 ---
 
+## [03/05/2026] — Sessione 14 (cont.)
+
+### TASK-096: Carryover shortfall obiettivi + messaggi mascotte cinematografici
+**File modificati:** `src/components/ExpensePieChart.tsx`, `src/pages/Dashboard.tsx`, `src/shared/labels.ts`
+
+- ✅ **ExpensePieChart:** rimossa `currentMonthlyAmount`; aggiunta `effectiveMonthlyGoal` che accumula shortfall dai periodi passati (fino 24 mesi) per ogni goal
+- ✅ **ExpensePieChart:** nuovi prop `allTransactions`, `periodStart`, `payDay`; helper `getPeriodDates` + `toIso`
+- ✅ **Dashboard:** passa `allTransactions`, `periodStart`, `payDay` a `ExpensePieChart`
+- ✅ **Dashboard:** calcola `baseGoal` e `carryoverAmount` in locale per la mascotte
+- ✅ **labels.ts:** aggiunti 4 messaggi mascotte con citazioni cinematografiche: `obiettivoRaggiunto` (Buzz Lightyear), `obiettivoVicino` (Yoda/Star Wars), `obiettivoMancato` (Houston), `carryover` (Never give up)
+- ✅ **getMascotMessage:** aggiornata firma `(saldo, count, monthlyGoal, carryoverAmount)` con logica goal-aware
+
+---
+
 ## [03/05/2026] — Sessione 14
 
 ### TASK-095: Sezione Missioni — obiettivi di risparmio

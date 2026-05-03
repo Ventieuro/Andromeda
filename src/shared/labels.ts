@@ -120,6 +120,26 @@ const STRINGS = {
         (importo: string) => `Alert! You're ${importo} in the red... Emergency landing! 🆘`,
         (importo: string) => `¡Alerta! Estás en rojo por ${importo}... ¡Aterrizaje de emergencia! 🆘`,
       ),
+      obiettivoRaggiunto: t(
+        '"Alla velocità della luce!" 🚀 Obiettivo mese centrato — missione compiuta!',
+        '"To infinity and beyond!" 🚀 Monthly goal hit — mission accomplished!',
+        '"¡Al infinito y más allá!" 🚀 ¡Objetivo del mes cumplido — misión completada!',
+      ),
+      obiettivoVicino: tf(
+        (mancante: string) => `"Forza, Luke!" Mancano solo ${mancante} all'obiettivo 💪`,
+        (mancante: string) => `"Use the Force!" Just ${mancante} to reach your goal 💪`,
+        (mancante: string) => `"¡Usa la Fuerza!" Solo ${mancante} para tu objetivo 💪`,
+      ),
+      obiettivoMancato: tf(
+        (importo: string) => `"Houston, abbiamo un problema." Mancano ${importo} all'obiettivo questo mese 📡`,
+        (importo: string) => `"Houston, we have a problem." You're ${importo} short of your goal 📡`,
+        (importo: string) => `"Houston, tenemos un problema." Te faltan ${importo} para tu objetivo 📡`,
+      ),
+      carryover: tf(
+        (importo: string) => `"Non arrenderti mai!" Recupero da mesi precedenti: +${importo} sull'obiettivo 🔁`,
+        (importo: string) => `"Never give up!" Catchup from past months: +${importo} on your goal 🔁`,
+        (importo: string) => `"¡Nunca te rindas!" Recuperación de meses anteriores: +${importo} 🔁`,
+      ),
     },
   },
 

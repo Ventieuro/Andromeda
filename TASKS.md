@@ -38,6 +38,13 @@
 
 ## Completati
 
+### ✅ TASK-096 — Carryover shortfall + messaggi mascotte (03/05/2026)
+- [x] `effectiveMonthlyGoal` in ExpensePieChart con accumulo shortfall 24 mesi
+- [x] Nuovi prop `allTransactions`, `periodStart`, `payDay` in ExpensePieChart
+- [x] Dashboard calcola `carryoverAmount` e passa a `getMascotMessage`
+- [x] 4 nuovi messaggi mascotte con citazioni cinematografiche (Houston, Buzz, Yoda, Never give up)
+- [x] Deploy ✅
+
 ### ✅ TASK-095 — Sezione Missioni: obiettivi di risparmio (03/05/2026)
 - [x] `SavingsGoal` interface aggiunta in `types.ts`
 - [x] CRUD (`loadGoals`, `saveGoals`, `addGoal`, `updateGoal`, `deleteGoal`) in `storage.ts`
