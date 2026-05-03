@@ -34,6 +34,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   const [category, setCategory] = useState(
     editTransaction ? normalizeCategoryKey(editTransaction.category, editTransaction.type) : ''
   )
+  const [important, setImportant] = useState(editTransaction?.important ?? false)
   const [recurring, setRecurring] = useState(editTransaction?.recurring ?? false)
   // String state per evitare il bug degli zeri iniziali (es. "02" → "2")
   const [recurringMonthsStr, setRecurringMonthsStr] = useState(
@@ -63,6 +64,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
         amount: Number(amount),
         date,
         category,
+        important,
         recurring,
         recurringMonths: recurring ? recurringMonths : 0,
       }
@@ -93,6 +95,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
       amount: Number(amount),
       date,
       category,
+      important,
       recurring,
       recurringMonths: recurring ? recurringMonths : 0,
     }
@@ -382,6 +385,28 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
               style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}
             />
           </div>
+
+          {/* Importante */}
+          {type === 'uscita' && (
+            <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={important}
+                  onChange={(e) => setImportant(e.target.checked)}
+                  className="w-5 h-5 rounded accent-amber-400"
+                />
+                <div>
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                    {FORM.labelImportante}
+                  </span>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                    {FORM.tooltipImportante}
+                  </p>
+                </div>
+              </label>
+            </div>
+          )}
 
           {/* Ricorrente */}
           <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>

@@ -38,6 +38,7 @@ export interface Transaction {
   recurringMonths: number // 0 = non ricorrente, N = quanti mesi
   recurringGroupId?: string // ID condiviso fra le occorrenze della stessa serie
   category: string
+  important?: boolean
   isReceipt?: boolean
   receiptItems?: ReceiptDetailItem[]
 }

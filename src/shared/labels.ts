@@ -154,6 +154,8 @@ const STRINGS = {
     modificaRicorrenteScope: t('Aggiornare anche le altre occorrenze collegate?', 'Update the other linked occurrences too?', '¿Actualizar también las demás ocurrencias?'),
     modificaTutte:           t('Sì, aggiorna tutte',                  'Yes, update all',                 'Sí, actualizar todas'),
     modificaSoloQuesta:      t('No, solo questa',                     'No, just this one',               'No, solo esta'),
+    labelImportante:         t('Spesa importante ⭐',                  'Important expense ⭐',             'Gasto importante ⭐'),
+    tooltipImportante:       t('Spese che devi sostenere per forza (affitto, bollette, abbonamenti…)', 'Expenses you must cover (rent, bills, subscriptions…)', 'Gastos que debes cubrir (alquiler, facturas, suscripciones…)'),
   },
 
   // ── Categorie ──────────────────────────────────────────

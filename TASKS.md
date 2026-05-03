@@ -38,6 +38,13 @@
 
 ## Completati
 
+### ✅ TASK-092 — Campo "Spesa importante" nel form transazione (03/05/2026)
+- [x] Aggiunto campo `important?: boolean` a interfaccia `Transaction` in `types.ts`
+- [x] Aggiunte label `labelImportante` e `tooltipImportante` (IT/EN/ES) in `labels.ts`
+- [x] Aggiunto state `important` e checkbox UI nel form (visibile solo per uscite)
+- [x] Campo salvato nella transazione sia in creazione che in modifica
+- [x] Build e test verificati ✅
+
 ### ✅ TASK-089 — Camera scontrino: fix multi-click su scatto (02/05/2026)
 - [x] Aggiunto lock anti-doppio-click durante `canvas.toBlob` nello scanner camera
 - [x] Pulsante scatto disabilitato con feedback visivo (stato `wait`) durante cattura

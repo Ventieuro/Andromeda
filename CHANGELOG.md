@@ -4,6 +4,17 @@
 
 ---
 
+## [03/05/2026] — Sessione 13
+
+### TASK-092: Campo "Spesa importante" nel form transazione
+**File modificati:** `src/shared/types.ts`, `src/shared/labels.ts`, `src/components/AddTransactionForm.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- ✅ **types.ts:** aggiunto `important?: boolean` a `Transaction`
+- ✅ **labels.ts:** aggiunte `labelImportante` e `tooltipImportante` in IT/EN/ES
+- ✅ **AddTransactionForm:** checkbox "Spesa importante ⭐" sopra il blocco ricorrente, visibile solo per uscite; stato salvato in creazione e modifica
+
+---
+
 ## [02/05/2026] — Sessione 12
 
 ### TASK-091: Ordinamento per inserimento nei filtri (prodotti + movimenti)
