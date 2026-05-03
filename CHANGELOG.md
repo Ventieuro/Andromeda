@@ -6,6 +6,26 @@
 
 ## [03/05/2026] — Sessione 13
 
+### TASK-094: SpaceDonutChart — indicatore spese importanti + bug fix cascade
+**File modificati:** `src/shared/storage.ts`, `src/components/AddTransactionForm.tsx`, `src/components/SpaceDonutChart.tsx`, `src/components/ExpensePieChart.tsx`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ **Bug fix:** `updateTransactionsByGroupId` ora propaga anche `important` a cascata su tutte le ricorrenti
+- ✅ **SpaceDonutChart:** funzione `drawImportantNeedle` — arco ambra pulsante esterno + ago tratteggiato dal centro + pallino sulla punta
+- ✅ **ExpensePieChart:** `buildSlices` calcola `hasImportant` per categoria e lo passa alle slice
+- ✅ **Legenda donut:** badge "⭐ importante" per le categorie con almeno una spesa importante
+
+---
+
+### TASK-093: SolarSystemChart — evidenziazione visiva spese importanti
+**File modificati:** `src/components/SolarSystemChart.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ **SolarSystemChart:** orbita ambra tratteggiata pulsante per categorie con spese importanti
+- ✅ **SolarSystemChart:** anello dorato pulsante attorno al pianeta se la categoria ha spese importanti
+- ✅ **Legenda:** badge "⭐ importante" (ambra, bordato) sotto l'importo categoria
+- ✅ **labels.ts:** aggiunta `spesaImportante` IT/EN/ES
+
+---
+
 ### TASK-092: Campo "Spesa importante" nel form transazione
 **File modificati:** `src/shared/types.ts`, `src/shared/labels.ts`, `src/components/AddTransactionForm.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
 

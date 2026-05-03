@@ -38,6 +38,23 @@
 
 ## Completati
 
+### ✅ TASK-094 — SpaceDonutChart: indicatore spese importanti + fix cascade (03/05/2026)
+- [x] **Bug fix:** `updateTransactionsByGroupId` ora include `important` nel patch (storage.ts + form)
+- [x] `SliceData` in SpaceDonutChart arricchita con `hasImportant?: boolean`
+- [x] Funzione `drawImportantNeedle`: arco ambra esterno + ago tratteggiato dal centro + pallino tip
+- [x] `buildSlices` in ExpensePieChart calcola `importantCategories` e popola `hasImportant`
+- [x] Legenda donut: badge "⭐ importante" (ambra) per categorie con spese importanti
+- [x] Build e test verificati ✅
+
+### ✅ TASK-093 — SolarSystemChart: evidenziazione visiva spese importanti (03/05/2026)
+- [x] `PlanetData` arricchita con `hasImportant: boolean`
+- [x] `buildPlanets` rileva categorie con almeno una transazione `important`
+- [x] Orbita punteggiata ambra pulsante (`drawImportantRing`) per categorie importanti
+- [x] Anello ambra pulsante attorno al pianeta importante (`drawPlanet` + `important` flag)
+- [x] Legenda: badge "⭐ importante" sotto l'importo per le categorie importanti
+- [x] Label i18n `spesaImportante` aggiunta in IT/EN/ES
+- [x] Build e test verificati ✅
+
 ### ✅ TASK-092 — Campo "Spesa importante" nel form transazione (03/05/2026)
 - [x] Aggiunto campo `important?: boolean` a interfaccia `Transaction` in `types.ts`
 - [x] Aggiunte label `labelImportante` e `tooltipImportante` (IT/EN/ES) in `labels.ts`

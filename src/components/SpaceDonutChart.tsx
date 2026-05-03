@@ -10,6 +10,7 @@ interface SliceData {
   percent: number
   color: string
   type: 'entrata' | 'uscita'
+  importantRatio?: number
 }
 
 interface SpaceDonutChartProps {
@@ -66,6 +67,49 @@ function drawStars(ctx: CanvasRenderingContext2D, stars: Star[], time: number) {
   }
 }
 
+// ─── Important needle ────────────────────────────────────
+function drawImportantNeedle(
+  ctx: CanvasRenderingContext2D,
+  cx: number, cy: number,
+  outerR: number,
+  startAngle: number, sweep: number, importantRatio: number,
+  time: number,
+) {
+  const importantSweep = sweep * importantRatio
+  const arcEnd = startAngle + importantSweep
+  const midAngle = startAngle + importantSweep / 2
+  const pulse = 0.5 + 0.5 * Math.sin(time * 2.5)
+
+  // Partial outer arc — only the important portion of the slice
+  if (importantSweep > 0.04) {
+    ctx.beginPath()
+    ctx.arc(cx, cy, outerR + 5, startAngle + 0.03, arcEnd - 0.03)
+    ctx.strokeStyle = `rgba(251,191,36,${0.5 + 0.3 * pulse})`
+    ctx.lineWidth = 3
+    ctx.setLineDash([])
+    ctx.stroke()
+  }
+
+  // Needle from center to mid of important arc
+  const needleEnd = outerR + 9
+  ctx.beginPath()
+  ctx.moveTo(cx, cy)
+  ctx.lineTo(cx + needleEnd * Math.cos(midAngle), cy + needleEnd * Math.sin(midAngle))
+  ctx.strokeStyle = `rgba(251,191,36,${0.35 + 0.25 * pulse})`
+  ctx.lineWidth = 1.5
+  ctx.setLineDash([3, 4])
+  ctx.stroke()
+  ctx.setLineDash([])
+
+  // Tip dot
+  const tx = cx + (outerR + 10) * Math.cos(midAngle)
+  const ty = cy + (outerR + 10) * Math.sin(midAngle)
+  ctx.beginPath()
+  ctx.arc(tx, ty, 3, 0, Math.PI * 2)
+  ctx.fillStyle = `rgba(251,191,36,${0.8 + 0.2 * pulse})`
+  ctx.fill()
+}
+
 // ─── Donut drawing ───────────────────────────────────────
 function drawDonut(
   ctx: CanvasRenderingContext2D,
@@ -109,7 +153,16 @@ function drawDonut(
     startAngle = endAngle
   }
 
-
+  // Second pass: draw important needles on top of all slices
+  startAngle = -Math.PI / 2
+  for (const slice of slices) {
+    const sweep = (slice.percent / 100) * Math.PI * 2
+    const ratio = slice.importantRatio ?? 0
+    if (ratio > 0) {
+      drawImportantNeedle(ctx, cx, cy, outerR, startAngle, sweep, ratio, time)
+    }
+    startAngle += sweep
+  }
 }
 
 // ─── Planet drawing ──────────────────────────────────────
@@ -377,9 +430,20 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
                         {s.category}
                       </span>
                     )}
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                      {formatEuro(s.amount)}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                        {formatEuro(s.amount)}
+                      </span>
+                      {(s.importantRatio ?? 0) > 0 && (
+                        <span
+                          className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
+                          style={{ backgroundColor: 'rgba(251,191,36,0.15)', color: '#f59e0b', border: '1px solid rgba(251,191,36,0.4)' }}
+                        >
+                          ⭐ {DASHBOARD.spesaImportante}
+                          {(s.importantRatio ?? 0) < 1 ? ` ${Math.round((s.importantRatio ?? 0) * 100)}%` : ''}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <span className="text-sm font-bold tabular-nums" style={{ color: s.color }}>
                     {s.percent.toFixed(1)}%

@@ -261,11 +261,23 @@ export function deleteTransactionsByGroupId(groupId: string) {
 
 export function updateTransactionsByGroupId(
   groupId: string,
-  patch: Pick<Transaction, 'type' | 'description' | 'amount' | 'category' | 'recurring' | 'recurringMonths'>,
+  patch: Pick<Transaction, 'type' | 'description' | 'amount' | 'category' | 'important' | 'recurring' | 'recurringMonths'>,
 ) {
   const all = loadTransactions().map((t) => {
     if (t.recurringGroupId !== groupId) return t
     return normalizeTransaction({ ...t, ...patch, updatedAt: new Date().toISOString() })
+  })
+  saveTransactions(all)
+}
+
+export function updateImportantByCategory(
+  category: string,
+  type: Transaction['type'],
+  important: boolean,
+) {
+  const all = loadTransactions().map((t) => {
+    if (t.category !== category || t.type !== type || !t.recurring) return t
+    return normalizeTransaction({ ...t, important, updatedAt: new Date().toISOString() })
   })
   saveTransactions(all)
 }

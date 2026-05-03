@@ -23,11 +23,13 @@ interface PlanetData {
   amount: number
   percent: number
   color: string
+  importantRatio: number
 }
 
 interface SolarSystemChartProps {
   transactions: Transaction[]
   onCategoryClick?: (canonicalKey: string) => void
+  sortMode?: 'amount' | 'important'
 }
 
 function formatEuro(amount: number) {
@@ -41,7 +43,7 @@ function hexToRgb(hex: string) {
   return { r, g, b }
 }
 
-function buildPlanets(transactions: Transaction[]): { planets: PlanetData[]; total: number } {
+function buildPlanets(transactions: Transaction[], sortMode: 'amount' | 'important' = 'amount'): { planets: PlanetData[]; total: number } {
   const expenses = transactions.filter((t) => t.type === 'uscita')
   if (expenses.length === 0) return { planets: [], total: 0 }
 
@@ -53,8 +55,20 @@ function buildPlanets(transactions: Transaction[]): { planets: PlanetData[]; tot
     byCategory.set(key, (byCategory.get(key) ?? 0) + tx.amount)
   }
 
+  // Track important amount per category
+  const importantByCategory = new Map<string, number>()
+  for (const tx of expenses) {
+    if (tx.important) {
+      const key = normalizeCategoryKey(tx.category, 'uscita')
+      importantByCategory.set(key, (importantByCategory.get(key) ?? 0) + tx.amount)
+    }
+  }
+
   const planets: PlanetData[] = [...byCategory.entries()]
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => sortMode === 'important'
+      ? (importantByCategory.get(b[0]) ?? 0) / b[1] - (importantByCategory.get(a[0]) ?? 0) / a[1] || b[1] - a[1]
+      : b[1] - a[1]
+    )
     .map(([canonicalKey, amount], i) => ({
       canonicalKey,
       category: translateCategory(canonicalKey, 'uscita'),
@@ -62,6 +76,7 @@ function buildPlanets(transactions: Transaction[]): { planets: PlanetData[]; tot
       amount,
       percent: Math.round((amount / total) * 100),
       color: PLANET_COLORS[i % PLANET_COLORS.length],
+      importantRatio: Math.min(1, (importantByCategory.get(canonicalKey) ?? 0) / amount),
     }))
 
   return { planets, total }
@@ -146,6 +161,26 @@ function drawSun(ctx: CanvasRenderingContext2D, cx: number, cy: number, radius: 
   ctx.fillText(formatEuro(total), cx, cy + 9)
 }
 
+// ─── Important orbit ring ────────────────────────────────
+function drawImportantRing(
+  ctx: CanvasRenderingContext2D,
+  cx: number, cy: number,
+  orbitR: number, importantRatio: number,
+  time: number,
+) {
+  const pulse = 0.5 + 0.5 * Math.sin(time * 2.5)
+  const alpha = 0.25 + 0.35 * pulse
+  // Partial arc: covers importantRatio of the full orbit, starting from top
+  const arcLen = Math.PI * 2 * importantRatio
+  ctx.beginPath()
+  ctx.arc(cx, cy, orbitR, -Math.PI / 2, -Math.PI / 2 + arcLen)
+  ctx.strokeStyle = `rgba(251,191,36,${alpha})`
+  ctx.lineWidth = 1.8
+  ctx.setLineDash([6, 5])
+  ctx.stroke()
+  ctx.setLineDash([])
+}
+
 // ─── Planet ──────────────────────────────────────────────
 function drawPlanet(
   ctx: CanvasRenderingContext2D,
@@ -155,6 +190,7 @@ function drawPlanet(
   icon: string, percent: number,
   time: number,
   direction: number,
+  importantRatio: number,
 ) {
   const px = cx + orbitR * Math.cos(angle)
   const py = cy + orbitR * Math.sin(angle)
@@ -227,11 +263,23 @@ function drawPlanet(
     ctx.fillText(`${percent}%`, px, py + planetR * 0.45)
   }
   ctx.textBaseline = 'alphabetic'
+
+  // Important: partial arc around planet proportional to importantRatio
+  if (importantRatio > 0) {
+    const pulse = 0.6 + 0.4 * Math.sin(time * 3)
+    const ringR = planetR + 3 + pulse * 2
+    const arcLen = Math.PI * 2 * importantRatio
+    ctx.beginPath()
+    ctx.arc(px, py, ringR, -Math.PI / 2, -Math.PI / 2 + arcLen)
+    ctx.strokeStyle = `rgba(251,191,36,${0.55 + 0.35 * pulse})`
+    ctx.lineWidth = 2
+    ctx.stroke()
+  }
 }
 
 // ─── Component ───────────────────────────────────────────
-function SolarSystemChart({ transactions, onCategoryClick }: SolarSystemChartProps) {
-  const { planets, total } = useMemo(() => buildPlanets(transactions), [transactions])
+function SolarSystemChart({ transactions, onCategoryClick, sortMode = 'amount' }: SolarSystemChartProps) {
+  const { planets, total } = useMemo(() => buildPlanets(transactions, sortMode), [transactions, sortMode])
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const animRef = useRef<number>(0)
@@ -301,12 +349,17 @@ function SolarSystemChart({ transactions, onCategoryClick }: SolarSystemChartPro
       // Sun
       drawSun(c, cx, cy, sunR, total, elapsed)
 
+      // Important orbit rings (drawn before planets so they appear below)
+      planets.forEach((planet, i) => {
+        if (planet.importantRatio > 0) drawImportantRing(c, cx, cy, orbitRadii[i], planet.importantRatio, elapsed)
+      })
+
       // Planets
       planets.forEach((planet, i) => {
         const baseAngle = (i * goldenAngle * Math.PI) / 180
         const angle = baseAngle + elapsed * speeds[i]
         const dir = speeds[i] >= 0 ? 1 : -1
-        drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(planet.percent), planet.color, planet.icon, planet.percent, elapsed, dir)
+        drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(planet.percent), planet.color, planet.icon, planet.percent, elapsed, dir, planet.importantRatio)
       })
 
       animRef.current = requestAnimationFrame(frame)
@@ -349,7 +402,7 @@ function SolarSystemChart({ transactions, onCategoryClick }: SolarSystemChartPro
             style={{ borderBottom: '1px solid var(--border)' }}
           >
             <MiniPlanet color={p.color} size={20} />
-            <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0">
               {onCategoryClick ? (
                 <button
                   className="block text-sm font-medium truncate text-left w-full"
@@ -363,9 +416,20 @@ function SolarSystemChart({ transactions, onCategoryClick }: SolarSystemChartPro
                   {p.icon} {p.category}
                 </span>
               )}
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                {formatEuro(p.amount)}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                  {formatEuro(p.amount)}
+                </span>
+                {p.importantRatio > 0 && (
+                  <span
+                    className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
+                    style={{ backgroundColor: 'rgba(251,191,36,0.15)', color: '#f59e0b', border: '1px solid rgba(251,191,36,0.4)' }}
+                  >
+                    ⭐ {DASHBOARD.spesaImportante}
+                    {p.importantRatio < 1 ? ` ${Math.round(p.importantRatio * 100)}%` : ''}
+                  </span>
+                )}
+              </div>
             </div>
             <span className="text-sm font-bold tabular-nums" style={{ color: p.color }}>
               {p.percent}%

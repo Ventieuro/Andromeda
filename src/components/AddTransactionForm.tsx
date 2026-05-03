@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { TransactionType, Transaction } from '../shared/types'
-import { generateId, addTransaction, updateTransaction, updateTransactionsByGroupId, loadCustomCategories, addCustomCategory } from '../shared/storage'
+import { generateId, addTransaction, updateTransaction, updateTransactionsByGroupId, updateImportantByCategory, loadCustomCategories, addCustomCategory } from '../shared/storage'
 import Mascot from './Mascot'
 import ReceiptScanner from './ReceiptScanner'
 import { FORM, normalizeCategoryKey, translateCategory, getCanonicalCategories } from '../shared/labels'
@@ -78,9 +78,19 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
         if (applyAll) {
           updateTransactionsByGroupId(editTransaction.recurringGroupId, {
             type, description: description.trim() || category,
-            amount: Number(amount), category, recurring,
+            amount: Number(amount), category, important, recurring,
             recurringMonths: recurring ? recurringMonths : 0,
           })
+        }
+      } else if (recurring && editTransaction.important !== important) {
+        // Nessun groupId ma transazione ricorrente: offri cascade per categoria
+        const applyAll = await showConfirm({
+          message: FORM.modificaRicorrenteScopeNoGroup,
+          confirmLabel: FORM.modificaTutte,
+          cancelLabel: FORM.modificaSoloQuesta,
+        })
+        if (applyAll) {
+          updateImportantByCategory(category, type, important)
         }
       }
       onSaved()

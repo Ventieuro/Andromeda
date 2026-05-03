@@ -25,6 +25,7 @@ interface Slice {
   percent: number
   color: string
   type: 'entrata' | 'uscita'
+  importantRatio?: number
 }
 
 interface ExpensePieChartProps {
@@ -46,9 +47,11 @@ function buildSlices(transactions: Transaction[]): Slice[] {
 
   // Expense slices — each is a portion of the income circle
   const byExpense = new Map<string, number>()
+  const importantByCategory = new Map<string, number>()
   for (const tx of expenseTx) {
     const key = normalizeCategoryKey(tx.category, 'uscita')
     byExpense.set(key, (byExpense.get(key) ?? 0) + tx.amount)
+    if (tx.important) importantByCategory.set(key, (importantByCategory.get(key) ?? 0) + tx.amount)
   }
 
   const expenseSlices: Slice[] = [...byExpense.entries()]
@@ -60,6 +63,7 @@ function buildSlices(transactions: Transaction[]): Slice[] {
       percent: Math.round((amount / base) * 1000) / 10,
       color: EXPENSE_COLORS[i % EXPENSE_COLORS.length],
       type: 'uscita' as const,
+      importantRatio: Math.min(1, (importantByCategory.get(canonicalKey) ?? 0) / amount),
     }))
 
   // Savings slice — the green remainder (income − expenses)
@@ -78,11 +82,24 @@ function buildSlices(transactions: Transaction[]): Slice[] {
 }
 
 function ExpensePieChart({ transactions, onCategoryClick, onViewChange }: ExpensePieChartProps) {
-  const slices = buildSlices(transactions)
+  const rawSlices = buildSlices(transactions)
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
   const [view, setView] = useState<'pie' | 'solar' | 'comet'>('pie')
+  const [sortMode, setSortMode] = useState<'amount' | 'important'>('amount')
   const { amountsVisible } = useAmounts()
+
+  const hasAnyImportant = rawSlices.some((s) => (s.importantRatio ?? 0) > 0)
+
+  const slices = sortMode === 'important'
+    ? [
+        // expense slices: important first (by ratio desc), then by amount desc; savings always last
+        ...rawSlices
+          .filter((s) => s.type === 'uscita')
+          .sort((a, b) => (b.importantRatio ?? 0) - (a.importantRatio ?? 0) || b.amount - a.amount),
+        ...rawSlices.filter((s) => s.type === 'entrata'),
+      ]
+    : rawSlices
 
   function changeView(v: 'pie' | 'solar' | 'comet') {
     setView(v)
@@ -142,6 +159,34 @@ function ExpensePieChart({ transactions, onCategoryClick, onViewChange }: Expens
         )}
       </div>
 
+      {/* Sort toggle — solo se ci sono spese importanti e vista pertinente */}
+      {slices.length > 0 && hasAnyImportant && view !== 'comet' && (
+        <div className="flex gap-1.5 mb-3">
+          <button
+            onClick={() => setSortMode('amount')}
+            className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
+            style={{
+              backgroundColor: sortMode === 'amount' ? 'var(--accent-light)' : 'var(--bg-secondary)',
+              color: sortMode === 'amount' ? 'var(--accent)' : 'var(--text-muted)',
+              border: `1px solid ${sortMode === 'amount' ? 'var(--accent)' : 'var(--border)'}`,
+            }}
+          >
+            📊 {DASHBOARD.ordinaPerImporto}
+          </button>
+          <button
+            onClick={() => setSortMode('important')}
+            className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
+            style={{
+              backgroundColor: sortMode === 'important' ? 'rgba(251,191,36,0.15)' : 'var(--bg-secondary)',
+              color: sortMode === 'important' ? '#f59e0b' : 'var(--text-muted)',
+              border: `1px solid ${sortMode === 'important' ? 'rgba(251,191,36,0.6)' : 'var(--border)'}`,
+            }}
+          >
+            ⭐ {DASHBOARD.ordinaPerImportante}
+          </button>
+        </div>
+      )}
+
       {slices.length === 0 ? (
         <p className="text-sm text-center py-4" style={{ color: 'var(--text-muted)' }}>
           {DASHBOARD.nessunGrafico}
@@ -149,7 +194,7 @@ function ExpensePieChart({ transactions, onCategoryClick, onViewChange }: Expens
       ) : view === 'comet' ? (
         <CometChart />
       ) : view === 'solar' ? (
-        <SolarSystemChart transactions={transactions} onCategoryClick={onCategoryClick} />
+        <SolarSystemChart transactions={transactions} onCategoryClick={onCategoryClick} sortMode={sortMode} />
       ) : (
         <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} size={280} hideIncome={!amountsVisible} onCategoryClick={onCategoryClick} />
       )}

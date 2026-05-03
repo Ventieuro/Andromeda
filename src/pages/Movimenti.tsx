@@ -442,6 +442,7 @@ function Movimenti() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {tx.description || translateCategory(tx.category)}
+                  {tx.important && <span style={{ marginLeft: '5px', fontSize: '12px' }}>⭐</span>}
                 </p>
                 <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
                   {translateCategory(tx.category)} · {formatDate(tx.date)}
