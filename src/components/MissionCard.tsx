@@ -161,6 +161,45 @@ const STYLES = `
 .mc-star-down3   { animation: starScrollDown 4s linear infinite 1.0s; }
 .mc-countdown    { animation: countdownPulse 0.9s ease-in-out infinite; }
 .mc-btn-glow     { animation: btnGlow 1.2s ease-in-out infinite; }
+@keyframes flameAppear {
+  0%   { transform: scaleY(0.05) scaleX(0.3); opacity: 0; }
+  35%  { opacity: 0.75; }
+  100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+}
+@keyframes groundFireBurst {
+  0%   { transform: scale(0.05); opacity: 0; }
+  20%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.55; }
+}
+@keyframes smokeRiseL {
+  0%   { transform: translate(0,0) scale(0.2); opacity: 0; }
+  18%  { opacity: 0.65; }
+  100% { transform: translate(-38px,-28px) scale(2.2); opacity: 0; }
+}
+@keyframes smokeRiseR {
+  0%   { transform: translate(0,0) scale(0.2); opacity: 0; }
+  18%  { opacity: 0.65; }
+  100% { transform: translate(38px,-28px) scale(2.2); opacity: 0; }
+}
+@keyframes smokeRiseC {
+  0%   { transform: scale(0.15); opacity: 0; }
+  25%  { opacity: 0.55; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+@keyframes textFadeIn {
+  0%   { opacity: 0; transform: scale(0.75); }
+  60%  { transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.mc-flame-appear { animation: flameAppear 0.85s ease-out forwards; transform-origin: 100px 175px; }
+.mc-ground-fire  { animation: groundFireBurst 0.65s ease-out forwards; transform-origin: 100px 175px; }
+.mc-smoke-l      { animation: smokeRiseL 1.3s ease-out infinite; transform-origin: 72px 175px; }
+.mc-smoke-r      { animation: smokeRiseR 1.3s ease-out infinite 0.18s; transform-origin: 128px 175px; }
+.mc-smoke-c      { animation: smokeRiseC 1.1s ease-out infinite 0.45s; transform-origin: 100px 176px; }
+.mc-smoke-l2     { animation: smokeRiseL 1.3s ease-out infinite 0.65s; transform-origin: 60px 175px; }
+.mc-smoke-r2     { animation: smokeRiseR 1.3s ease-out infinite 0.8s; transform-origin: 140px 175px; }
+.mc-text-ignite  { animation: textFadeIn 0.45s ease-out forwards; transform-origin: 100px 22px; }
+.mc-text-liftoff { animation: textFadeIn 0.4s ease-out forwards; transform-origin: 100px 22px; }
 `
 
 // ─── Launch Pad ───────────────────────────────────────────
@@ -252,9 +291,10 @@ interface ShipProps {
   previewPiece: PieceKey | null
   showFlames?: boolean
   bigFlames?: boolean
+  igniting?: boolean
 }
 
-function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, showFlames = false, bigFlames = false }: ShipProps) {
+function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, showFlames = false, bigFlames = false, igniting = false }: ShipProps) {
   const isUnlocked = (piece: PieceKey) => pct >= THRESHOLDS[piece]
 
   function getColor(piece: PieceKey): string {
@@ -296,12 +336,12 @@ function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, sho
         <rect x="78" y="155" width="8" height="14" rx="4" fill={engineColor} opacity="0.8" />
         <rect x="114" y="155" width="8" height="14" rx="4" fill={engineColor} opacity="0.8" />
         {showFlames && (
-          <>
+          <g className={igniting ? 'mc-flame-appear' : ''}>
             <ellipse cx="90" cy="185" rx={bigFlames ? 10 : 6} ry={bigFlames ? 20 : 10} fill="#ff8800" className={flameAClass} style={{ transformOrigin: '90px 175px' }}/>
             <ellipse cx="110" cy="185" rx={bigFlames ? 9 : 5} ry={bigFlames ? 17 : 8} fill="#ffcc00" className={flameBClass} style={{ transformOrigin: '110px 175px' }}/>
             <ellipse cx="100" cy="183" rx={bigFlames ? 7 : 4} ry={bigFlames ? 15 : 7} fill="#fff5aa" className={flameAClass} style={{ transformOrigin: '100px 175px' }}/>
             <ellipse cx="100" cy="182" rx={bigFlames ? 26 : 14} ry={bigFlames ? 12 : 6} fill="#ff6600" opacity="0.25"/>
-          </>
+          </g>
         )}
       </g>
 
@@ -418,7 +458,8 @@ export default function MissionCard({
       return raw ? (JSON.parse(raw) as PieceColors) : { ...DEFAULT_COLORS }
     } catch { return { ...DEFAULT_COLORS } }
   })
-  const [pendingPiece, setPendingPiece] = useState<PieceKey | null>(null)
+  const [pendingQueue, setPendingQueue] = useState<PieceKey[]>([])
+  const pendingPiece = pendingQueue[0] ?? null
   const [selectedColor, setSelectedColor] = useState<string>(COLORS[0])
   const [confirmedPieces, setConfirmedPieces] = useState<Set<PieceKey>>(new Set())
   const [newlyUnlocked, setNewlyUnlocked] = useState<PieceKey | null>(null)
@@ -429,11 +470,13 @@ export default function MissionCard({
     return pct >= 100 ? 'ready' : 'idle'
   })
   const [countdown, setCountdown] = useState(10)
+  const [liftOff, setLiftOff] = useState(false)
 
   const prevPct = useRef<number>(pct)
   const flashTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const cdInterval = useRef<ReturnType<typeof setInterval> | null>(null)
   const ignTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const liftOffTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Detect newly unlocked pieces + 100% reached
   useEffect(() => {
@@ -442,8 +485,11 @@ export default function MissionCard({
       const t = THRESHOLDS[piece]
       if (t === 0) continue
       if (prev < t && pct >= t && !confirmedPieces.has(piece)) {
-        setPendingPiece(piece)
-        setSelectedColor(COLORS[0])
+        setPendingQueue(q => {
+          if (q.includes(piece)) return q
+          if (q.length === 0) setSelectedColor(COLORS[0])
+          return [...q, piece]
+        })
         setNewlyUnlocked(piece)
         if (flashTimeout.current) clearTimeout(flashTimeout.current)
         flashTimeout.current = setTimeout(() => setNewlyUnlocked(null), 700)
@@ -469,11 +515,15 @@ export default function MissionCard({
         clearInterval(cdInterval.current!)
         cdInterval.current = null
         setLaunchPhase('ignition')
+        setLiftOff(false)
+        if (liftOffTimeout.current) clearTimeout(liftOffTimeout.current)
+        liftOffTimeout.current = setTimeout(() => setLiftOff(true), 1000)
         if (ignTimeout.current) clearTimeout(ignTimeout.current)
         ignTimeout.current = setTimeout(() => {
           setLaunchPhase('travel')
-          try { localStorage.setItem(`astrocoin-mc-launched-${name}`, 'true') } catch { setLaunchPhase('travel') }
-        }, 4300)
+          setLiftOff(false)
+          try { localStorage.setItem(`astrocoin-mc-launched-${name}`, 'true') } catch { /* ignore */ }
+        }, 7300)
       }
     }, 1000)
   }
@@ -484,7 +534,9 @@ export default function MissionCard({
     setColors(newColors)
     try { localStorage.setItem(`astrocoin-mc-colors-${name}`, JSON.stringify(newColors)) } catch { setColors(newColors) }
     setConfirmedPieces((s) => new Set([...s, pendingPiece!]))
-    setPendingPiece(null)
+    const nextQueue = pendingQueue.slice(1)
+    setPendingQueue(nextQueue)
+    setSelectedColor(nextQueue[0] ? colors[nextQueue[0]] : COLORS[0])
   }
 
   // Inject CSS
@@ -501,6 +553,7 @@ export default function MissionCard({
       if (flashTimeout.current) clearTimeout(flashTimeout.current)
       if (cdInterval.current) clearInterval(cdInterval.current)
       if (ignTimeout.current) clearTimeout(ignTimeout.current)
+      if (liftOffTimeout.current) clearTimeout(liftOffTimeout.current)
     }
   }, [])
 
@@ -541,7 +594,7 @@ export default function MissionCard({
           <g style={(inTravel
               ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px' }
               : inLaunchSequence
-              ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px', transition: 'transform 3s 1s cubic-bezier(0.3,0,0.1,1)' }
+              ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px', transition: 'transform 3s 3s cubic-bezier(0.3,0,0.1,1)' }
               : { transform: 'rotate(0deg)', transformOrigin: '100px 105px' }
           )}>
             <g className={(inLaunchSequence || inTravel) ? 'mc-star-down' : ''}>
@@ -555,12 +608,24 @@ export default function MissionCard({
             </g>
           </g>
 
-          {/* Pad + ground — slides down during ignition, hidden in travel */}
+          {/* Pad + ground + fire + smoke — everything slides down on liftOff */}
           {!inTravel && (
-            <g className={inLaunchSequence ? 'mc-pad-down' : ''}>
+            <g className={(inLaunchSequence && liftOff) ? 'mc-pad-down' : ''}>
               <LaunchPad showOpenArms={inLaunchSequence} />
               <rect x="0" y="177" width="200" height="33" fill="#0d1120"/>
               <line x1="0" y1="177" x2="200" y2="177" stroke="#1e2540" strokeWidth="1.5"/>
+              {/* Ground fire + smoke — inside pad group so they slide down with the terrain */}
+              {inLaunchSequence && (
+                <g>
+                  <ellipse cx="100" cy="176" rx="44" ry="7" fill="#ff5500" className="mc-ground-fire"/>
+                  <ellipse cx="100" cy="175" rx="26" ry="4" fill="#ffaa00" className="mc-ground-fire"/>
+                  <ellipse cx="72" cy="175" rx="13" ry="9" fill="#9aa4bb" className="mc-smoke-l"/>
+                  <ellipse cx="128" cy="175" rx="13" ry="9" fill="#9aa4bb" className="mc-smoke-r"/>
+                  <ellipse cx="100" cy="177" rx="11" ry="7" fill="#b0b8d0" className="mc-smoke-c"/>
+                  <ellipse cx="58" cy="175" rx="9" ry="6" fill="#8899aa" className="mc-smoke-l2"/>
+                  <ellipse cx="142" cy="175" rx="9" ry="6" fill="#8899aa" className="mc-smoke-r2"/>
+                </g>
+              )}
             </g>
           )}
 
@@ -585,7 +650,7 @@ export default function MissionCard({
           <g style={(inTravel
               ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px' }
               : inLaunchSequence
-              ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px', transition: 'transform 3s 1s cubic-bezier(0.3,0,0.1,1)' }
+              ? { transform: 'rotate(90deg)', transformOrigin: '100px 105px', transition: 'transform 3s 3s cubic-bezier(0.3,0,0.1,1)' }
               : { transform: 'rotate(0deg)', transformOrigin: '100px 105px' }
           )}>
             <g className={inTravel ? 'mc-ship-float' : ''}>
@@ -596,7 +661,8 @@ export default function MissionCard({
                 previewColor={pendingPiece ? selectedColor : null}
                 previewPiece={pendingPiece}
                 showFlames={inLaunchSequence || inTravel}
-                bigFlames={inLaunchSequence}
+                bigFlames={inLaunchSequence && liftOff}
+                igniting={inLaunchSequence && !liftOff}
               />
             </g>
           </g>
@@ -604,6 +670,14 @@ export default function MissionCard({
           {/* Travel label */}
           {inTravel && (
             <text x="100" y="202" textAnchor="middle" fill="#534AB7" fontSize="7" fontFamily="monospace" letterSpacing="2" opacity="0.9">IN VIAGGIO NELLO SPAZIO</text>
+          )}
+
+          {/* IGNITION → LIFT OFF overlay */}
+          {inLaunchSequence && !liftOff && (
+            <text key="ign" x="100" y="22" textAnchor="middle" fill="#ff7722" fontSize="9" fontFamily="monospace" letterSpacing="4" fontWeight="700" opacity="0.95" className="mc-text-ignite">IGNITION</text>
+          )}
+          {inLaunchSequence && liftOff && (
+            <text key="lft" x="100" y="22" textAnchor="middle" fill="#f5d060" fontSize="9" fontFamily="monospace" letterSpacing="4" fontWeight="700" opacity="0.95" className="mc-text-liftoff">LIFT OFF</text>
           )}
 
         </svg>
@@ -675,22 +749,32 @@ export default function MissionCard({
         </div>
       )}
 
-      {/* ─── IGNITION status ─── */}
-      {launchPhase === 'ignition' && (
+      {/* ─── IGNITION / LIFT OFF status ─── */}
+      {launchPhase === 'ignition' && !liftOff && (
         <div style={{ textAlign: 'center', marginBottom: '14px' }}>
-          <div style={{ fontSize: '13px', color: '#ff8800', fontWeight: 700, letterSpacing: '2px' }}>
-            🔥 ACCENSIONE MOTORI...
+          <div style={{ fontSize: '13px', color: '#ff6600', fontWeight: 700, letterSpacing: '3px', fontFamily: 'monospace' }}>
+            🔥 IGNITION
+          </div>
+        </div>
+      )}
+      {launchPhase === 'ignition' && liftOff && (
+        <div style={{ textAlign: 'center', marginBottom: '14px' }}>
+          <div style={{ fontSize: '13px', color: '#f5d060', fontWeight: 700, letterSpacing: '3px', fontFamily: 'monospace' }}>
+            🚀 LIFT OFF
           </div>
         </div>
       )}
 
       {/* ─── Color Picker (unlock box) ─── */}
-      {pendingPiece && launchPhase === 'idle' && (
+      {pendingPiece && (launchPhase === 'idle' || launchPhase === 'ready') && (
         <div style={{
           background: '#1a1f38', border: '1px solid #2a3060',
           borderRadius: '12px', padding: '14px', marginBottom: '12px',
         }}>
-          <div style={{ fontSize: '13px', fontWeight: 700, color: '#f5d060', marginBottom: '4px' }}>★ Nuovo pezzo sbloccato!</div>
+          {!confirmedPieces.has(pendingPiece)
+            ? <div style={{ fontSize: '13px', fontWeight: 700, color: '#f5d060', marginBottom: '4px' }}>★ Nuovo pezzo sbloccato!</div>
+            : <div style={{ fontSize: '13px', fontWeight: 700, color: '#8899cc', marginBottom: '4px' }}>✎ Modifica colore</div>
+          }
           <div style={{ fontSize: '12px', color: '#8899cc', marginBottom: '10px' }}>
             Scegli il colore {pendingPiece === 'wings' || pendingPiece === 'nose' ? 'delle' : 'del'} {PIECE_NAMES_IT[pendingPiece]}:
           </div>
@@ -758,14 +842,20 @@ export default function MissionCard({
         }}>
           {PIECE_ORDER.map((piece) => {
             const unlocked = pct >= THRESHOLDS[piece]
+            const isActive = pendingPiece === piece
             return (
               <div key={piece} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 {unlocked ? (
-                  <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: colors[piece], boxShadow: `0 0 5px ${colors[piece]}`, flexShrink: 0 }}/>
+                  <div style={{
+                    width: '14px', height: '14px', borderRadius: '50%',
+                    background: colors[piece],
+                    boxShadow: isActive ? `0 0 0 2px #fff, 0 0 8px ${colors[piece]}` : `0 0 5px ${colors[piece]}`,
+                    flexShrink: 0,
+                  }}/>
                 ) : (
                   <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '1.5px dashed #3a4460', flexShrink: 0 }}/>
                 )}
-                <span style={{ fontSize: '11px', color: unlocked ? '#8899cc' : '#3a4460' }}>
+                <span style={{ fontSize: '11px', color: unlocked ? (isActive ? '#e0e6ff' : '#8899cc') : '#3a4460' }}>
                   {unlocked ? PIECE_NAMES_IT[piece] : '?'}
                 </span>
               </div>

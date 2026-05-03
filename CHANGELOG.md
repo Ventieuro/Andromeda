@@ -6,6 +6,32 @@
 
 ## [03/05/2026] — Sessione 16
 
+## [03/05/2026] — Sessione 16
+
+## [03/05/2026] — Sessione 16
+
+### TASK-106 (fix): MissionCard — color picker sempre accessibile
+**File modificati:** `src/components/MissionCard.tsx`, `package.json`
+
+- ✅ Picker visibile anche in fase `ready` (non solo `idle`) → si può scegliere il colore anche dopo aver raggiunto 100%
+- ✅ Puntini colore in bassa barra cliccabili → riaprono picker pre-riempito col colore attuale
+- ✅ Titolo picker smart: "★ Nuovo pezzo sbloccato!" prima conferma, "✎ Modifica colore" per ri-edit
+- ✅ Dot attivo mostra ring bianco per feedback visivo
+- ✅ Versione bump → `0.7.10`
+
+---
+
+### TASK-105 (fix): MissionCard — fuoco+fumo scendono col terreno, rotazione ritardata
+**File modificati:** `src/components/MissionCard.tsx`, `ANIMATIONS.md` (creato), `package.json`
+
+- ✅ **Fix 1**: fuoco+fumo spostati DENTRO `<g className="mc-pad-down">` → scendono con terreno e pad al liftOff
+- ✅ **Fix 2**: CSS transition delay rotazione `1s` → `3s` (stelle + nave), `ignTimeout` 5300→7300ms
+- ✅ **Nuova timeline**: t=0 IGNITION, t=1s LIFT OFF + pad scende, t=3s rotazione inizia, t=6s rotazione completa, t=7.3s travel
+- ✅ **ANIMATIONS.md** creato: documento di riferimento con tutti i keyframe, timing, variabili di stato e istruzioni per modifiche future
+- ✅ Versione bump → `0.7.9`
+
+---
+
 ### TASK-104 (fix): MissionCard — wobble finale + re-animazione su refresh
 **File modificati:** `src/components/MissionCard.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
 
