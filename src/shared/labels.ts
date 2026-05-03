@@ -331,6 +331,56 @@ const STRINGS = {
     ordinaPrezzoDesc:  t('Prezzo (decrescente)',            'Price (high to low)',         'Precio (descendente)'),
   },
 
+  // ── Missioni ───────────────────────────────────────────
+  missioni: {
+    titolo:           t('Missioni',                         'Missions',                    'Misiones'),
+    nessunObiettivo:  t('Nessun obiettivo ancora.',         'No goals yet.',               'Ningún objetivo aún.'),
+    aggiungi:         t('Nuovo obiettivo',                  'New goal',                    'Nuevo objetivo'),
+    modifica:         t('Modifica',                         'Edit',                        'Editar'),
+    elimina:          t('Elimina',                          'Delete',                      'Eliminar'),
+    eliminaConferma:  tf(
+      (n: string) => `Eliminare l'obiettivo "${n}"?`,
+      (n: string) => `Delete goal "${n}"?`,
+      (n: string) => `¿Eliminar el objetivo "${n}"?`,
+    ),
+    salva:            t('Salva',                            'Save',                        'Guardar'),
+    annulla:          t('Annulla',                          'Cancel',                      'Cancelar'),
+    nome:             t('Nome obiettivo',                   'Goal name',                   'Nombre del objetivo'),
+    emoji:            t('Emoji',                            'Emoji',                       'Emoji'),
+    modalita:         t('Modalità',                         'Mode',                        'Modo'),
+    modMensile:       t('Risparmio mensile fisso',          'Fixed monthly saving',        'Ahorro mensual fijo'),
+    modData:          t('Raggiungi entro una data',         'Reach by a date',             'Alcanzar antes de una fecha'),
+    importoMensile:   t('Importo al mese (€)',              'Monthly amount (€)',          'Importe mensual (€)'),
+    importoTotale:    t('Importo totale (€)',               'Total amount (€)',            'Importe total (€)'),
+    dataObiet:        t('Data obiettivo',                   'Target date',                 'Fecha objetivo'),
+    giaRisparmiato:   t('Già risparmiato (€)',              'Already saved (€)',           'Ya ahorrado (€)'),
+    aggiungiRisparmio: t('+ Aggiungi risparmio',            '+ Add savings',               '+ Añadir ahorro'),
+    aggiornaSaved:    t('Importo da aggiungere (€)',        'Amount to add (€)',           'Importe a añadir (€)'),
+    progressoLabel:   tf(
+      (a: string, t: string) => `${a} di ${t}`,
+      (a: string, t: string) => `${a} of ${t}`,
+      (a: string, t: string) => `${a} de ${t}`,
+    ),
+    mensileCalc:      tf(
+      (a: string) => `${a}/mese`,
+      (a: string) => `${a}/mo`,
+      (a: string) => `${a}/mes`,
+    ),
+    mesiMancanti:     tf(
+      (n: number) => `${n} mes${n === 1 ? 'e' : 'i'} al traguardo`,
+      (n: number) => `${n} month${n === 1 ? '' : 's'} to go`,
+      (n: number) => `${n} mes${n === 1 ? '' : 'es'} restante${n === 1 ? '' : 's'}`,
+    ),
+    completato:       t('🎉 Obiettivo raggiunto!',          '🎉 Goal reached!',            '🎉 ¡Objetivo alcanzado!'),
+    scaduto:          t('⚠️ Data superata',                 '⚠️ Date passed',              '⚠️ Fecha superada'),
+    entro:            tf(
+      (d: string) => `Entro il ${d}`,
+      (d: string) => `By ${d}`,
+      (d: string) => `Antes del ${d}`,
+    ),
+    suggerimento:     t('Gli obiettivi di risparmio ti aiutano a pianificare le spese future.', 'Savings goals help you plan future expenses.', 'Los objetivos de ahorro te ayudan a planificar gastos futuros.'),
+  },
+
   // ── Settings ───────────────────────────────────────────
   settings: {
     impostazioni:      t('Configurazioni',               'Settings',                    'Configuración'),
@@ -596,3 +646,4 @@ export const AUTO_BACKUP: Labels['autoBackup'] = localize(STRINGS.autoBackup)
 export const OCR:         Labels['ocr']         = localize(STRINGS.ocr)
 export const RECEIPT_DETAIL: Labels['receiptDetail'] = localize(STRINGS.receiptDetail)
 export const PRODOTTI: Labels['prodotti'] = localize(STRINGS.prodotti)
+export const MISSIONI: Labels['missioni'] = localize(STRINGS.missioni)

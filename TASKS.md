@@ -38,6 +38,14 @@
 
 ## Completati
 
+### ✅ TASK-095 — Sezione Missioni: obiettivi di risparmio (03/05/2026)
+- [x] `SavingsGoal` interface aggiunta in `types.ts`
+- [x] CRUD (`loadGoals`, `saveGoals`, `addGoal`, `updateGoal`, `deleteGoal`) in `storage.ts`
+- [x] Label `missioni` (IT/EN/ES) + export `MISSIONI` in `labels.ts`
+- [x] `Missions.tsx` implementato con GoalForm + GoalCard + FAB
+- [x] Modalità "mensile fisso" e "obiettivo entro data" con calcolo rata mensile automatico
+- [x] Versione bump → `0.7.0`, deploy ✅
+
 ### ✅ TASK-094 — SpaceDonutChart: indicatore spese importanti + fix cascade (03/05/2026)
 - [x] **Bug fix:** `updateTransactionsByGroupId` ora include `important` nel patch (storage.ts + form)
 - [x] `SliceData` in SpaceDonutChart arricchita con `hasImportant?: boolean`

@@ -1,4 +1,4 @@
-import type { Transaction, AppSettings, ProductEntry } from './types'
+import type { Transaction, AppSettings, ProductEntry, SavingsGoal } from './types'
 import { normalizeCategoryKey } from './labels'
 
 const STORAGE_KEY = 'hermes-transactions'
@@ -7,6 +7,7 @@ const CUSTOM_CAT_KEY = 'hermes-custom-categories'
 const CUSTOM_ICONS_KEY = 'hermes-custom-icons'
 const NOTIFICATIONS_KEY = 'hermes-notifications'
 const PRODUCTS_KEY = 'hermes-products'
+const GOALS_KEY = 'hermes-goals'
 
 const QR_TRANSFER_PREFIX = 'hermes-xfer-session-'
 const QR_TRANSFER_READY_KEY = 'hermes-xfer-ready-payload'
@@ -22,6 +23,7 @@ const MANAGED_KEYS = [
   CUSTOM_ICONS_KEY,
   NOTIFICATIONS_KEY,
   PRODUCTS_KEY,
+  GOALS_KEY,
 ] as const
 
 type ManagedKey = (typeof MANAGED_KEYS)[number]
@@ -369,6 +371,42 @@ export function loadProducts(): ProductEntry[] {
 
 export function saveProducts(products: ProductEntry[]) {
   setManagedItem(PRODUCTS_KEY, JSON.stringify(products))
+}
+
+// ─── Obiettivi di Risparmio ──────────────────────────────
+
+export function loadGoals(): SavingsGoal[] {
+  try {
+    const raw = getManagedItem(GOALS_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed as SavingsGoal[]
+  } catch {
+    return []
+  }
+}
+
+export function saveGoals(goals: SavingsGoal[]) {
+  setManagedItem(GOALS_KEY, JSON.stringify(goals))
+}
+
+export function addGoal(goal: Omit<SavingsGoal, 'id' | 'createdAt' | 'updatedAt'>): SavingsGoal {
+  const now = new Date().toISOString()
+  const full: SavingsGoal = { ...goal, id: generateId(), createdAt: now, updatedAt: now }
+  saveGoals([...loadGoals(), full])
+  return full
+}
+
+export function updateGoal(updated: SavingsGoal) {
+  const goals = loadGoals().map((g) =>
+    g.id === updated.id ? { ...updated, updatedAt: new Date().toISOString() } : g
+  )
+  saveGoals(goals)
+}
+
+export function deleteGoal(id: string) {
+  saveGoals(loadGoals().filter((g) => g.id !== id))
 }
 
 /**

@@ -48,6 +48,23 @@ export interface AppSettings {
   userName: string
 }
 
+export interface SavingsGoal {
+  id: string
+  name: string
+  emoji: string
+  /** Totale da raggiungere (opzionale) */
+  targetAmount?: number
+  /** Data obiettivo ISO yyyy-mm-dd (opzionale) */
+  targetDate?: string
+  /** Risparmio mensile fisso impostato dall'utente */
+  monthlyAmount?: number
+  /** Quanto già messo da parte */
+  savedAmount: number
+  createdAt: string
+  updatedAt: string
+}
+
+
 // Le categorie sono ora in src/shared/labels.ts → CATEGORIE
 import { CATEGORIE } from './labels'
 export const CATEGORIES = CATEGORIE

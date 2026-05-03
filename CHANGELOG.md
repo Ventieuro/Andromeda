@@ -4,6 +4,23 @@
 
 ---
 
+## [03/05/2026] — Sessione 14
+
+### TASK-095: Sezione Missioni — obiettivi di risparmio
+**File modificati:** `src/shared/types.ts`, `src/shared/storage.ts`, `src/shared/labels.ts`, `src/pages/Missions.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ **types.ts:** aggiunta interfaccia `SavingsGoal` (id, name, emoji, targetAmount, targetDate, monthlyAmount, savedAmount, createdAt, updatedAt)
+- ✅ **storage.ts:** GOALS_KEY + MANAGED_KEYS + `loadGoals`, `saveGoals`, `addGoal`, `updateGoal`, `deleteGoal`
+- ✅ **labels.ts:** sezione `missioni` con 25 label IT/EN/ES + export `MISSIONI`
+- ✅ **Missions.tsx:** pagina completa con `GoalForm` (bottom sheet), `GoalCard` (progress bar + info), FAB
+- ✅ Modalità "mensile fisso": inserisci quanto vuoi risparmiare al mese (importo totale opzionale)
+- ✅ Modalità "obiettivo entro data": inserisci totale + data, l'app calcola rata mensile automatica
+- ✅ "Aggiungi risparmio" per incrementare `savedAmount` a ogni obiettivo
+- ✅ Conferma eliminazione tramite `showConfirm`, prompt risparmio tramite `showPrompt`
+- ✅ v0.7.0 — minor bump (nuova feature)
+
+---
+
 ## [03/05/2026] — Sessione 13
 
 ### TASK-094: SpaceDonutChart — indicatore spese importanti + bug fix cascade
