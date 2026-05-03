@@ -273,10 +273,11 @@ export function updateTransactionsByGroupId(
 export function updateImportantByCategory(
   category: string,
   type: Transaction['type'],
+  description: string,
   important: boolean,
 ) {
   const all = loadTransactions().map((t) => {
-    if (t.category !== category || t.type !== type || !t.recurring) return t
+    if (t.category !== category || t.type !== type || t.description !== description || !t.recurring) return t
     return normalizeTransaction({ ...t, important, updatedAt: new Date().toISOString() })
   })
   saveTransactions(all)

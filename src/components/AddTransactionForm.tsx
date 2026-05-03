@@ -90,7 +90,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
           cancelLabel: FORM.modificaSoloQuesta,
         })
         if (applyAll) {
-          updateImportantByCategory(category, type, important)
+          updateImportantByCategory(category, type, description.trim() || category, important)
         }
       }
       onSaved()

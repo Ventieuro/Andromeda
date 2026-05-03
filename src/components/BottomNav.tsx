@@ -24,10 +24,12 @@ function ListIcon() {
   )
 }
 
-function FolderIcon() {
+function TargetIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z" />
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
     </svg>
   )
 }
@@ -115,21 +117,21 @@ function BottomNav() {
           {/* Spacer for + button slot */}
           <div style={{ flex: 1, flexShrink: 0 }} aria-hidden="true" />
 
-          {/* Categorie */}
+          {/* Missioni */}
           <Link
-            to="/categories"
+            to="/missions"
             style={{
               flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
               padding: '4px 0', textDecoration: 'none',
-              color: isActive('/categories') ? 'var(--accent)' : 'var(--nav-text)',
+              color: isActive('/missions') ? 'var(--accent)' : 'var(--nav-text)',
               transition: 'color 0.2s',
             }}
-            title={LAYOUT.navCategories}
+            title={LAYOUT.navMissioni}
           >
-            <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/categories') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
-              <FolderIcon />
+            <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/missions') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
+              <TargetIcon />
             </div>
-            <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navCategories}</span>
+            <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navMissioni}</span>
           </Link>
 
           {/* Impostazioni */}
@@ -138,12 +140,12 @@ function BottomNav() {
             style={{
               flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
               padding: '4px 0', textDecoration: 'none',
-              color: isActive('/settings') ? 'var(--accent)' : 'var(--nav-text)',
+              color: location.pathname.startsWith('/settings') ? 'var(--accent)' : 'var(--nav-text)',
               transition: 'color 0.2s',
             }}
             title={LAYOUT.navSettings}
           >
-            <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/settings') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
+            <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: location.pathname.startsWith('/settings') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
               <SettingsIcon />
             </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navSettings}</span>

@@ -46,7 +46,8 @@ const STRINGS = {
     navHome:        t('Home',         'Home',          'Inicio'),
     navCategories:  t('Categorie',    'Categories',    'Categorias'),
     navMovimenti:   t('Movimenti',    'Transactions',  'Movimientos'),
-    navSettings:    t('Impostazioni', 'Settings',      'Configuracion'),
+    navSettings:    t('Configurazioni', 'Settings',      'Configuración'),
+    navMissioni:    t('Missioni',     'Missions',      'Misiones'),
     navAdd:         t('Aggiungi',     'Add',           'Agregar'),
     nascondiImporti: t('Nascondi importi', 'Hide amounts', 'Ocultar importes'),
     mostraImporti:   t('Mostra importi',   'Show amounts',  'Mostrar importes'),
@@ -332,7 +333,7 @@ const STRINGS = {
 
   // ── Settings ───────────────────────────────────────────
   settings: {
-    impostazioni:      t('Impostazioni',                  'Settings',                    'Configuración'),
+    impostazioni:      t('Configurazioni',               'Settings',                    'Configuración'),
     tema:              t('Tema',                         'Theme',                       'Tema'),
     darkMode:          t('Spazio',                       'Space',                       'Espacio'),
     lightMode:         t('NASA',                         'NASA',                        'NASA'),
@@ -373,6 +374,9 @@ const STRINGS = {
     codiceCopiato:     t('✅ Codice copiato',             '✅ Code copied',                 '✅ Codigo copiado'),
     codicePrompt:      t('Inserisci la password del codice:', 'Enter code password:',      'Ingresa la contraseña del codigo:'),
     spazioLocaleTitolo: t('Spazio locale',                 'Local storage',                 'Espacio local'),
+    sicurezza:          t('Sicurezza',                    'Security',                      'Seguridad'),
+    esportaVoce:        t('Esporta Dati',                 'Export Data',                   'Exportar datos'),
+    backupVoce:         t('Backup Automatico',            'Auto Backup',                   'Copia automática'),
     spazioLocaleDettaglio: tf(
       (used: string, max: string, pct: number) => `Usato ${used} su circa ${max} (${pct}%)`,
       (used: string, max: string, pct: number) => `Using ${used} out of about ${max} (${pct}%)`,

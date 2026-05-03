@@ -75,35 +75,25 @@ function drawImportantNeedle(
   startAngle: number, sweep: number, importantRatio: number,
   time: number,
 ) {
-  const importantSweep = sweep * importantRatio
+  // Arc = fixed max (36°) × importantRatio, capped to slice sweep so it never overflows
+  const importantSweep = Math.min(Math.PI / 5 * importantRatio, sweep)
+  if (importantSweep <= 0.04) return
+
   const arcEnd = startAngle + importantSweep
   const midAngle = startAngle + importantSweep / 2
   const pulse = 0.5 + 0.5 * Math.sin(time * 2.5)
 
-  // Partial outer arc — only the important portion of the slice
-  if (importantSweep > 0.04) {
-    ctx.beginPath()
-    ctx.arc(cx, cy, outerR + 5, startAngle + 0.03, arcEnd - 0.03)
-    ctx.strokeStyle = `rgba(251,191,36,${0.5 + 0.3 * pulse})`
-    ctx.lineWidth = 3
-    ctx.setLineDash([])
-    ctx.stroke()
-  }
-
-  // Needle from center to mid of important arc
-  const needleEnd = outerR + 9
+  // Outer arc — only the important portion of the slice
   ctx.beginPath()
-  ctx.moveTo(cx, cy)
-  ctx.lineTo(cx + needleEnd * Math.cos(midAngle), cy + needleEnd * Math.sin(midAngle))
-  ctx.strokeStyle = `rgba(251,191,36,${0.35 + 0.25 * pulse})`
-  ctx.lineWidth = 1.5
-  ctx.setLineDash([3, 4])
-  ctx.stroke()
+  ctx.arc(cx, cy, outerR + 4, startAngle + 0.03, arcEnd - 0.03)
+  ctx.strokeStyle = `rgba(251,191,36,${0.5 + 0.3 * pulse})`
+  ctx.lineWidth = 3
   ctx.setLineDash([])
+  ctx.stroke()
 
-  // Tip dot
-  const tx = cx + (outerR + 10) * Math.cos(midAngle)
-  const ty = cy + (outerR + 10) * Math.sin(midAngle)
+  // Tip dot at midpoint of arc
+  const tx = cx + (outerR + 9) * Math.cos(midAngle)
+  const ty = cy + (outerR + 9) * Math.sin(midAngle)
   ctx.beginPath()
   ctx.arc(tx, ty, 3, 0, Math.PI * 2)
   ctx.fillStyle = `rgba(251,191,36,${0.8 + 0.2 * pulse})`
