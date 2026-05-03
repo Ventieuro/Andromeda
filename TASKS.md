@@ -38,6 +38,16 @@
 
 ## Completati
 
+### ✅ TASK-098 — MissionCard: astronave SVG con assemblaggio progressivo (03/05/2026)
+- [x] Creato `src/components/MissionCard.tsx` con astronave SVG cartoon (5 pezzi)
+- [x] Soglie sblocco: motore 0%, corpo 15%, ali 35%, punta 55%, finestrino 75%
+- [x] Pezzi bloccati → sagome tratteggiate con `?`; sblocco con animazione `unlockPop` + `flashRing`
+- [x] Color picker al momento sblocco (8 colori, anteprima live, confirma salva)
+- [x] Animazioni: fiamma propulsore `flicker`, luci `blink`, fluttuamento a 95%+ `float`
+- [x] Storico colori in fondo alla card
+- [x] `Missions.tsx`: `GoalCard` → `MissionCard`
+- [x] Versione bump → `0.7.2`, deploy ✅
+
 ### ✅ TASK-097 — Migrazione icone → lucide-react (03/05/2026)
 - [x] Installato `lucide-react`
 - [x] `BottomNav.tsx`: rimossi 4 componenti SVG inline → `House`, `List`, `Target`, `Settings`
@@ -234,6 +244,41 @@
 ## In Corso
 
 <!-- Nessun task in corso -->
+
+### ✅ TASK-102 — MissionCard: stelle sempre visibili + transizione fluida + rotazione lenta (03/05/2026)
+- [x] **Unico SVG unificato** — niente swap DOM, zero flash nero tra fasi
+- [x] **Stelle sempre presenti** (anche durante costruzione): `#060a1a` sempre come sfondo
+- [x] **Stelle ferme** in fase build, **scorrono verso il basso** durante lancio
+- [x] **Container stelle ruota 90°** sincrono con la nave (`mc-stars-tilt` 2.2s) → le stelle scorrono a sinistra in fase travel
+- [x] **Rotazione nave più lenta**: `launchShip` 4s (era 3.5s), curva `cubic-bezier(0.3,0,0.1,1)` più graduale
+- [x] Versione bump → `0.7.6`, build ✅, deploy ✅
+
+### ✅ TASK-101 — MissionCard: fix sequenza lancio cinematica (03/05/2026)
+- [x] Terreno + rampa scivolano verso il basso durante l'ignition (illusione di decollo)
+- [x] La navicella rimane centrata, poi ruota 90° in senso orario per diventare orizzontale
+- [x] Dopo la rotazione la navicella sfuma (fade out) → SpaceTravel appare con fade in
+- [x] Stelle SpaceTravel scorrono a SINISTRA (translateX) invece che verticalmente
+- [x] Rimosso il pianeta dalla vista spazio
+- [x] Navicella orizzontale centrata nella vista spazio (rotate 90° nel SVG)
+- [x] Versione bump → `0.7.5`, build ✅, deploy ✅
+
+### ✅ TASK-100 — MissionCard: sequenza lancio completa + viaggio nello spazio loop (03/05/2026)
+- [x] Launch pad sempre visibile durante costruzione (0-99%)
+- [x] Fantasma navicella + terreno/suolo nel SVG durante costruzione
+- [x] 100%: pulsante LANCIA con glow arancione
+- [x] Countdown 10→0: numero gigante pulsante, diventa rosso sotto 3
+- [x] Fase ignition (2.8s): fiamme grandi + braccia rampa che si aprono lateralmente + glow a terra
+- [x] Fase travel (loop ∞): vista spazio con stelle scrollanti, pianeta sullo sfondo, astronave inclinata 15° con ondeggiamento perpetuo e fiamme accese
+- [x] Nessuna uscita dallo schermo — crossfade diretto a loop spazio
+- [x] Versione bump → `0.7.4`, build ✅, deploy ✅
+
+### ✅ TASK-099 — MissionCard: fix finestrino + fiamme progressive + animazione lancio + launch pad (03/05/2026)
+- [x] `LaunchPad` SVG component: rampa di lancio con colonne, scalette, sagoma ghost dell'astronave, luci rosse lampeggianti, HUD "SISTEMA PRONTO"
+- [x] Mostrata a pct===0 (invece dell'astronave); a pct>0 torna l'astronave con assemblaggio progressivo
+- [x] Fiamme solo a pct≥95 (o durante il lancio), non più sempre attive
+- [x] Cockpit più visibile: r=21 (era 18), glass r=16 (era 14), fill più chiaro `#0f1530`, stroke aggiunto; rendering order fix (body-nose join prima del cockpit)
+- [x] Animazione lancio a pct=100: stelle che cadono + nave sale con `@keyframes launch`; dopo 1.6s → success state ("Navicella in orbita ✨")
+- [x] Versione bump → `0.7.3`, build ✅, deploy ✅
 
 ## Completati
 

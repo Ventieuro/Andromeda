@@ -6,7 +6,73 @@
 
 ## [03/05/2026] — Sessione 15
 
-### TASK-097: Migrazione icone → lucide-react
+### TASK-102: MissionCard — stelle sempre visibili + transizione fluida + rotazione lenta
+**File modificati:** `src/components/MissionCard.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ **SVG unificato**: eliminati i 3 branch separati (build/ignition/travel) — un unico `<svg>` sempre nel DOM, nessun flash nero tra fasi
+- ✅ **Background `#060a1a` sempre visibile** — stelle sempre presenti (fisse in build, animano in lancio)
+- ✅ **Stelle fase build**: statiche (nessuna animazione)
+- ✅ **Stelle fase ignition**: scorrono verso il basso (`starScrollDown`, translate Y +210px)
+- ✅ **Container stelle tilta 90° CW** (`starsContainerTilt` 2.2s, delay 1s) in sincronia con la rotazione nave → lo scroll verticale diventa orizzontale (verso sinistra) nella vista travel
+- ✅ **Rotazione nave più lenta**: `launchShip` 4s con `cubic-bezier(0.3,0,0.1,1)` — 25% del tempo fermo, poi rotazione progressiva
+- ✅ **Float in travel**: `spaceFloat` sposta in translateX (± 5px) coerente con orientamento orizzontale
+- ✅ Versione bump → `0.7.6`
+
+---
+
+### TASK-101: MissionCard — fix sequenza lancio cinematica
+**File modificati:** `src/components/MissionCard.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ **Ignition 2-layer**: pad+terreno in `<div>` separato che scivola giù (`padSlideDown` 2.5s) → illusion di decollo
+- ✅ **Navicella**: rimane centrata sul pad, ruota 90° in senso orario (`launchFull` 3.5s: 0-50% ferma, 50-80% rotazione, 80-93% orizzontale, 93-100% fade out)
+- ✅ **SpaceTravel**: stelle scrollano a sinistra (`starScrollLeft` translateX 0→-200px) con pattern tiled 0..400px per loop seamless
+- ✅ **Pianeta rimosso** dalla vista spazio
+- ✅ **Navicella orizzontale**: transform SVG `translate(100,90) rotate(90) scale(0.72) translate(-100,-112)` → naso a destra, motore a sinistra
+- ✅ **Fade in/out**: SpaceTravel appare con `mc-fadein` (0.8s ease-in)
+- ✅ Versione bump → `0.7.5`
+
+---
+
+### TASK-100: MissionCard — sequenza lancio completa + viaggio spazio loop
+**File modificati:** `src/components/MissionCard.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ **Launch pad sempre presente** durante costruzione (0-99%) come struttura di supporto alla navicella
+- ✅ **Suolo** nel SVG: rettangolo scuro + linea orizzontale, navicella appoggiata (no float durante costruzione)
+- ✅ **Ghost silhouette** a pct=0: sagoma tratteggiata viola dell'astronave da costruire
+- ✅ **Pulsante LANCIA**: appare a 100%, stile arancione con animazione glow pulsante (`btnGlow`)
+- ✅ **Countdown 10→0**: numero monospace 52px, pulsante (`countdownPulse`), diventa rosso a ≤3
+- ✅ **Fase ignition** (2.8s): fiamme grandi (`flickerBig`), braccia rampa che si aprono (`padArmsOpen`/`padArmsOpenR`), glow arancione a terra, label "ACCENSIONE MOTORI..."
+- ✅ **Fase travel (loop ∞)**: SVG spazio 200×210 con `#060a1a`, 3 layer stelle scrollanti, pianeta blu, astronave inclinata 15° con float perpetuo + fiamme accese — nessuna uscita dallo schermo
+- ✅ Versione bump → `0.7.4`
+
+---
+
+### TASK-099: MissionCard — fix finestrino, fiamme progressive, animazione lancio, launch pad
+**File modificati:** `src/components/MissionCard.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ **LaunchPad SVG:** nuova struttura rampa di lancio mostrata a pct===0 — colonne tecniche con scalette, sagoma ghost astronave (tratteggiata, `#534AB7` opacity 0.2), luci rosse lampeggianti su colonne, bracci meccanici in cima, sparkle a terra, HUD monospace (SISTEMA PRONTO / IN ATTESA FONDI...)
+- ✅ **Fiamme condizionali:** gli elementi fiamma (ellissi) renderizzati solo quando `pct >= 95 || isLaunching` (non più a 0%)
+- ✅ **Cockpit fix:** outer `r=21` (era 18), glass `r=16` (era 14), fill `#0f1530` (più visibile), `stroke` aggiunto, reflection più prominente — risolto anche il rendering order: body-nose join ora renderizza PRIMA del cockpit
+- ✅ **Animazione lancio:** quando pct raggiunge 100, `launchPhase` passa a `'liftoff'` → stelle bianche/gialle che cadono + nave sale con `@keyframes launch`; dopo 1.6s → `'gone'` con success state (🚀 + "Navicella in orbita ✨")
+- ✅ Versione bump → `0.7.3`
+
+---
+
+## [03/05/2026] — Sessione 15
+
+### TASK-098: MissionCard — astronave SVG con assemblag pezzo per pezzo
+**File creati:** `src/components/MissionCard.tsx`  
+**File modificati:** `src/pages/Missions.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ **MissionCard.tsx:** componente standalone con astronave SVG cartoon (5 pezzi: motore, corpo, ali, punta, finestrino)
+- ✅ Pezzi si sbloccano a soglie 0/15/35/55/75% con animazioni (`unlockPop`, `flashRing`)
+- ✅ Pezzi bloccati visibili come sagome tratteggiate con `?`
+- ✅ Color picker appare al momento sblocco — anteprima in tempo reale, conferma salva colore
+- ✅ Fiamma propulsore animata (`flicker`), luci laterali lampeggianti (`blink`), fluttuamento a 95%+ (`float`)
+- ✅ Storico colori in fondo alla card (cerchi colorati per pezzi sbloccati, tratteggiati per bloccati)
+- ✅ **Missions.tsx:** `GoalCard` rimpiazzata da `MissionCard`; rimossa funzione e import `Card`/`formatDate` unused
+- ✅ Versione bump → `0.7.2`, build ✅, deploy ✅
+
 **File modificati:** `package.json`, `src/components/BottomNav.tsx`, `src/components/Layout.tsx`, `src/pages/SettingsPage.tsx`, `src/pages/Movimenti.tsx`, `src/components/ProductsCatalog.tsx`
 
 - ✅ Installato `lucide-react`

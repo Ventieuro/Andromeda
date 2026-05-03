@@ -3,17 +3,13 @@ import type { SavingsGoal } from '../shared/types'
 import { loadGoals, addGoal, updateGoal, deleteGoal } from '../shared/storage'
 import { MISSIONI } from '../shared/labels'
 import { useDialog } from '../shared/DialogContext'
-import { Card, Button, Input, SectionHeader, FAB } from '../components/ui'
+import { Button, Input, SectionHeader, FAB } from '../components/ui'
+import MissionCard from '../components/MissionCard'
 
 // ─── Helpers ─────────────────────────────────────────────
 
 function formatEuro(n: number) {
   return n.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' })
-}
-
-function formatDate(iso: string) {
-  const [y, m, d] = iso.split('-')
-  return `${d}/${m}/${y}`
 }
 
 /** Mesi interi rimanenti dalla data odierna a targetDate */
@@ -257,114 +253,6 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
   )
 }
 
-// ─── Goal Card ───────────────────────────────────────────
-
-function GoalCard({ goal, onEdit, onDelete, onAddSavings }: {
-  goal: SavingsGoal
-  onEdit: () => void
-  onDelete: () => void
-  onAddSavings: () => void
-}) {
-  const hasTarget = goal.targetAmount !== undefined && goal.targetAmount > 0
-  const progress = hasTarget ? Math.min(1, goal.savedAmount / goal.targetAmount!) : null
-  const completed = progress !== null && progress >= 1
-
-  const months = goal.targetDate ? monthsUntil(goal.targetDate) : null
-  const pastDue = goal.targetDate ? new Date(goal.targetDate) < new Date() && !completed : false
-
-  const monthly = goal.monthlyAmount
-    ? goal.monthlyAmount
-    : (goal.targetAmount && goal.targetDate && months && months > 0)
-      ? calcMonthly(goal.targetAmount, goal.savedAmount, months)
-      : null
-
-  return (
-    <Card padding="md" style={{ marginBottom: '12px' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-        <span style={{ fontSize: '32px', lineHeight: 1 }}>{goal.emoji}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--text-primary)', marginBottom: '2px' }}>
-            {goal.name}
-          </div>
-          {goal.targetDate && (
-            <div style={{ fontSize: '12px', color: pastDue ? '#e74c3c' : 'var(--text-muted)' }}>
-              {pastDue ? MISSIONI.scaduto : MISSIONI.entro(formatDate(goal.targetDate))}
-            </div>
-          )}
-        </div>
-        <button onClick={onEdit} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', color: 'var(--text-muted)' }} aria-label="Modifica">✏️</button>
-        <button onClick={onDelete} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', color: 'var(--text-muted)' }} aria-label="Elimina">🗑️</button>
-      </div>
-
-      {/* Progress bar */}
-      {hasTarget && (
-        <div style={{ marginBottom: '10px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-              {MISSIONI.progressoLabel(formatEuro(goal.savedAmount), formatEuro(goal.targetAmount!))}
-            </span>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: completed ? '#22c55e' : 'var(--accent)' }}>
-              {Math.round((progress ?? 0) * 100)}%
-            </span>
-          </div>
-          <div style={{ height: '8px', borderRadius: '4px', background: 'var(--bg-secondary)', overflow: 'hidden' }}>
-            <div style={{
-              height: '100%', borderRadius: '4px',
-              width: `${Math.round((progress ?? 0) * 100)}%`,
-              background: completed ? '#22c55e' : 'var(--accent)',
-              transition: 'width 0.4s ease',
-            }} />
-          </div>
-        </div>
-      )}
-
-      {/* Info row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        {completed && (
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#22c55e' }}>
-            {MISSIONI.completato}
-          </span>
-        )}
-        {!completed && monthly !== null && monthly > 0 && (
-          <span style={{
-            fontSize: '13px', fontWeight: 600,
-            color: 'var(--accent)',
-            background: 'var(--accent-light)',
-            padding: '3px 10px', borderRadius: '20px',
-          }}>
-            {MISSIONI.mensileCalc(formatEuro(monthly))}
-          </span>
-        )}
-        {!completed && months !== null && months > 0 && (
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-            {MISSIONI.mesiMancanti(months)}
-          </span>
-        )}
-        {!completed && !hasTarget && goal.savedAmount > 0 && (
-          <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-            {formatEuro(goal.savedAmount)} risparmiati
-          </span>
-        )}
-        {!completed && (
-          <button
-            onClick={onAddSavings}
-            style={{
-              marginLeft: 'auto',
-              background: 'none', border: '1px solid var(--border)',
-              borderRadius: '20px', padding: '4px 12px',
-              fontSize: '12px', cursor: 'pointer',
-              color: 'var(--text-secondary)', transition: 'all 0.15s',
-            }}
-          >
-            {MISSIONI.aggiungiRisparmio}
-          </button>
-        )}
-      </div>
-    </Card>
-  )
-}
-
 // ─── Page ────────────────────────────────────────────────
 
 function Missions() {
@@ -444,12 +332,16 @@ function Missions() {
           <>
             <SectionHeader>{MISSIONI.titolo}</SectionHeader>
             {goals.map((g) => (
-              <GoalCard
+              <MissionCard
                 key={g.id}
-                goal={g}
+                name={g.name}
+                icon={g.emoji}
+                current={g.savedAmount}
+                target={g.targetAmount ?? 0}
+                monthlyRate={g.monthlyAmount}
                 onEdit={() => { setEditingGoal(g); setShowForm(true) }}
                 onDelete={() => handleDelete(g)}
-                onAddSavings={() => handleAddSavings(g)}
+                onAddSaving={() => handleAddSavings(g)}
               />
             ))}
           </>
