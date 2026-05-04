@@ -37,7 +37,7 @@ interface GoalFormProps {
   onCancel: () => void
 }
 
-const EMOJIS = ['🎯', '🏠', '✈️', '🚗', '💍', '🎓', '💻', '📱', '🎸', '🌴', '🏋️', '🏦']
+const EMOJIS = ['🎯', '🏠', '✈️', '🚗', '💍', '🎓', '💻', '🎮', '🩺', '🎁', '🏋️', '🏦']
 
 function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
   const [name, setName] = useState(initial?.name ?? '')
@@ -331,9 +331,10 @@ function Missions() {
         ) : (
           <>
             <SectionHeader>{MISSIONI.titolo}</SectionHeader>
-            {goals.map((g) => (
+            {[...goals].reverse().map((g) => (
               <MissionCard
                 key={g.id}
+                id={g.id}
                 name={g.name}
                 icon={g.emoji}
                 current={g.savedAmount}

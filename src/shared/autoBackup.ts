@@ -115,7 +115,7 @@ async function buildBackupContent(password: string | null): Promise<string> {
   const missionCardData: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-'))) {
+    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-'))) {
       missionCardData[key] = localStorage.getItem(key) ?? ''
     }
   }

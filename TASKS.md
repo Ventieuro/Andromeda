@@ -38,6 +38,30 @@
 
 ## Completati
 
+### ✅ TASK-111 — Missions: ordine cronologico inverso + aggiornamento icone (05/05/2026)
+- [x] `goals.map` → `[...goals].reverse().map` — missioni dalla più recente alla più vecchia
+- [x] Icone: rimossi 🌴📱🎸, aggiunti 🎮🩺🎁
+- [x] Versione bump → `0.7.16`, deploy ✅
+
+### ✅ TASK-110 — Fix: chiave localStorage MissionCard basata su id invece di name (05/05/2026)
+- [x] Aggiunto prop `id: string` a `MissionCardProps`
+- [x] Tutte le chiavi localStorage (`mc-colors`, `mc-launched`, `mc-confirmed`) usano `id` invece di `name`
+- [x] `Missions.tsx`: passa `id={g.id}` a `MissionCard`
+- [x] Versione bump → `0.7.15`, deploy ✅
+
+### ✅ TASK-109 — Fix: customizzazioni navicella perse dopo refresh (04/05/2026)
+- [x] `loadConfirmedPieces(name)`: helper che legge `astrocoin-mc-confirmed-${name}` da localStorage
+- [x] `confirmedPieces` inizializzato da localStorage al mount
+- [x] `pendingQueue` inizializzato al mount con tutti i pezzi sbloccati ma non ancora confermati
+- [x] `confirmColor`: salva `confirmedPieces` in localStorage (`astrocoin-mc-confirmed-*`)
+- [x] `autoBackup.ts`: aggiunta chiave `astrocoin-mc-confirmed-*` al backup
+- [x] Versione bump → `0.7.14`, deploy ✅
+
+### ✅ TASK-108 — Fix: sblocco multiplo customizzazioni navicella (04/05/2026)
+- [x] Rimosso `break` dal loop `useEffect` in `MissionCard.tsx` — ora tutte le soglie superate in un salto vengono accodate in `pendingQueue`
+- [x] Animazione flash `newlyUnlocked` mostrata solo per il primo pezzo della batch
+- [x] Versione bump → `0.7.13`, deploy ✅
+
 ### ✅ TASK-107 — Backup include missioni e prodotti (03/05/2026)
 - [x] `autoBackup.ts`: `buildBackupContent()` include `products`, `goals`, `missionCardData`
 - [x] `storage.ts`: `AppBackup` v1|2 con campi opzionali; `applyBackup()` ripristina i nuovi campi

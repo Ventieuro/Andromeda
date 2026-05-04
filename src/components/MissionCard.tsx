@@ -3,6 +3,7 @@
 // ─── Types ───────────────────────────────────────────────
 
 interface MissionCardProps {
+  id: string
   name: string
   icon: string
   current: number
@@ -57,6 +58,13 @@ const DEFAULT_COLORS: PieceColors = {
 }
 
 // ─── Helpers ─────────────────────────────────────────────
+
+function loadConfirmedPieces(id: string): Set<PieceKey> {
+  try {
+    const raw = localStorage.getItem(`astrocoin-mc-confirmed-${id}`)
+    return raw ? new Set(JSON.parse(raw) as PieceKey[]) : new Set()
+  } catch { return new Set() }
+}
 
 function formatEuro(n: number) {
   return n.toLocaleString('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
@@ -441,6 +449,7 @@ const STARS_LAYER_C: StarDot[] = [
 // 'travel'    → permanent space loop
 
 export default function MissionCard({
+  id,
   name,
   icon,
   current,
@@ -454,18 +463,25 @@ export default function MissionCard({
 
   const [colors, setColors] = useState<PieceColors>(() => {
     try {
-      const raw = localStorage.getItem(`astrocoin-mc-colors-${name}`)
+      const raw = localStorage.getItem(`astrocoin-mc-colors-${id}`)
       return raw ? (JSON.parse(raw) as PieceColors) : { ...DEFAULT_COLORS }
     } catch { return { ...DEFAULT_COLORS } }
   })
-  const [pendingQueue, setPendingQueue] = useState<PieceKey[]>([])
+  const [confirmedPieces, setConfirmedPieces] = useState<Set<PieceKey>>(() => loadConfirmedPieces(id))
+  const [pendingQueue, setPendingQueue] = useState<PieceKey[]>(() => {
+    const confirmed = loadConfirmedPieces(id)
+    return PIECE_ORDER.filter(piece => {
+      const t = THRESHOLDS[piece]
+      if (t === 0) return false
+      return pct >= t && !confirmed.has(piece)
+    })
+  })
   const pendingPiece = pendingQueue[0] ?? null
   const [selectedColor, setSelectedColor] = useState<string>(COLORS[0])
-  const [confirmedPieces, setConfirmedPieces] = useState<Set<PieceKey>>(new Set())
   const [newlyUnlocked, setNewlyUnlocked] = useState<PieceKey | null>(null)
   const [launchPhase, setLaunchPhase] = useState<'idle' | 'ready' | 'countdown' | 'ignition' | 'travel'>(() => {
     try {
-      if (localStorage.getItem(`astrocoin-mc-launched-${name}`) === 'true' && pct >= 100) return 'travel'
+      if (localStorage.getItem(`astrocoin-mc-launched-${id}`) === 'true' && pct >= 100) return 'travel'
     } catch { return 'idle' }
     return pct >= 100 ? 'ready' : 'idle'
   })
@@ -481,20 +497,24 @@ export default function MissionCard({
   // Detect newly unlocked pieces + 100% reached
   useEffect(() => {
     const prev = prevPct.current
+    const toAdd: PieceKey[] = []
     for (const piece of PIECE_ORDER) {
       const t = THRESHOLDS[piece]
       if (t === 0) continue
       if (prev < t && pct >= t && !confirmedPieces.has(piece)) {
-        setPendingQueue(q => {
-          if (q.includes(piece)) return q
-          if (q.length === 0) setSelectedColor(COLORS[0])
-          return [...q, piece]
-        })
-        setNewlyUnlocked(piece)
-        if (flashTimeout.current) clearTimeout(flashTimeout.current)
-        flashTimeout.current = setTimeout(() => setNewlyUnlocked(null), 700)
-        break
+        toAdd.push(piece)
       }
+    }
+    if (toAdd.length > 0) {
+      setPendingQueue(q => {
+        const filtered = toAdd.filter(p => !q.includes(p))
+        if (filtered.length === 0) return q
+        if (q.length === 0) setSelectedColor(COLORS[0])
+        return [...q, ...filtered]
+      })
+      setNewlyUnlocked(toAdd[0])
+      if (flashTimeout.current) clearTimeout(flashTimeout.current)
+      flashTimeout.current = setTimeout(() => setNewlyUnlocked(null), 700)
     }
     if (prev < 100 && pct >= 100 && launchPhase === 'idle') {
       setLaunchPhase('ready')
@@ -522,7 +542,7 @@ export default function MissionCard({
         ignTimeout.current = setTimeout(() => {
           setLaunchPhase('travel')
           setLiftOff(false)
-          try { localStorage.setItem(`astrocoin-mc-launched-${name}`, 'true') } catch { /* ignore */ }
+          try { localStorage.setItem(`astrocoin-mc-launched-${id}`, 'true') } catch { /* ignore */ }
         }, 7300)
       }
     }, 1000)
@@ -532,8 +552,10 @@ export default function MissionCard({
     if (!pendingPiece) return
     const newColors = { ...colors, [pendingPiece]: selectedColor }
     setColors(newColors)
-    try { localStorage.setItem(`astrocoin-mc-colors-${name}`, JSON.stringify(newColors)) } catch { setColors(newColors) }
-    setConfirmedPieces((s) => new Set([...s, pendingPiece!]))
+    try { localStorage.setItem(`astrocoin-mc-colors-${id}`, JSON.stringify(newColors)) } catch { setColors(newColors) }
+    const newConfirmed = new Set([...confirmedPieces, pendingPiece])
+    setConfirmedPieces(newConfirmed)
+    try { localStorage.setItem(`astrocoin-mc-confirmed-${id}`, JSON.stringify([...newConfirmed])) } catch { /* ignore */ }
     const nextQueue = pendingQueue.slice(1)
     setPendingQueue(nextQueue)
     setSelectedColor(nextQueue[0] ? colors[nextQueue[0]] : COLORS[0])

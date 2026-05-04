@@ -4,6 +4,52 @@
 
 ---
 
+## [05/05/2026] — Sessione 18
+
+### TASK-111 (feature): Missions — ordine cronologico inverso + aggiornamento icone
+**File modificati:** `src/pages/Missions.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Missioni visualizzate dalla più recente alla più vecchia (`[...goals].reverse()`)
+- ✅ Emoji picker: rimossi 🌴 📱 🎸, aggiunti 🎮 (svago) 🩺 (dottore) 🎁 (regalo)
+- ✅ Versione bump → `0.7.16`
+
+---
+
+### TASK-110 (fix): MissionCard — chiave storage basata su id
+**File modificati:** `src/components/MissionCard.tsx`, `src/pages/Missions.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Bug: le chiavi localStorage usavano `name` come discriminante — due obiettivi con lo stesso nome condividevano lo stato della navicella (colori, pezzi confermati, lancio)
+- ✅ Aggiunto prop `id: string` a `MissionCardProps`; tutte le chiavi `astrocoin-mc-*` ora usano `id` (UUID univoco del goal)
+- ✅ `Missions.tsx`: passa `id={g.id}` a ogni `MissionCard`
+- ✅ Versione bump → `0.7.15`
+
+---
+
+## [04/05/2026] — Sessione 17
+
+### TASK-109 (fix): MissionCard — customizzazioni perse dopo refresh
+**File modificati:** `src/components/MissionCard.tsx`, `src/shared/autoBackup.ts`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Bug: `confirmedPieces` non era persistita — dopo un refresh, `pendingQueue` ripartiva vuoto e le customizzazioni sbloccate da un salto grande non venivano riproposte
+- ✅ Aggiunto `loadConfirmedPieces(name)` helper che legge `astrocoin-mc-confirmed-${name}` da localStorage
+- ✅ `confirmedPieces` ora si inizializza dal localStorage al mount
+- ✅ `pendingQueue` si inizializza al mount con tutti i pezzi `pct >= threshold && !confirmed` — copre il caso refresh dopo un salto grande
+- ✅ `confirmColor`: salva la lista confermata in `astrocoin-mc-confirmed-*`
+- ✅ `autoBackup.ts`: aggiunta chiave `astrocoin-mc-confirmed-*` al backup/restore
+- ✅ Versione bump → `0.7.14`
+
+---
+
+### TASK-108 (fix): MissionCard — sblocco multiplo customizzazioni navicella
+**File modificati:** `src/components/MissionCard.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Bug: quando il progresso saltava più soglie in una sola transazione (es. da 0% a 95%), solo la prima customizzazione veniva accodata (`break` interrompeva il loop)
+- ✅ Fix: loop raccoglie tutte le soglie superate in `toAdd[]`, le aggiunge tutte a `pendingQueue` — l'utente le sblocca una alla volta
+- ✅ Animazione `unlockPop` mostrata solo per il primo pezzo della batch
+- ✅ Versione bump → `0.7.13`
+
+---
+
 ## [03/05/2026] — Sessione 16
 
 ### TASK-107 (feature): Backup include missioni e prodotti
