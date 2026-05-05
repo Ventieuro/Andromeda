@@ -87,6 +87,7 @@ const STRINGS = {
     graficoSpese:                 t('Come spendi i tuoi soldi',                        'How you spend your money',               'Cómo gastas tu dinero'),
     nessunGrafico:                t('Nessuna uscita in questo periodo.',               'No expenses in this period.',            'No hay gastos en este período.'),
     risparmiLabel:                t('Risparmi',                                        'Savings',                                'Ahorros'),
+    missioniRisparmio:            t('Risparmi Obiettivi',                              'Goal Savings',                           'Ahorros Objetivos'),
     obiettivoRisparmio:           t('Obiettivo risparmio',                             'Savings goal',                           'Meta de ahorro'),
     categorieLabel:               t('Categorie',                                       'Categories',                             'Categorías'),
     spesaImportante:              t('importante',                                      'important',                              'importante'),
@@ -182,6 +183,9 @@ const STRINGS = {
     modificaSoloQuesta:      t('No, solo questa',                     'No, just this one',               'No, solo esta'),
     labelImportante:         t('Spesa importante ⭐',                  'Important expense ⭐',             'Gasto importante ⭐'),
     tooltipImportante:       t('Spese che devi sostenere per forza (affitto, bollette, abbonamenti…)', 'Expenses you must cover (rent, bills, subscriptions…)', 'Gastos que debes cubrir (alquiler, facturas, suscripciones…)'),
+    labelMissione:           t('Missione (opzionale)',                'Mission (optional)',              'Misión (opcional)'),
+    nessunaMessione:         t('Nessuna missione',                    'No mission',                     'Sin misión'),
+    oDivider:                t('oppure associa a una missione',       'or link to a mission',           'o asocia a una misión'),
   },
 
   // ── Categorie ──────────────────────────────────────────

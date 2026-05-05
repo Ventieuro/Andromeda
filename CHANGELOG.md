@@ -4,6 +4,65 @@
 
 ---
 
+## [13/05/2026] — Sessione 19
+
+### TASK-117 (fix+feature): Arco azzurro separato per risparmi già versati agli obiettivi
+**File modificati:** `src/components/SpaceDonutChart.tsx`, `src/components/ExpensePieChart.tsx`, `package.json`
+
+- ✅ Ripristinato arco **rosso** per goal mensile non raggiunto (era stato cambiato in blu per errore in v0.7.21)
+- ✅ Nuovo arco **azzurro** pulsante (`drawManualSavingsArc`) a raggio `outerR+11` = risparmi già versati manualmente agli obiettivi nel periodo
+- ✅ `missionTotal` calcolato in `ExpensePieChart` e passato come prop `missionSaved` a `SpaceDonutChart`
+- ✅ Versione bump → `0.7.22`
+
+## [13/05/2026] — Sessione 19
+
+### TASK-116 (tweak): Arco esterno pulsante azzurro invece di rosso
+**File modificati:** `src/components/SpaceDonutChart.tsx`, `package.json`
+
+- ✅ Arco esterno pulsante: azzurro (`96,165,250`) quando obiettivo non ancora raggiunto, verde quando raggiunto
+- ✅ Versione bump → `0.7.21`
+
+### TASK-115 (feature): Arco azzurro per risparmi obiettivo nel grafico
+**File modificati:** `src/components/ExpensePieChart.tsx`, `src/shared/labels.ts`, `package.json`
+
+- ✅ Arco azzurro (`#60a5fa`, label "Risparmi Obiettivi") = tx con `goalId` nel periodo — soldi già spostati negli obiettivi
+- ✅ Arco verde (`#22c55e`, label "Risparmi") = `income - regularExpenses - missionTotal` = risparmio vero non ancora toccato
+- ✅ Spese categorie = solo tx senza `goalId`
+- ✅ Versione bump → `0.7.20`
+
+### TASK-114 (feature): Missioni nel grafico verde + cancellazione scalano goal
+**File modificati:** `src/components/ExpensePieChart.tsx`, `src/pages/Dashboard.tsx`, `src/pages/Movimenti.tsx`, `src/shared/labels.ts`, `package.json`
+
+- ✅ Tx con `goalId` non contano come uscita nel grafico — l'arco verde (Risparmi) aumenta
+- ✅ `buildSlices`: solo `regularExpenses` (no missioni) come base del donut
+- ✅ On delete (Dashboard + Movimenti): se `tx.goalId` → `goal.savedAmount -= tx.amount`
+- ✅ Cancellazione gruppo ricorrente: sottrae somma di tutte le tx del gruppo dal goal
+- ✅ Versione bump → `0.7.19`
+
+### TASK-113 (feature): UX missioni — mutua esclusione + display transazioni goal
+**File modificati:** `src/components/AddTransactionForm.tsx`, `src/shared/labels.ts`, `src/pages/Movimenti.tsx`, `src/pages/Dashboard.tsx`, `package.json`
+
+- ✅ Categoria e missione mutualmente esclusive: click su una azzera l'altra
+- ✅ Missione picker spostato su `uscita` (risparmio = soldi che escono dal budget)
+- ✅ Dimming opacity 0.45 sulla sezione inattiva (categoria o missione)
+- ✅ Pill missione attiva: sfondo `#1e3a6a`, testo `#7c9eff`
+- ✅ `isValid` aggiornato: valido se `category !== ''` OR `goalId !== ''`
+- ✅ Fallback descrizione usa nome missione quando description vuota
+- ✅ `FORM.oDivider` aggiunto a `labels.ts` (IT/EN/ES)
+- ✅ `Movimenti.tsx` + `Dashboard.tsx`: transazioni con goalId mostrano emoji+nome missione e importo blu `#7c9eff`
+- ✅ Versione bump → `0.7.18`
+
+### TASK-112 (feature): Mission picker in AddTransactionForm
+**File modificati:** `src/shared/types.ts`, `src/shared/labels.ts`, `src/components/AddTransactionForm.tsx`, `src/components/MissionCard.tsx`, `src/pages/Missions.tsx`, `package.json`
+
+- ✅ Rimosso tasto `+ Risparmio` da `MissionCard` e `handleAddSavings` da `Missions.tsx`
+- ✅ `Transaction` ottiene campo opzionale `goalId?: string`
+- ✅ `AddTransactionForm`: sezione "Missione (opzionale)" con pill picker (solo entrate, solo goal non completati)
+- ✅ Su submit: se goal selezionato, `updateGoal` aggiorna `savedAmount`
+- ✅ Versione bump → `0.7.17`
+
+---
+
 ## [05/05/2026] — Sessione 18
 
 ### TASK-111 (feature): Missions — ordine cronologico inverso + aggiornamento icone

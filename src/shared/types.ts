@@ -41,6 +41,7 @@ export interface Transaction {
   important?: boolean
   isReceipt?: boolean
   receiptItems?: ReceiptDetailItem[]
+  goalId?: string
 }
 
 export interface AppSettings {

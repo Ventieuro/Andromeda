@@ -21,6 +21,7 @@ interface SpaceDonutChartProps {
   hideIncome?: boolean
   onCategoryClick?: (canonicalKey: string) => void
   savingsGoal?: number
+  missionSaved?: number
 }
 
 // ─── Helpers ─────────────────────────────────────────────
@@ -327,7 +328,7 @@ function drawCenter(
 }
 
 // ─── Component ───────────────────────────────────────────
-function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideIncome = false, onCategoryClick, savingsGoal = 0 }: SpaceDonutChartProps) {
+function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideIncome = false, onCategoryClick, savingsGoal = 0, missionSaved = 0 }: SpaceDonutChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const animRef = useRef<number>(0)
@@ -396,8 +397,13 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
 
       // Savings goal arc (counter-clockwise from top, green = met, red = not met)
       if (savingsGoal > 0) {
-        drawSavingsGoalArc(c, cx, cy, outerR, totalIncome, totalIncome - totalExpenses, savingsGoal, elapsed)
+        drawSavingsGoalArc(c, cx, cy, outerR, totalIncome, totalIncome - totalExpenses + missionSaved, savingsGoal, elapsed)
       }
+
+      // Manual savings arc (blue = already deposited into goals this period) — hidden for now
+      // if (missionSaved > 0) {
+      //   drawManualSavingsArc(c, cx, cy, outerR, totalIncome, missionSaved, elapsed)
+      // }
 
       // Planets
       slices.forEach((slice, i) => {
@@ -416,7 +422,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     animRef.current = requestAnimationFrame(frame)
 
     return () => cancelAnimationFrame(animRef.current)
-  }, [slices, totalIncome, totalExpenses, size, hideIncome, savingsGoal])
+  }, [slices, totalIncome, totalExpenses, size, hideIncome, savingsGoal, missionSaved])
 
   useEffect(() => {
     const cleanup = draw()

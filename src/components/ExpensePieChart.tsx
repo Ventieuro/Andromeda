@@ -102,15 +102,20 @@ function buildSlices(transactions: Transaction[]): Slice[] {
   if (incomeTx.length === 0 && expenseTx.length === 0) return []
 
   const totalIncome = incomeTx.reduce((s, t) => s + t.amount, 0)
-  const totalExpenses = expenseTx.reduce((s, t) => s + t.amount, 0)
 
-  // Base = income (or expenses if they exceed income)
+  // Separate mission tx (already manually saved to a goal) from regular expenses
+  const missionTx = expenseTx.filter((t) => t.goalId)
+  const regularTx = expenseTx.filter((t) => !t.goalId)
+  const regularExpenses = regularTx.reduce((s, t) => s + t.amount, 0)
+  const missionTotal = missionTx.reduce((s, t) => s + t.amount, 0)
+  const totalExpenses = regularExpenses + missionTotal
+
   const base = Math.max(totalIncome, totalExpenses) || 1
 
-  // Expense slices — each is a portion of the income circle
+  // Expense slices — regular expenses only, grouped by category
   const byExpense = new Map<string, number>()
   const importantByCategory = new Map<string, number>()
-  for (const tx of expenseTx) {
+  for (const tx of regularTx) {
     const key = normalizeCategoryKey(tx.category, 'uscita')
     byExpense.set(key, (byExpense.get(key) ?? 0) + tx.amount)
     if (tx.important) importantByCategory.set(key, (importantByCategory.get(key) ?? 0) + tx.amount)
@@ -128,23 +133,23 @@ function buildSlices(transactions: Transaction[]): Slice[] {
       importantRatio: Math.min(1, (importantByCategory.get(canonicalKey) ?? 0) / amount),
     }))
 
-  // Savings slice — the green remainder (income − expenses)
-  const savings = totalIncome - totalExpenses
-  const savingsSlices: Slice[] = savings > 0 ? [{
-    canonicalKey: '', // non-clickable
+  // Green slice — total savings (includes money already put into goals)
+  const totalSavings = totalIncome - regularExpenses
+  const savingsSlices: Slice[] = totalSavings > 0 ? [{
+    canonicalKey: '',
     category: DASHBOARD.risparmiLabel,
-    amount: savings,
-    percent: Math.round((savings / base) * 1000) / 10,
+    amount: totalSavings,
+    percent: Math.round((totalSavings / base) * 1000) / 10,
     color: '#22c55e',
     type: 'entrata' as const,
   }] : []
 
-  // Expenses first, savings (green) last so it ends the circle
   return [...expenseSlices, ...savingsSlices]
 }
 
 function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart, payDay = 27, onCategoryClick, onViewChange }: ExpensePieChartProps) {
   const rawSlices = buildSlices(transactions)
+  const missionTotal = transactions.filter((t) => t.type === 'uscita' && t.goalId).reduce((s, t) => s + t.amount, 0)
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
   const [view, setView] = useState<'pie' | 'solar' | 'comet'>('pie')
@@ -268,13 +273,13 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
         </p>
       ) : slices.length === 0 ? (
         // Nessuna transazione ma ci sono obiettivi: mostra donut vuoto con arco obiettivo
-        <SpaceDonutChart slices={[]} totalIncome={0} totalExpenses={0} size={280} hideIncome={!amountsVisible} savingsGoal={totalMonthlyGoal} />
+        <SpaceDonutChart slices={[]} totalIncome={0} totalExpenses={0} size={280} hideIncome={!amountsVisible} savingsGoal={totalMonthlyGoal} missionSaved={0} />
       ) : view === 'comet' ? (
         <CometChart />
       ) : view === 'solar' ? (
         <SolarSystemChart transactions={transactions} onCategoryClick={onCategoryClick} sortMode={sortMode} />
       ) : (
-        <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} size={280} hideIncome={!amountsVisible} onCategoryClick={onCategoryClick} savingsGoal={totalMonthlyGoal} />
+        <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} size={280} hideIncome={!amountsVisible} onCategoryClick={onCategoryClick} savingsGoal={totalMonthlyGoal} missionSaved={missionTotal} />
       )}
     </div>
   )

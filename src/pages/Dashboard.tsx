@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
 import ReceiptDetailModal from '../components/ReceiptDetailModal'
-import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings, loadGoals } from '../shared/storage'
+import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings, loadGoals, updateGoal } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import ExpensePieChart from '../components/ExpensePieChart'
 import { DASHBOARD, MASCOTTE, translateCategory } from '../shared/labels'
@@ -98,6 +98,7 @@ function Dashboard() {
   const isCurrentPeriod = monthOffset === 0
 
   const allTx = loadTransactions()
+  const goals = loadGoals()
   void refreshKey // trigger re-render on data change
   const periodTx = getTransactionsInPeriod(allTx, start, end)
 
@@ -154,11 +155,26 @@ function Dashboard() {
         cancelLabel: DASHBOARD.eliminaSoloQuesta,
       })
       if (deleteAll) {
+        if (tx.goalId) {
+          const groupTotal = loadTransactions()
+            .filter(t => t.recurringGroupId === tx.recurringGroupId && t.goalId === tx.goalId)
+            .reduce((s, t) => s + t.amount, 0)
+          const goal = loadGoals().find(g => g.id === tx.goalId)
+          if (goal) updateGoal({ ...goal, savedAmount: Math.max(0, goal.savedAmount - groupTotal) })
+        }
         deleteTransactionsByGroupId(tx.recurringGroupId)
       } else {
+        if (tx.goalId) {
+          const goal = loadGoals().find(g => g.id === tx.goalId)
+          if (goal) updateGoal({ ...goal, savedAmount: Math.max(0, goal.savedAmount - tx.amount) })
+        }
         deleteTransaction(tx.id)
       }
     } else {
+      if (tx.goalId) {
+        const goal = loadGoals().find(g => g.id === tx.goalId)
+        if (goal) updateGoal({ ...goal, savedAmount: Math.max(0, goal.savedAmount - tx.amount) })
+      }
       deleteTransaction(tx.id)
     }
     refresh()
@@ -320,16 +336,20 @@ function Dashboard() {
                   border: `1px solid ${tx.type === 'entrata' ? 'var(--tx-income-border)' : 'var(--tx-expense-border)'}`,
                 }}
               >
-                <span style={{ fontSize: '20px', flexShrink: 0 }}>{getCategoryIcon(tx.category)}</span>
+                <span style={{ fontSize: '20px', flexShrink: 0 }}>
+                  {tx.goalId ? (goals.find(g => g.id === tx.goalId)?.emoji ?? '🚀') : getCategoryIcon(tx.category)}
+                </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {tx.description}{tx.recurring && ' 🔄'}
                   </p>
                   <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'var(--text-muted)' }}>
-                    {translateCategory(tx.category)} · {formatDay(tx.date)}
+                    {tx.goalId
+                      ? `🚀 ${goals.find(g => g.id === tx.goalId)?.name ?? 'Missione'}`
+                      : translateCategory(tx.category)} · {formatDay(tx.date)}
                   </p>
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 700, flexShrink: 0, color: tx.type === 'entrata' ? 'var(--tx-income-text)' : 'var(--tx-expense-text)' }}>
+                <span style={{ fontSize: '14px', fontWeight: 700, flexShrink: 0, color: tx.goalId ? '#7c9eff' : (tx.type === 'entrata' ? 'var(--tx-income-text)' : 'var(--tx-expense-text)') }}>
                   {tx.type === 'entrata'
                     ? (!amountsVisible ? HIDDEN : `+${formatEuro(tx.amount)}`)
                     : `-${formatEuro(tx.amount)}`}

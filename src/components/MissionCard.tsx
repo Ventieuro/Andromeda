@@ -9,7 +9,6 @@ interface MissionCardProps {
   current: number
   target: number
   monthlyRate?: number
-  onAddSaving?: () => void
   onEdit?: () => void
   onDelete?: () => void
 }
@@ -455,7 +454,6 @@ export default function MissionCard({
   current,
   target,
   monthlyRate,
-  onAddSaving,
   onEdit,
   onDelete,
 }: MissionCardProps) {
@@ -841,17 +839,7 @@ export default function MissionCard({
               {formatEuro(monthlyRate)}/mese
             </span>
           )}
-          {onAddSaving && pct < 100 && (
-            <button onClick={onAddSaving} style={{
-              marginLeft: monthlyRate ? 'auto' : 0,
-              background: 'linear-gradient(135deg, #3b6fff22, #7c9eff22)',
-              border: '1px solid #3b6fff', borderRadius: '20px',
-              color: '#7c9eff', fontSize: '12px', fontWeight: 600,
-              padding: '5px 14px', cursor: 'pointer',
-            }}>
-              + Risparmio
-            </button>
-          )}
+          
         </div>
       )}
 

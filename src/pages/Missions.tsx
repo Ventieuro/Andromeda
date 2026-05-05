@@ -259,7 +259,7 @@ function Missions() {
   const [goals, setGoals] = useState<SavingsGoal[]>([])
   const [showForm, setShowForm] = useState(false)
   const [editingGoal, setEditingGoal] = useState<SavingsGoal | null>(null)
-  const { showConfirm, showPrompt } = useDialog()
+  const { showConfirm } = useDialog()
 
   function refresh() {
     setGoals(loadGoals())
@@ -290,22 +290,6 @@ function Missions() {
       deleteGoal(goal.id)
       refresh()
     }
-  }
-
-  async function handleAddSavings(goal: SavingsGoal) {
-    const result = await showPrompt({
-      title: MISSIONI.aggiungiRisparmio,
-      message: MISSIONI.aggiornaSaved,
-      placeholder: '100',
-      inputType: 'number',
-      confirmLabel: MISSIONI.salva,
-      cancelLabel: MISSIONI.annulla,
-    })
-    if (result === null) return
-    const amount = Number(result)
-    if (isNaN(amount) || amount <= 0) return
-    updateGoal({ ...goal, savedAmount: goal.savedAmount + amount })
-    refresh()
   }
 
   return (
@@ -342,7 +326,6 @@ function Missions() {
                 monthlyRate={g.monthlyAmount}
                 onEdit={() => { setEditingGoal(g); setShowForm(true) }}
                 onDelete={() => handleDelete(g)}
-                onAddSaving={() => handleAddSavings(g)}
               />
             ))}
           </>

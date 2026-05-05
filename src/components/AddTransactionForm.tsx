@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { TransactionType, Transaction } from '../shared/types'
-import { generateId, addTransaction, updateTransaction, updateTransactionsByGroupId, updateImportantByCategory, loadCustomCategories, addCustomCategory } from '../shared/storage'
+import { generateId, addTransaction, updateTransaction, updateTransactionsByGroupId, updateImportantByCategory, loadCustomCategories, addCustomCategory, loadGoals, updateGoal } from '../shared/storage'
 import Mascot from './Mascot'
 import ReceiptScanner from './ReceiptScanner'
 import { FORM, normalizeCategoryKey, translateCategory, getCanonicalCategories } from '../shared/labels'
@@ -46,12 +46,14 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   const [saveForFuture, setSaveForFuture] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
   const [entryMode, setEntryMode] = useState<'manual' | 'receipt'>('manual')
+  const [goalId, setGoalId] = useState<string>(editTransaction?.goalId ?? '')
+  const goals = loadGoals().filter(g => !g.targetAmount || g.savedAmount < g.targetAmount)
 
   const customCats = loadCustomCategories()
   // Usiamo sempre chiavi canoniche IT; la visualizzazione usa translateCategory()
   const builtinKeys = getCanonicalCategories(type)
   const categories = [...builtinKeys, ...customCats[type]]
-  const isValid = Number(amount) > 0 && category
+  const isValid = Number(amount) > 0 && (category !== '' || goalId !== '')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -101,13 +103,14 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
     const tx: Transaction = {
       id: generateId(),
       type,
-      description: description.trim() || category,
+      description: description.trim() || (goalId ? (goals.find(g => g.id === goalId)?.name ?? '') : '') || category,
       amount: Number(amount),
       date,
       category,
       important,
       recurring,
       recurringMonths: recurring ? recurringMonths : 0,
+      ...(goalId ? { goalId } : {}),
     }
 
     // Se ricorrente, crea una copia per ogni mese futuro con groupId condiviso
@@ -125,6 +128,14 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
       }
     } else {
       addTransaction(tx)
+    }
+
+    // Aggiorna savedAmount del goal selezionato
+    if (goalId) {
+      const goal = loadGoals().find(g => g.id === goalId)
+      if (goal) {
+        updateGoal({ ...goal, savedAmount: goal.savedAmount + Number(amount) })
+      }
     }
 
     onSaved()
@@ -300,14 +311,14 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
           </div>
 
           {/* Categoria */}
-          <div>
+          <div style={{ opacity: goalId !== '' ? 0.45 : 1, transition: 'opacity 0.2s' }}>
             <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelCategoria}</label>
             <div className="flex flex-wrap gap-2">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => setCategory(cat)}
+                  onClick={() => { setCategory(cat); setGoalId('') }}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
                     category === cat
                       ? type === 'entrata'
@@ -348,6 +359,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
                       if (!trimmed) return
                       if (saveForFuture) addCustomCategory(type, trimmed)
                       setCategory(trimmed)
+                      setGoalId('')
                       setNewCatName('')
                       setShowNewCat(false)
                       setSaveForFuture(false)
@@ -370,6 +382,37 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
               </div>
             )}
           </div>
+
+          {/* Missione (solo per uscite) — mutualmente esclusiva con categoria — hidden for now */}
+          {false && type === 'uscita' && goals.length > 0 && (
+            <>
+              <div className="flex items-center gap-2 my-1">
+                <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{FORM.oDivider}</span>
+                <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
+              </div>
+              <div style={{ opacity: category !== '' ? 0.45 : 1, transition: 'opacity 0.2s' }}>
+                <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelMissione}</label>
+                <div className="flex flex-wrap gap-2">
+                  {goals.map((g) => (
+                    <button
+                      key={g.id}
+                      type="button"
+                      onClick={() => { setGoalId(g.id === goalId ? '' : g.id); setCategory('') }}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
+                        goalId === g.id ? 'ring-1 ring-blue-400' : ''
+                      }`}
+                      style={goalId === g.id
+                        ? { backgroundColor: '#1e3a6a', color: '#7c9eff' }
+                        : { backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}
+                    >
+                      {g.emoji} {g.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Descrizione (opzionale) */}
           <div>
