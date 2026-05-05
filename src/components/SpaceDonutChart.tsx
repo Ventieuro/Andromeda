@@ -472,6 +472,11 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     setTappedSlice(null)
   }
 
+  // ─── Vibrazione al cambio fetta ───────────────────────────────────
+  useEffect(() => {
+    if (tappedSlice && navigator.vibrate) navigator.vibrate(8)
+  }, [tappedSlice])
+
   // ─── Native touch events (passive:false → can preventDefault) ────
   useEffect(() => {
     const canvas = canvasRef.current
