@@ -1,6 +1,8 @@
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback, useState } from 'react'
 import { DASHBOARD } from '../shared/labels'
 import MiniPlanet from './MiniPlanet'
+
+const LEGEND_LIMIT = 5
 
 // ─── Types ───────────────────────────────────────────────
 interface SliceData {
@@ -332,6 +334,8 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const animRef = useRef<number>(0)
+  const [tappedSlice, setTappedSlice] = useState<SliceData | null>(null)
+  const [legendExpanded, setLegendExpanded] = useState(false)
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current
@@ -432,19 +436,105 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     }
   }, [draw])
 
+  // ─── Canvas hit test ──────────────────────────────────
+  function hitTestCanvas(x: number, y: number) {
+    if (slices.length === 0) return
+    const scale = size / 320
+    const outerR = 100 * scale
+    const innerR = 58 * scale
+    const cx = size / 2
+    const cy = size / 2
+    const dx = x - cx
+    const dy = y - cy
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    if (dist < innerR - 8 || dist > outerR + 16) {
+      setTappedSlice(null)
+      return
+    }
+    let angle = Math.atan2(dy, dx) + Math.PI / 2
+    if (angle < 0) angle += Math.PI * 2
+    let cumAngle = 0
+    for (const slice of slices) {
+      const sweep = (slice.percent / 100) * Math.PI * 2
+      if (angle <= cumAngle + sweep) {
+        setTappedSlice((prev) =>
+          prev?.canonicalKey === slice.canonicalKey && prev?.category === slice.category ? null : slice
+        )
+        return
+      }
+      cumAngle += sweep
+    }
+    setTappedSlice(null)
+  }
+
   return (
     <div className="flex flex-col sm:flex-row items-center gap-4">
-      <canvas
-        ref={canvasRef}
-        className="flex-shrink-0 rounded-xl"
-        style={{ width: size, height: size }}
-      />
+      {/* Canvas con tooltip overlay */}
+      <div style={{ position: 'relative', flexShrink: 0 }}>
+        <canvas
+          ref={canvasRef}
+          className="rounded-xl"
+          style={{ width: size, height: size, cursor: slices.length > 0 ? 'pointer' : 'default' }}
+          onClick={(e: React.MouseEvent<HTMLCanvasElement>) => {
+            const rect = canvasRef.current!.getBoundingClientRect()
+            const x = e.clientX - rect.left
+            const y = e.clientY - rect.top
+            hitTestCanvas(x, y)
+          }}
+          onTouchEnd={(e: React.TouchEvent<HTMLCanvasElement>) => {
+            if (e.changedTouches.length === 0) return
+            const rect = canvasRef.current!.getBoundingClientRect()
+            const x = e.changedTouches[0].clientX - rect.left
+            const y = e.changedTouches[0].clientY - rect.top
+            hitTestCanvas(x, y)
+          }}
+        />
+
+        {/* Tooltip fetta selezionata */}
+        {tappedSlice && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '12px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: 'rgba(8,11,24,0.92)',
+              border: `1px solid ${tappedSlice.color}`,
+              borderRadius: '12px',
+              padding: '8px 14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              pointerEvents: 'none',
+              backdropFilter: 'blur(8px)',
+              minWidth: '160px',
+              maxWidth: `${size - 24}px`,
+              boxShadow: `0 0 16px ${tappedSlice.color}44`,
+            }}
+          >
+            <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: tappedSlice.color, flexShrink: 0, boxShadow: `0 0 6px ${tappedSlice.color}` }} />
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <div style={{ color: '#e8eaf6', fontSize: '13px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {tappedSlice.category}
+              </div>
+              <div style={{ color: tappedSlice.color, fontSize: '12px', marginTop: '1px' }}>
+                {formatEuro(tappedSlice.amount)} · {tappedSlice.percent.toFixed(1)}%
+                {(tappedSlice.importantRatio ?? 0) > 0 && ' ⭐'}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Legenda */}
       <div className="flex-1 space-y-1 w-full">
         {(['entrata', 'uscita'] as const).map((group) => {
           const groupSlices = slices.filter((s) => s.type === group)
           if (groupSlices.length === 0) return null
+          const showAccordion = group === 'uscita' && groupSlices.length > LEGEND_LIMIT
+          const displaySlices = showAccordion && !legendExpanded
+            ? groupSlices.slice(0, LEGEND_LIMIT)
+            : groupSlices
           return (
             <div key={group}>
               <h3
@@ -453,11 +543,17 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
               >
                 {group === 'entrata' ? DASHBOARD.entrate : DASHBOARD.uscite}
               </h3>
-              {groupSlices.map((s) => (
+              {displaySlices.map((s) => (
                 <div
                   key={s.canonicalKey || s.category}
                   className="flex items-center gap-3 py-1"
-                  style={{ borderBottom: '1px solid var(--border)' }}
+                  style={{
+                    borderBottom: '1px solid var(--border)',
+                    backgroundColor: tappedSlice?.canonicalKey === s.canonicalKey && tappedSlice?.category === s.category
+                      ? `${s.color}14` : 'transparent',
+                    borderRadius: '6px',
+                    transition: 'background-color 0.2s',
+                  }}
                 >
                   <MiniPlanet color={s.color} size={18} />
                   <div className="flex-1 min-w-0">
@@ -494,6 +590,15 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
                   </span>
                 </div>
               ))}
+              {showAccordion && (
+                <button
+                  onClick={() => setLegendExpanded((v) => !v)}
+                  className="w-full py-1.5 text-xs font-medium transition"
+                  style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  {legendExpanded ? DASHBOARD.legendaNascondi : DASHBOARD.legendaMostraTutte(groupSlices.length)}
+                </button>
+              )}
             </div>
           )
         })}

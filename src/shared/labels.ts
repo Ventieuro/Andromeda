@@ -90,6 +90,12 @@ const STRINGS = {
     risparmiLabel:                t('Risparmi',                                        'Savings',                                'Ahorros'),
     missioniRisparmio:            t('Risparmi Obiettivi',                              'Goal Savings',                           'Ahorros Objetivos'),
     obiettivoRisparmio:           t('Obiettivo risparmio',                             'Savings goal',                           'Meta de ahorro'),
+    legendaMostraTutte: tf(
+      (n: number) => `Mostra tutte le categorie (${n}) ▼`,
+      (n: number) => `Show all categories (${n}) ▼`,
+      (n: number) => `Mostrar todas las categorías (${n}) ▼`,
+    ),
+    legendaNascondi:              t('Comprimi ▲',                                      'Collapse ▲',                             'Comprimir ▲'),
     categorieLabel:               t('Categorie',                                       'Categories',                             'Categorías'),
     spesaImportante:              t('importante',                                      'important',                              'importante'),
     ordinaPerImporto:             t('Dal più grande',                                  'Largest first',                          'Mayor primero'),
