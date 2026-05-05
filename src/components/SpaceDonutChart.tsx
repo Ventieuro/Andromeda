@@ -437,7 +437,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
   }, [draw])
 
   // ─── Canvas hit test ──────────────────────────────────
-  function hitTestCanvas(x: number, y: number) {
+  function hitTestCanvas(x: number, y: number, toggle = false) {
     if (slices.length === 0) return
     const scale = size / 320
     const outerR = 100 * scale
@@ -457,15 +457,61 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     for (const slice of slices) {
       const sweep = (slice.percent / 100) * Math.PI * 2
       if (angle <= cumAngle + sweep) {
-        setTappedSlice((prev) =>
-          prev?.canonicalKey === slice.canonicalKey && prev?.category === slice.category ? null : slice
-        )
+        if (toggle) {
+          setTappedSlice((prev) =>
+            prev?.canonicalKey === slice.canonicalKey && prev?.category === slice.category ? null : slice
+          )
+        } else {
+          // drag mode: always set (no toggle)
+          setTappedSlice(slice)
+        }
         return
       }
       cumAngle += sweep
     }
     setTappedSlice(null)
   }
+
+  // ─── Native touch events (passive:false → can preventDefault) ────
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas || slices.length === 0) return
+
+    function getXY(touch: Touch): { x: number; y: number } {
+      const rect = canvas!.getBoundingClientRect()
+      return { x: touch.clientX - rect.left, y: touch.clientY - rect.top }
+    }
+
+    function onTouchStart(e: TouchEvent) {
+      if (e.touches.length !== 1) return
+      const { x, y } = getXY(e.touches[0])
+      // Check if touch is on donut area before locking scroll
+      const scale = size / 320
+      const outerR = 100 * scale
+      const innerR = 58 * scale
+      const cx = size / 2; const cy = size / 2
+      const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2)
+      if (dist >= innerR - 8 && dist <= outerR + 16) {
+        e.preventDefault()
+        hitTestCanvas(x, y, true)
+      }
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (e.touches.length !== 1) return
+      e.preventDefault()
+      const { x, y } = getXY(e.touches[0])
+      hitTestCanvas(x, y, false)
+    }
+
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false })
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false })
+    return () => {
+      canvas.removeEventListener('touchstart', onTouchStart)
+      canvas.removeEventListener('touchmove', onTouchMove)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slices, size])
 
   return (
     <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -474,21 +520,31 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
         <canvas
           ref={canvasRef}
           className="rounded-xl"
-          style={{ width: size, height: size, cursor: slices.length > 0 ? 'pointer' : 'default' }}
+          style={{ width: size, height: size, cursor: slices.length > 0 ? 'pointer' : 'default', touchAction: 'none' }}
           onClick={(e: React.MouseEvent<HTMLCanvasElement>) => {
             const rect = canvasRef.current!.getBoundingClientRect()
-            const x = e.clientX - rect.left
-            const y = e.clientY - rect.top
-            hitTestCanvas(x, y)
-          }}
-          onTouchEnd={(e: React.TouchEvent<HTMLCanvasElement>) => {
-            if (e.changedTouches.length === 0) return
-            const rect = canvasRef.current!.getBoundingClientRect()
-            const x = e.changedTouches[0].clientX - rect.left
-            const y = e.changedTouches[0].clientY - rect.top
-            hitTestCanvas(x, y)
+            hitTestCanvas(e.clientX - rect.left, e.clientY - rect.top, true)
           }}
         />
+
+        {/* Hint tocca la torta — visibile solo finché l'utente non ha mai tappato */}
+        {slices.length > 0 && !tappedSlice && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '10px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              fontSize: '10px',
+              color: 'rgba(255,255,255,0.35)',
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+              letterSpacing: '0.03em',
+            }}
+          >
+            👆 tocca una fetta
+          </div>
+        )}
 
         {/* Tooltip fetta selezionata */}
         {tappedSlice && (
