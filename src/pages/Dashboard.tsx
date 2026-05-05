@@ -237,30 +237,35 @@ function Dashboard() {
       </div>
 
       {/* Stipendio + Oggi inline sotto nav */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px 0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-muted)' }}>
-          <label htmlFor="payday">{DASHBOARD.stipendioIl}</label>
-          <select
-            id="payday"
-            value={payDay}
-            onChange={(e) => handlePayDayChange(Number(e.target.value))}
-            style={{
-              background: 'var(--input-bg)', border: '1px solid var(--input-border)',
-              color: 'var(--text-primary)', borderRadius: '8px', padding: '3px 8px',
-              fontSize: '13px', outline: 'none',
-            }}
-          >
-            {Array.from({ length: 28 }, (_, i) => i + 1).map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </select>
+      <div style={{ padding: '8px 16px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-muted)' }}>
+            <label htmlFor="payday">{DASHBOARD.stipendioIl}</label>
+            <select
+              id="payday"
+              value={payDay}
+              onChange={(e) => handlePayDayChange(Number(e.target.value))}
+              style={{
+                background: 'var(--input-bg)', border: '1px solid var(--input-border)',
+                color: 'var(--text-primary)', borderRadius: '8px', padding: '3px 8px',
+                fontSize: '13px', outline: 'none',
+              }}
+            >
+              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </div>
+          {!isCurrentPeriod && (
+            <button
+              onClick={() => setMonthOffset(0)}
+              style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
+            >{DASHBOARD.oggi}</button>
+          )}
         </div>
-        {!isCurrentPeriod && (
-          <button
-            onClick={() => setMonthOffset(0)}
-            style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
-          >{DASHBOARD.oggi}</button>
-        )}
+        <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+          {DASHBOARD.stipendioHint}
+        </p>
       </div>
 
       {/* ── 2. Grafico grande ─────────────────────────────── */}

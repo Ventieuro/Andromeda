@@ -174,6 +174,9 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
               📅 {MISSIONI.modData}
             </Button>
           </div>
+          <p style={{ margin: '8px 0 0', fontSize: '12px', lineHeight: '1.5', color: 'var(--text-muted)' }}>
+            {mode === 'mensile' ? MISSIONI.hintMensile : MISSIONI.hintData}
+          </p>
         </div>
 
         {/* Campi per modalità mensile */}
