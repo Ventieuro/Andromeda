@@ -5,6 +5,7 @@ import { ThemeProvider } from './shared/ThemeContext'
 import { DialogProvider } from './shared/DialogContext'
 import { AmountsProvider } from './shared/AmountsContext'
 import { initPersistentStorage, migrateCategoryKeys } from './shared/storage'
+import { reloadApp } from './shared/platform'
 import App from './App'
 import './index.css'
 
@@ -87,7 +88,7 @@ function showUpdateNotification(registration: ServiceWorkerRegistration) {
       console.log('👆 Utente ha cliccato Aggiorna')
       if (registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' })
-        window.location.reload()
+        reloadApp()
       }
     }
   }

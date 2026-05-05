@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { getThemeTokens } from './themeTokens'
+import type { ThemeTokens } from './themeTokens'
 
 export type Theme = 'spazio' | 'nasa' | 'mission'
 
@@ -40,4 +42,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 // eslint-disable-next-line react-refresh/only-export-components
 export function useTheme() {
   return useContext(ThemeContext)
+}
+
+/**
+ * Returns theme colors as plain JS values.
+ * Web: works alongside CSS variables.
+ * React Native migration: replace `style={{ color: 'var(--text-primary)' }}`
+ *   with `style={{ color: tokens.textPrimary }}` — then drop CSS variables entirely.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useThemeTokens(): ThemeTokens {
+  const { theme } = useContext(ThemeContext)
+  return getThemeTokens(theme)
 }

@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
 import { DASHBOARD } from '../shared/labels'
+import { haptic } from '../shared/platform'
 import MiniPlanet from './MiniPlanet'
 
 const LEGEND_LIMIT = 5
@@ -474,7 +475,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
 
   // ─── Vibrazione al cambio fetta ───────────────────────────────────
   useEffect(() => {
-    if (tappedSlice && navigator.vibrate) navigator.vibrate(8)
+    if (tappedSlice) haptic(8)
   }, [tappedSlice])
 
   // ─── Native touch events (passive:false → can preventDefault) ────
