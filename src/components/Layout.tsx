@@ -19,15 +19,18 @@ function Layout() {
         <div className="flex-1" />
         <button
           onClick={toggleAmounts}
-          className="w-9 h-9 flex items-center justify-center rounded-full transition hover:opacity-80 active:scale-90"
-          style={{ color: 'var(--nav-text)', background: 'none', border: 'none', cursor: 'pointer' }}
+          className="flex items-center gap-1.5 px-2.5 h-9 rounded-full transition hover:opacity-80 active:scale-90"
+          style={{ color: 'var(--nav-text)', background: amountsVisible ? 'none' : 'rgba(239,68,68,0.15)', border: 'none', cursor: 'pointer' }}
           aria-label={amountsVisible ? LAYOUT.nascondiImporti : LAYOUT.mostraImporti}
           title={amountsVisible ? LAYOUT.nascondiImporti : LAYOUT.mostraImporti}
         >
           {amountsVisible ? (
-            <Eye size={22} aria-hidden="true" />
+            <Eye size={20} aria-hidden="true" />
           ) : (
-            <EyeOff size={22} aria-hidden="true" />
+            <>
+              <EyeOff size={20} aria-hidden="true" />
+              <span className="text-xs font-medium" style={{ color: 'rgba(239,68,68,0.9)' }}>{LAYOUT.importiNascosti}</span>
+            </>
           )}
         </button>
       </header>

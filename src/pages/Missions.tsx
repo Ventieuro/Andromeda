@@ -339,7 +339,7 @@ function Missions() {
       <FAB
         onClick={() => { setEditingGoal(null); setShowForm(true) }}
         ariaLabel={MISSIONI.aggiungi}
-        style={{ bottom: '96px' }}
+        style={{ bottom: '96px', backgroundColor: '#3b6fff', color: '#ffffff' }}
       >
         +
       </FAB>

@@ -126,6 +126,23 @@ export function clearStorageCache() {
   storageEngine = 'localStorage'
 }
 
+/** Cancella tutti i dati utente (transazioni, missioni, prodotti, categorie custom).
+ *  Non tocca impostazioni, tema, lingua o PIN. */
+export function clearAllUserData() {
+  setManagedItem(STORAGE_KEY, '[]')
+  setManagedItem(GOALS_KEY, '[]')
+  setManagedItem(PRODUCTS_KEY, '[]')
+  setManagedItem(CUSTOM_CAT_KEY, '{}')
+  setManagedItem(CUSTOM_ICONS_KEY, '{}')
+  // rimuovi customizzazioni navicella (prefix astrocoin-mc-*)
+  const toRemove: string[] = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i)
+    if (k && k.startsWith('astrocoin-mc-')) toRemove.push(k)
+  }
+  for (const k of toRemove) localStorage.removeItem(k)
+}
+
 function getManagedItem(key: ManagedKey): string | null {
   if (storageCache.has(key)) return storageCache.get(key) ?? null
   const fallback = localStorage.getItem(key)

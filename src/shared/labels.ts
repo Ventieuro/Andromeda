@@ -51,6 +51,7 @@ const STRINGS = {
     navAdd:         t('Aggiungi',     'Add',           'Agregar'),
     nascondiImporti: t('Nascondi importi', 'Hide amounts', 'Ocultar importes'),
     mostraImporti:   t('Mostra importi',   'Show amounts',  'Mostrar importes'),
+    importiNascosti: t('importi nascosti', 'amounts hidden', 'importes ocultos'),
   },
 
   // ── Temi ───────────────────────────────────────────────
@@ -159,6 +160,11 @@ const STRINGS = {
     labelQuando:            t('Quando?',                             'When?',                          '¿Cuándo?'),
     labelRicorrente:        t('Si ripete ogni mese? 🌀',             'Repeats every month? 🌀',        '¿Se repite cada mes? 🌀'),
     messaggioRicorrente:    t('Per quanti mesi vuoi che si ripeta?', 'For how many months?',           '¿Durante cuántos meses?'),
+    ricorrentePreview:      tf(
+      (n: number) => `Verranno create ${n} copie della transazione (una per mese).`,
+      (n: number) => `${n} copies of this transaction will be created (one per month).`,
+      (n: number) => `Se crearán ${n} copias de la transacción (una por mes).`,
+    ),
     unitaMesi:              t('mesi',                                'months',                         'meses'),
     submitEntrata:          t('✅ Aggiungi entrata',                  '✅ Add income',                   '✅ Añadir ingreso'),
     submitUscita:           t('✅ Aggiungi uscita',                   '✅ Add expense',                  '✅ Añadir gasto'),
@@ -312,6 +318,7 @@ const STRINGS = {
     titolo:          t('Prodotti',                        'Products',                    'Productos'),
     tabMovimenti:    t('Movimenti',                       'Transactions',                'Movimientos'),
     tabProdotti:     t('Prodotti',                        'Products',                    'Productos'),
+    tabProdottiHint: t('Articoli importati dagli scontrini', 'Items imported from receipts', 'Artículos importados desde tickets'),
     cerca:           t('Cerca prodotto…',                 'Search product…',             'Buscar producto…'),
     nessunProdotto:  t('Nessun prodotto ancora.\nI prodotti vengono aggiunti automaticamente quando importi uno scontrino.', 'No products yet.\nProducts are added automatically when you import a receipt.', 'Ningún producto aún.\nLos productos se añaden automáticamente al importar un ticket.'),
     ultimoPrezzo:    t('Ultimo prezzo',                   'Latest price',                'Último precio'),
@@ -462,6 +469,9 @@ const STRINGS = {
     spazioLocaleWarning: t('⚠️ Spazio locale quasi pieno: valuta backup/esportazione e pulizia dati vecchi.', '⚠️ Local storage is getting full: consider backup/export and cleaning old data.', '⚠️ El espacio local se está llenando: considera backup/exportación y limpieza de datos antiguos.'),
     spazioLocaleNota:   t('Stima basata su limite tipico IndexedDB (~50 MB per dominio).', 'Estimate based on typical IndexedDB limit (~50 MB per origin).', 'Estimación basada en el límite típico de IndexedDB (~50 MB por dominio).'),
     versione:           t('Versione', 'Version', 'Versión'),
+    svuotaDati:         t('🗑️ Svuota tutti i dati', '🗑️ Clear all data', '🗑️ Borrar todos los datos'),
+    svuotaConferma:     t('Verranno eliminati definitivamente:\n• Tutte le transazioni\n• Tutte le missioni\n• Tutti i prodotti\n• Categorie personalizzate\n\nImpostazioni, tema, lingua e PIN verranno mantenuti.', 'Will be permanently deleted:\n• All transactions\n• All missions\n• All products\n• Custom categories\n\nSettings, theme, language and PIN will be kept.', 'Se eliminarán permanentemente:\n• Todas las transacciones\n• Todas las misiones\n• Todos los productos\n• Categorías personalizadas\n\nLas configuraciones, tema, idioma y PIN se mantendrán.'),
+    svuotaFatto:        t('✅ Dati cancellati', '✅ Data cleared', '✅ Datos eliminados'),
   },
 
   // ── Notifiche ──────────────────────────────────────────

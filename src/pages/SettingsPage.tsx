@@ -14,6 +14,7 @@ import {
   isBiometricCredentialSaved,
   registerBiometric,
   removeBiometricCredential,
+  clearAllUserData,
 } from '../shared/storage'
 import {
   loadAutoBackupSettings,
@@ -444,6 +445,21 @@ function SettingsRow({ icon, label, onClick }: { icon: string; label: string; on
 // ─── Main Page ────────────────────────────────────────────
 function SettingsPage() {
   const navigate = useNavigate()
+  const { showConfirm } = useDialog()
+  const [resetDone, setResetDone] = useState(false)
+
+  async function handleReset() {
+    const ok = await showConfirm({
+      title: SETTINGS.svuotaDati,
+      message: SETTINGS.svuotaConferma,
+      confirmLabel: SETTINGS.svuotaDati,
+      cancelLabel: '✕ Annulla',
+    })
+    if (!ok) return
+    clearAllUserData()
+    setResetDone(true)
+    setTimeout(() => setResetDone(false), 3000)
+  }
 
   return (
     <div style={{ minHeight: '100%' }}>
@@ -457,6 +473,22 @@ function SettingsPage() {
         <SettingsRow icon="💾" label={SETTINGS.spazioLocaleTitolo}   onClick={() => navigate('/settings/spazio')} />
         <SettingsRow icon="📤" label={SETTINGS.esportaVoce}          onClick={() => navigate('/settings/esporta')} />
         <SettingsRow icon="🗄️" label={SETTINGS.backupVoce}           onClick={() => navigate('/settings/backup')} />
+      </div>
+
+      {/* ─── Zona pericolosa ─── */}
+      <div className="px-4 mt-6">
+        <p className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: '#ef4444' }}>Zona pericolosa</p>
+        <button
+          onClick={handleReset}
+          className="w-full py-3 rounded-xl text-sm font-medium transition active:scale-[0.98]"
+          style={{
+            backgroundColor: resetDone ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.08)',
+            color: resetDone ? '#22c55e' : '#ef4444',
+            border: `1px solid ${resetDone ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+          }}
+        >
+          {resetDone ? SETTINGS.svuotaFatto : SETTINGS.svuotaDati}
+        </button>
       </div>
 
       <div className="px-4 py-8 text-center">

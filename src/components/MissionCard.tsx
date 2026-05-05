@@ -70,7 +70,7 @@ function formatEuro(n: number) {
 }
 
 function getNextUnlock(pct: number): string {
-  if (pct === 0) return ''
+  if (pct === 0) return '🔧 Aggiungi transazioni per iniziare a costruire la tua navicella'
   if (pct < 15) return '🔧 Prossimo: corpo navicella al 15%'
   if (pct < 35) return 'Prossimo: ali al 35%'
   if (pct < 55) return 'Prossimo: punta al 55%'

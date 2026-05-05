@@ -482,23 +482,28 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
             )}
 
             {recurring && (
-              <div className="mt-2 flex items-center gap-2">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  min={1}
-                  max={60}
-                  value={recurringMonthsStr}
-                  onChange={(e) => {
-                    const v = e.target.value.replace(/[^0-9]/g, '')
-                    setRecurringMonthsStr(v === '' ? '' : String(Math.min(60, parseInt(v, 10) || 1)))
-                  }}
-                  onBlur={() => setRecurringMonthsStr(String(recurringMonths))}
-                  className="w-20 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2"
-                  style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
-                />
-                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{FORM.unitaMesi}</span>
-              </div>
+              <>
+                <div className="mt-2 flex items-center gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    min={1}
+                    max={60}
+                    value={recurringMonthsStr}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9]/g, '')
+                      setRecurringMonthsStr(v === '' ? '' : String(Math.min(60, parseInt(v, 10) || 1)))
+                    }}
+                    onBlur={() => setRecurringMonthsStr(String(recurringMonths))}
+                    className="w-20 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2"
+                    style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+                  />
+                  <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{FORM.unitaMesi}</span>
+                </div>
+                <p className="text-xs mt-2" style={{ color: 'var(--accent)', fontWeight: 500 }}>
+                  {FORM.ricorrentePreview(recurringMonths)}
+                </p>
+              </>
             )}
           </div>
 

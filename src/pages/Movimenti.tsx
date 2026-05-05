@@ -217,6 +217,11 @@ function Movimenti() {
             {PRODOTTI.tabProdotti}
           </button>
         </div>
+        {activeTab === 'prodotti' && (
+          <p style={{ margin: '6px 0 0', fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center' }}>
+            {PRODOTTI.tabProdottiHint}
+          </p>
+        )}
       </div>
 
       {activeTab === 'prodotti' && <ProductsCatalog />}
