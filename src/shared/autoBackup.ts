@@ -199,18 +199,9 @@ export async function writeBackupToFolder(password: string | null = null): Promi
 export async function performAutoBackup(): Promise<void> {
   const settings = loadAutoBackupSettings()
   if (!settings.enabled) return
+  if (settings.dest !== 'folder') return // auto backup solo con cartella, non download
 
   const pwd = settings.password || null
-
-  if (settings.dest === 'folder') {
-    const ok = await writeBackupToFolder(pwd)
-    if (!ok) {
-      // fallback silenzioso: salva in localStorage (sempre affidabile)
-      // il download non si fa automaticamente se il browser blocca l'accesso alla cartella
-    }
-  } else {
-    await triggerDownloadBackup(pwd)
-  }
-
+  await writeBackupToFolder(pwd)
   saveAutoBackupSettings({ ...settings, lastBackup: new Date().toISOString() })
 }

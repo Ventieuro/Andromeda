@@ -7,6 +7,7 @@ import InstallPrompt from './components/InstallPrompt'
 import Dashboard from './pages/Dashboard'
 import Categories from './pages/Categories'
 import SettingsPage, {
+  AspettoSection,
   LinguaSection,
   NotificheSection,
   SicurezzaSection,
@@ -39,6 +40,7 @@ function App() {
           <Route path="/missions" element={<Missions />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/settings/aspetto" element={<AspettoSection />} />
           <Route path="/settings/lingua" element={<LinguaSection />} />
           <Route path="/settings/notifiche" element={<NotificheSection />} />
           <Route path="/settings/sicurezza" element={<SicurezzaSection />} />

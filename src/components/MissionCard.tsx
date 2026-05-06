@@ -45,8 +45,8 @@ const PIECE_NAMES_IT: Record<PieceKey, string> = {
 const PIECE_ORDER: PieceKey[] = ['engine', 'body', 'wings', 'nose', 'cockpit']
 
 const COLORS = [
-  '#E8C84A', '#ff6060', '#60d4ff', '#80ff80',
-  '#ff80c0', '#c0a0ff', '#ff9940', '#ffffff',
+  '#E8C84A', '#cc2020', '#00D4FF', '#80ff80', '#ff80c0',
+  '#c0a0ff', '#ff9940', '#ffffff', '#000000', '#7030d0',
 ]
 
 const DEFAULT_COLORS: PieceColors = {
@@ -339,10 +339,10 @@ function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, sho
 
       {/* ─── ENGINE ─── */}
       <g id="engine">
-        <ellipse cx="100" cy="175" rx="22" ry="10" fill={engineColor} opacity="0.9" />
-        <path d="M78 165 Q100 178 122 165 L116 155 Q100 162 84 155 Z" fill={engineColor} />
-        <rect x="78" y="155" width="8" height="14" rx="4" fill={engineColor} opacity="0.8" />
-        <rect x="114" y="155" width="8" height="14" rx="4" fill={engineColor} opacity="0.8" />
+        <ellipse cx="100" cy="175" rx="22" ry="10" fill={engineColor} stroke="#ffffff20" strokeWidth="1" opacity="0.9" />
+        <path d="M78 165 Q100 178 122 165 L116 155 Q100 162 84 155 Z" fill={engineColor} stroke="#ffffff20" strokeWidth="1" />
+        <rect x="78" y="155" width="8" height="14" rx="4" fill={engineColor} stroke="#ffffff20" strokeWidth="1" opacity="0.8" />
+        <rect x="114" y="155" width="8" height="14" rx="4" fill={engineColor} stroke="#ffffff20" strokeWidth="1" opacity="0.8" />
         {showFlames && (
           <g className={igniting ? 'mc-flame-appear' : ''}>
             <ellipse cx="90" cy="185" rx={bigFlames ? 10 : 6} ry={bigFlames ? 20 : 10} fill="#ff8800" className={flameAClass} style={{ transformOrigin: '90px 175px' }}/>
@@ -356,7 +356,7 @@ function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, sho
       {/* ─── BODY ─── */}
       {isUnlocked('body') ? (
         <g id="body" className={newlyUnlocked === 'body' ? 'mc-unlock' : ''}>
-          <rect x="70" y="115" width="60" height="50" rx="16" fill={bodyColor} />
+          <rect x="70" y="115" width="60" height="50" rx="16" fill={bodyColor} stroke="#ffffff20" strokeWidth="1" />
           <line x1="72" y1="132" x2="128" y2="132" stroke="#ffffff22" strokeWidth="1" />
           <line x1="72" y1="148" x2="128" y2="148" stroke="#ffffff22" strokeWidth="1" />
           <line x1="88" y1="115" x2="88" y2="165" stroke="#ffffff15" strokeWidth="1" />
@@ -370,9 +370,9 @@ function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, sho
       {/* ─── WINGS ─── */}
       {isUnlocked('wings') ? (
         <g id="wings" className={newlyUnlocked === 'wings' ? 'mc-unlock' : ''}>
-          <path d="M70 140 L30 170 L45 155 L70 158 Z" fill={wingsColor} />
+          <path d="M70 140 L30 170 L45 155 L70 158 Z" fill={wingsColor} stroke="#ffffff20" strokeWidth="1" />
           <line x1="70" y1="140" x2="36" y2="165" stroke="#ffffff20" strokeWidth="1" />
-          <path d="M130 140 L170 170 L155 155 L130 158 Z" fill={wingsColor} />
+          <path d="M130 140 L170 170 L155 155 L130 158 Z" fill={wingsColor} stroke="#ffffff20" strokeWidth="1" />
           <line x1="130" y1="140" x2="164" y2="165" stroke="#ffffff20" strokeWidth="1" />
         </g>
       ) : ghostPiece('wings', (
@@ -385,7 +385,7 @@ function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, sho
       {/* ─── NOSE ─── */}
       {isUnlocked('nose') ? (
         <g id="nose" className={newlyUnlocked === 'nose' ? 'mc-unlock' : ''}>
-          <path d="M100 38 Q82 68 78 95 Q100 88 122 95 Q118 68 100 38 Z" fill={noseColor} />
+          <path d="M100 38 Q82 68 78 95 Q100 88 122 95 Q118 68 100 38 Z" fill={noseColor} stroke="#ffffff20" strokeWidth="1" />
           <path d="M100 50 Q92 72 90 90" stroke="#ffffff25" strokeWidth="2" fill="none" />
         </g>
       ) : ghostPiece('nose', <path d="M100 38 Q82 68 78 95 Q100 88 122 95 Q118 68 100 38 Z" />)}
@@ -400,7 +400,7 @@ function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, sho
       {/* ─── COCKPIT — always on top ─── */}
       {isUnlocked('cockpit') ? (
         <g id="cockpit" className={newlyUnlocked === 'cockpit' ? 'mc-unlock' : ''}>
-          <circle cx="100" cy="112" r="21" fill={cockpitColor} stroke={cockpitColor} strokeWidth="1.5"/>
+          <circle cx="100" cy="112" r="21" fill={cockpitColor} stroke="#ffffff25" strokeWidth="1.5"/>
           <circle cx="100" cy="112" r="16" fill="#0f1530" />
           <circle cx="100" cy="112" r="16" fill={cockpitColor} opacity="0.18" />
           <ellipse cx="93" cy="105" rx="6" ry="5" fill="#ffffff" opacity="0.45" transform="rotate(-20 93 105)" />
@@ -470,9 +470,7 @@ export default function MissionCard({
   const [pendingQueue, setPendingQueue] = useState<PieceKey[]>(() => {
     const confirmed = loadConfirmedPieces(id)
     return PIECE_ORDER.filter(piece => {
-      const t = THRESHOLDS[piece]
-      if (t === 0) return false
-      return pct >= t && !confirmed.has(piece)
+      return pct >= THRESHOLDS[piece] && !confirmed.has(piece)
     })
   })
   const pendingPiece = pendingQueue[0] ?? null
@@ -499,7 +497,6 @@ export default function MissionCard({
     const toAdd: PieceKey[] = []
     for (const piece of PIECE_ORDER) {
       const t = THRESHOLDS[piece]
-      if (t === 0) continue
       if (prev < t && pct >= t && !confirmedPieces.has(piece)) {
         toAdd.push(piece)
       }
@@ -799,16 +796,19 @@ export default function MissionCard({
           <div style={{ fontSize: '12px', color: '#8899cc', marginBottom: '10px' }}>
             Scegli il colore {pendingPiece === 'wings' || pendingPiece === 'nose' ? 'delle' : 'del'} {PIECE_NAMES_IT[pendingPiece]}:
           </div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
-            {COLORS.map((c) => (
-              <div key={c} onClick={() => setSelectedColor(c)} style={{
-                width: '28px', height: '28px', borderRadius: '50%',
-                background: c, cursor: 'pointer',
-                border: selectedColor === c ? '3px solid #ffffff' : '2px solid #2a3060',
-                boxShadow: selectedColor === c ? `0 0 8px ${c}` : 'none',
-                transition: 'all 0.15s',
-              }}/>
-            ))}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 28px)', gap: '8px', marginBottom: '12px', width: 'fit-content', margin: '0 auto 12px' }}>
+            {COLORS.map((c) => {
+              const isSelected = selectedColor === c
+              return (
+                <div key={c} onClick={() => setSelectedColor(c)} style={{
+                  width: '28px', height: '28px', borderRadius: '50%',
+                  background: c, cursor: 'pointer',
+                  border: isSelected ? '3px solid #ffffff' : '2px solid #2a3060',
+                  boxShadow: 'none',
+                  transition: 'all 0.15s',
+                }}/>
+              )
+            })}
           </div>
           <button onClick={confirmColor} style={{
             background: 'linear-gradient(135deg, #3b6fff, #7c9eff)',
@@ -855,7 +855,15 @@ export default function MissionCard({
             const unlocked = pct >= THRESHOLDS[piece]
             const isActive = pendingPiece === piece
             return (
-              <div key={piece} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div
+                key={piece}
+                onClick={() => {
+                  if (!unlocked) return
+                  if (pendingPiece === piece) return
+                  setPendingQueue(q => q.includes(piece) ? q : [piece, ...q.filter(p => p !== piece)])
+                  setSelectedColor(colors[piece])
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: unlocked ? 'pointer' : 'default' }}>
                 {unlocked ? (
                   <div style={{
                     width: '14px', height: '14px', borderRadius: '50%',

@@ -4,6 +4,42 @@
 
 ---
 
+## [06/05/2026] — Sessione 20
+
+### TASK-121 (fix): Grafico torta — scroll libero, long press per interazione
+**File modificati:** `src/components/SpaceDonutChart.tsx`, `package.json`
+
+- ✅ `touchstart` rimosso da `passive:false` → non blocca più lo scroll della pagina
+- ✅ Long press 400ms attiva selezione fetta + haptic; spostamento >10px annulla il timer
+- ✅ `touchAction: 'auto'` sul canvas (era `'none'`)
+- ✅ Versione bump → `0.7.26`
+
+### TASK-120 (feature): Color picker missioni — restyle bottoni con icona Target
+**File modificati:** `src/components/MissionCard.tsx`, `package.json`
+
+- ✅ Cerchi 48px con radial gradient + glow colorato al posto dei pallini 28px
+- ✅ Icona `Target` (lucide-react) al centro di ogni colore
+- ✅ Nome colore (IT) + hex code sotto ogni bottone
+- ✅ Colore `#60d4ff` → `#00D4FF` (Azzurro Fluo), `COLOR_NAMES` map aggiunta
+- ✅ Versione bump → `0.7.25`
+
+### TASK-119 (refactor): Impostazioni — icone lucide-react al posto delle emoji
+**File modificati:** `src/pages/SettingsPage.tsx`, `package.json`
+
+- ✅ `SettingsRow.icon` da `string` emoji a `React.ReactNode`
+- ✅ Menu: Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive
+- ✅ Backup dest: Download, FolderOpen; Tema: Moon, Sun, Rocket
+- ✅ Versione bump → `0.7.24`
+
+### TASK-118 (fix): Auto backup — niente download automatici
+**File modificati:** `src/shared/autoBackup.ts`, `src/pages/SettingsPage.tsx`, `src/shared/labels.ts`, `package.json`
+
+- ✅ `performAutoBackup`: early return se `dest !== 'folder'`
+- ✅ Toggle "Attiva alla chiusura" visibile solo con cartella locale
+- ✅ Nota informativa quando dest=download
+- ✅ `AUTO_BACKUP.soloCartella` aggiunto a labels
+- ✅ Versione bump → `0.7.23`
+
 ## [13/05/2026] — Sessione 19
 
 ### TASK-117 (fix+feature): Arco azzurro separato per risparmi già versati agli obiettivi

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Moon, Sun, Rocket, Download, FolderOpen } from 'lucide-react'
 import { PageHeader } from '../components/ui'
 import { useTheme } from '../shared/ThemeContext'
 import MoneyPlusImporter from '../components/MoneyPlusImporter'
@@ -58,39 +58,49 @@ function BackButton() {
   )
 }
 
-// ─── Lingua & Tema Section ────────────────────────────────
-export function LinguaSection() {
+// ─── Aspetto Section (solo tema) ─────────────────────────
+export function AspettoSection() {
   const { theme, setTheme } = useTheme()
   return (
     <div style={{ minHeight: '100%' }}>
-      <PageHeader title={SETTINGS.lingua} />
+      <PageHeader title={SETTINGS.aspetto} />
       <div className="px-4 space-y-6">
         <BackButton />
-
         <div>
           <SectionLabel>{SETTINGS.tema}</SectionLabel>
           <div className="grid grid-cols-3 gap-2">
             {([
-              { t: 'spazio', emoji: '🌑', label: SETTINGS.darkMode },
-              { t: 'nasa', emoji: '☀️', label: SETTINGS.lightMode },
-              { t: 'mission', emoji: '🚀', label: 'Mission' },
-            ] as { t: Parameters<typeof setTheme>[0]; emoji: string; label: string }[]).map(({ t, emoji, label }) => (
+              { t: 'spazio', icon: <Moon size={14} />, label: SETTINGS.darkMode },
+              { t: 'nasa', icon: <Sun size={14} />, label: SETTINGS.lightMode },
+              { t: 'mission', icon: <Rocket size={14} />, label: 'Mission' },
+            ] as { t: Parameters<typeof setTheme>[0]; icon: React.ReactNode; label: string }[]).map(({ t, icon, label }) => (
               <button
                 key={t}
                 onClick={() => setTheme(t)}
-                className={`py-2.5 px-2 rounded-xl text-sm font-medium transition ${theme === t ? 'ring-2' : ''}`}
+                className={`py-2.5 px-2 rounded-xl text-sm font-medium transition flex items-center justify-center gap-1.5 ${theme === t ? 'ring-2' : ''}`}
                 style={{
                   backgroundColor: theme === t ? 'var(--accent-light)' : 'var(--bg-secondary)',
                   color: theme === t ? 'var(--accent)' : 'var(--text-secondary)',
                   '--tw-ring-color': 'var(--accent)',
                 } as React.CSSProperties}
               >
-                {emoji} {label}
+                {icon} {label}
               </button>
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
 
+// ─── Lingua Section (solo lingua) ────────────────────────
+export function LinguaSection() {
+  return (
+    <div style={{ minHeight: '100%' }}>
+      <PageHeader title={SETTINGS.lingua} />
+      <div className="px-4 space-y-6">
+        <BackButton />
         <div>
           <SectionLabel>{SETTINGS.lingua}</SectionLabel>
           <div className="grid grid-cols-3 gap-2">
@@ -162,9 +172,9 @@ export function NotificheSection() {
             <button
               onClick={() => {
                 if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                  navigator.serviceWorker.ready.then((reg) => reg.showNotification('🚀 Hermes', { body: NOTIFICHE.messaggioPromemoria, icon: '/Hermes/pwa-192x192.svg' }))
+                  navigator.serviceWorker.ready.then((reg) => reg.showNotification(LAYOUT.appName, { body: NOTIFICHE.messaggioPromemoria, icon: '/Hermes/pwa-192x192.svg' }))
                 } else if ('Notification' in window && Notification.permission === 'granted') {
-                  new Notification('🚀 Hermes', { body: NOTIFICHE.messaggioPromemoria })
+                  new Notification(LAYOUT.appName, { body: NOTIFICHE.messaggioPromemoria })
                 }
               }}
               className="w-full py-2 rounded-xl text-xs font-medium transition active:scale-95"
@@ -386,6 +396,18 @@ export function BackupSection() {
       <div className="px-4 space-y-3">
         <BackButton />
 
+        {/* Toggle abilitazione automatica — solo con cartella */}
+        {autoBackup.dest === 'folder' && isFSASupported() ? (
+          <div className="flex items-center justify-between rounded-xl p-3.5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{AUTO_BACKUP.attiva}</span>
+            <div onClick={() => update({ enabled: !autoBackup.enabled })} className="w-11 h-6 rounded-full transition relative cursor-pointer" style={{ backgroundColor: autoBackup.enabled ? 'var(--accent)' : 'var(--bg-secondary)', border: '1px solid var(--border)' }} role="switch" aria-checked={autoBackup.enabled}>
+              <div className="w-4 h-4 rounded-full absolute top-0.5 transition-transform" style={{ backgroundColor: '#fff', transform: autoBackup.enabled ? 'translateX(22px)' : 'translateX(3px)' }} />
+            </div>
+          </div>
+        ) : (
+          <p className="text-[11px] rounded-xl px-3 py-2" style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>{AUTO_BACKUP.soloCartella}</p>
+        )}
+
         <div>
           <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{AUTO_BACKUP.passwordLabel}</p>
           <input type="password" className="w-full px-3 py-2 rounded-xl text-sm" style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }} placeholder={AUTO_BACKUP.passwordPlaceholder} value={autoBackup.password ?? ''} onChange={(e) => update({ password: e.target.value || null })} />
@@ -394,11 +416,11 @@ export function BackupSection() {
         <div>
           <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{AUTO_BACKUP.destinazione}</p>
           <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => update({ dest: 'download' })} className={`py-2 rounded-xl text-xs font-medium transition ${autoBackup.dest === 'download' ? 'ring-2' : ''}`} style={{ backgroundColor: autoBackup.dest === 'download' ? 'var(--accent-light)' : 'var(--bg-secondary)', color: autoBackup.dest === 'download' ? 'var(--accent)' : 'var(--text-secondary)', border: '1px solid var(--border)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}>
-              📥 {AUTO_BACKUP.download}
+            <button onClick={() => update({ dest: 'download' })} className={`py-2 rounded-xl text-xs font-medium transition flex items-center justify-center gap-1.5 ${autoBackup.dest === 'download' ? 'ring-2' : ''}`} style={{ backgroundColor: autoBackup.dest === 'download' ? 'var(--accent-light)' : 'var(--bg-secondary)', color: autoBackup.dest === 'download' ? 'var(--accent)' : 'var(--text-secondary)', border: '1px solid var(--border)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}>
+              <Download size={13} /> {AUTO_BACKUP.download}
             </button>
-            <button onClick={() => { if (!isFSASupported()) return; update({ dest: 'folder' }) }} disabled={!isFSASupported()} className={`py-2 rounded-xl text-xs font-medium transition disabled:opacity-40 ${autoBackup.dest === 'folder' ? 'ring-2' : ''}`} style={{ backgroundColor: autoBackup.dest === 'folder' ? 'var(--accent-light)' : 'var(--bg-secondary)', color: autoBackup.dest === 'folder' ? 'var(--accent)' : 'var(--text-secondary)', border: '1px solid var(--border)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}>
-              📁 {AUTO_BACKUP.cartella}
+            <button onClick={() => { if (!isFSASupported()) return; update({ dest: 'folder' }) }} disabled={!isFSASupported()} className={`py-2 rounded-xl text-xs font-medium transition disabled:opacity-40 flex items-center justify-center gap-1.5 ${autoBackup.dest === 'folder' ? 'ring-2' : ''}`} style={{ backgroundColor: autoBackup.dest === 'folder' ? 'var(--accent-light)' : 'var(--bg-secondary)', color: autoBackup.dest === 'folder' ? 'var(--accent)' : 'var(--text-secondary)', border: '1px solid var(--border)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}>
+              <FolderOpen size={13} /> {AUTO_BACKUP.cartella}
             </button>
           </div>
           {!isFSASupported() && <p className="text-[11px] mt-1" style={{ color: 'var(--text-muted)' }}>{AUTO_BACKUP.nonSupportato}</p>}
@@ -428,14 +450,14 @@ export function BackupSection() {
 }
 
 // ─── Settings Menu Row ────────────────────────────────────
-function SettingsRow({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
+function SettingsRow({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
       className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition active:scale-[0.98]"
       style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
     >
-      <span style={{ fontSize: '20px', width: '28px', textAlign: 'center' }}>{icon}</span>
+      <span className="flex items-center justify-center" style={{ width: '28px', color: 'var(--accent)' }}>{icon}</span>
       <span className="flex-1 text-left text-sm font-medium">{label}</span>
       <ChevronRight size={16} aria-hidden="true" style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
     </button>
@@ -466,13 +488,14 @@ function SettingsPage() {
       <PageHeader title={SETTINGS.impostazioni} />
 
       <div className="px-4 flex flex-col gap-2">
-        <SettingsRow icon="🗂️" label={LAYOUT.navCategories}          onClick={() => navigate('/categories')} />
-        <SettingsRow icon="🌍" label={SETTINGS.lingua}               onClick={() => navigate('/settings/lingua')} />
-        <SettingsRow icon="🔔" label={SETTINGS.notifiche}            onClick={() => navigate('/settings/notifiche')} />
-        <SettingsRow icon="🔒" label={SETTINGS.sicurezza}            onClick={() => navigate('/settings/sicurezza')} />
-        <SettingsRow icon="💾" label={SETTINGS.spazioLocaleTitolo}   onClick={() => navigate('/settings/spazio')} />
-        <SettingsRow icon="📤" label={SETTINGS.esportaVoce}          onClick={() => navigate('/settings/esporta')} />
-        <SettingsRow icon="🗄️" label={SETTINGS.backupVoce}           onClick={() => navigate('/settings/backup')} />
+        <SettingsRow icon={<Tag size={18} />}          label={LAYOUT.navCategories}         onClick={() => navigate('/categories')} />
+        <SettingsRow icon={<Palette size={18} />}      label={SETTINGS.aspetto}             onClick={() => navigate('/settings/aspetto')} />
+        <SettingsRow icon={<Globe size={18} />}        label={SETTINGS.lingua}              onClick={() => navigate('/settings/lingua')} />
+        <SettingsRow icon={<Bell size={18} />}         label={SETTINGS.notifiche}           onClick={() => navigate('/settings/notifiche')} />
+        <SettingsRow icon={<Lock size={18} />}         label={SETTINGS.sicurezza}           onClick={() => navigate('/settings/sicurezza')} />
+        <SettingsRow icon={<HardDrive size={18} />}    label={SETTINGS.spazioLocaleTitolo}  onClick={() => navigate('/settings/spazio')} />
+        <SettingsRow icon={<ArrowUpDown size={18} />}  label={SETTINGS.esportaVoce}         onClick={() => navigate('/settings/esporta')} />
+        <SettingsRow icon={<Archive size={18} />}      label={SETTINGS.backupVoce}          onClick={() => navigate('/settings/backup')} />
       </div>
 
       {/* ─── Zona pericolosa ─── */}

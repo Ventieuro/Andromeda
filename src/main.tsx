@@ -6,6 +6,7 @@ import { DialogProvider } from './shared/DialogContext'
 import { AmountsProvider } from './shared/AmountsContext'
 import { initPersistentStorage, migrateCategoryKeys } from './shared/storage'
 import { reloadApp } from './shared/platform'
+import { performAutoBackup } from './shared/autoBackup'
 import App from './App'
 import './index.css'
 
@@ -100,6 +101,9 @@ function showUpdateNotification(registration: ServiceWorkerRegistration) {
 // Quando iOS "Note Rapide" o un overlay cambia il viewport e poi lo ripristina,
 // Safari a volte non ridisegna la pagina. Forziamo un repaint al ritorno.
 document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    performAutoBackup()
+  }
   if (document.visibilityState === 'visible') {
     document.body.style.display = 'none'
     // Trigger reflow — accesso a offsetHeight è intenzionale

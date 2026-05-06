@@ -424,6 +424,7 @@ const STRINGS = {
   // ── Settings ───────────────────────────────────────────
   settings: {
     impostazioni:      t('Configurazioni',               'Settings',                    'Configuración'),
+    aspetto:           t('Aspetto',                      'Appearance',                  'Apariencia'),
     tema:              t('Tema',                         'Theme',                       'Tema'),
     darkMode:          t('Spazio',                       'Space',                       'Espacio'),
     lightMode:         t('NASA',                         'NASA',                        'NASA'),
@@ -465,7 +466,7 @@ const STRINGS = {
     codicePrompt:      t('Inserisci la password del codice:', 'Enter code password:',      'Ingresa la contraseña del codigo:'),
     spazioLocaleTitolo: t('Spazio locale',                 'Local storage',                 'Espacio local'),
     sicurezza:          t('Sicurezza',                    'Security',                      'Seguridad'),
-    esportaVoce:        t('Esporta Dati',                 'Export Data',                   'Exportar datos'),
+    esportaVoce:        t('Esporta / Importa',            'Export / Import',               'Exportar / Importar'),
     backupVoce:         t('Backup Automatico',            'Auto Backup',                   'Copia automática'),
     spazioLocaleDettaglio: tf(
       (used: string, max: string, pct: number) => `Usato ${used} su circa ${max} (${pct}%)`,
@@ -564,6 +565,7 @@ const STRINGS = {
     mai:             t('Mai',                                'Never',                         'Nunca'),
     backupOra:       t('💾 Backup ora',                      '💾 Backup now',                  '💾 Copia ahora'),
     nonSupportato:   t('Non supportato da questo browser.',  'Not supported by this browser.','No compatible con este navegador.'),
+    soloCartella:    t('L\'auto backup richiede la cartella locale.',  'Auto backup requires a local folder.',  'La copia automática requiere una carpeta local.'),
     passwordLabel:   t('Password cifratura',                 'Encryption password',            'Contraseña de cifrado'),
     passwordPlaceholder: t('Lascia vuoto = nessuna cifratura', 'Leave empty = no encryption',  'Dejar vacío = sin cifrar'),
     nota:            t('Con password: file cifrato AES-256. Senza: JSON non cifrato.', 'With password: AES-256 encrypted file. Without: plain JSON.', 'Con contraseña: cifrado AES-256. Sin ella: JSON sin cifrar.'),

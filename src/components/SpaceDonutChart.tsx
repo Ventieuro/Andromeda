@@ -473,12 +473,16 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     setTappedSlice(null)
   }
 
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const longPressActiveRef = useRef(false)
+  const touchStartPosRef = useRef<{ x: number; y: number } | null>(null)
+
   // ─── Vibrazione al cambio fetta ───────────────────────────────────
   useEffect(() => {
     if (tappedSlice) haptic(8)
   }, [tappedSlice])
 
-  // ─── Native touch events (passive:false → can preventDefault) ────
+  // ─── Native touch events — long press per attivare, scroll libero ────
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas || slices.length === 0) return
@@ -488,33 +492,66 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
       return { x: touch.clientX - rect.left, y: touch.clientY - rect.top }
     }
 
-    function onTouchStart(e: TouchEvent) {
-      if (e.touches.length !== 1) return
-      const { x, y } = getXY(e.touches[0])
-      // Check if touch is on donut area before locking scroll
+    function isOnDonut(x: number, y: number): boolean {
       const scale = size / 320
       const outerR = 100 * scale
       const innerR = 58 * scale
       const cx = size / 2; const cy = size / 2
       const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2)
-      if (dist >= innerR - 8 && dist <= outerR + 16) {
-        e.preventDefault()
-        hitTestCanvas(x, y, true)
+      return dist >= innerR - 8 && dist <= outerR + 16
+    }
+
+    function clearLongPress() {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current)
+        longPressTimerRef.current = null
       }
+    }
+
+    function onTouchStart(e: TouchEvent) {
+      if (e.touches.length !== 1) return
+      const { x, y } = getXY(e.touches[0])
+      longPressActiveRef.current = false
+      touchStartPosRef.current = { x, y }
+      clearLongPress()
+      if (!isOnDonut(x, y)) return
+      longPressTimerRef.current = setTimeout(() => {
+        longPressActiveRef.current = true
+        haptic(20)
+        hitTestCanvas(x, y, true)
+      }, 400)
     }
 
     function onTouchMove(e: TouchEvent) {
       if (e.touches.length !== 1) return
-      e.preventDefault()
       const { x, y } = getXY(e.touches[0])
+      const start = touchStartPosRef.current
+      // Se si sposta > 10px prima del long press, annulla (è uno scroll)
+      if (!longPressActiveRef.current && start) {
+        const moved = Math.sqrt((x - start.x) ** 2 + (y - start.y) ** 2)
+        if (moved > 10) clearLongPress()
+        return
+      }
+      // Long press attivo: blocca scroll e aggiorna fetta
+      e.preventDefault()
       hitTestCanvas(x, y, false)
     }
 
-    canvas.addEventListener('touchstart', onTouchStart, { passive: false })
+    function onTouchEnd() {
+      clearLongPress()
+      longPressActiveRef.current = false
+      touchStartPosRef.current = null
+    }
+
+    canvas.addEventListener('touchstart', onTouchStart, { passive: true })
     canvas.addEventListener('touchmove', onTouchMove, { passive: false })
+    canvas.addEventListener('touchend', onTouchEnd)
+    canvas.addEventListener('touchcancel', onTouchEnd)
     return () => {
       canvas.removeEventListener('touchstart', onTouchStart)
       canvas.removeEventListener('touchmove', onTouchMove)
+      canvas.removeEventListener('touchend', onTouchEnd)
+      canvas.removeEventListener('touchcancel', onTouchEnd)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slices, size])
@@ -526,7 +563,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
         <canvas
           ref={canvasRef}
           className="rounded-xl"
-          style={{ width: size, height: size, cursor: slices.length > 0 ? 'pointer' : 'default', touchAction: 'none' }}
+          style={{ width: size, height: size, cursor: slices.length > 0 ? 'pointer' : 'default', touchAction: 'auto' }}
           onClick={(e: React.MouseEvent<HTMLCanvasElement>) => {
             const rect = canvasRef.current!.getBoundingClientRect()
             hitTestCanvas(e.clientX - rect.left, e.clientY - rect.top, true)

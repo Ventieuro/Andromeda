@@ -38,6 +38,35 @@
 
 ## Completati
 
+### ✅ TASK-121 — Grafico torta: scroll libero, interazione con long press (06/05/2026)
+- [x] `SpaceDonutChart`: `touchstart` non chiama più `preventDefault()` → scroll libero
+- [x] Long press 400ms sul donut attiva la selezione fetta + haptic 20ms
+- [x] Spostamento >10px prima del long press = annulla timer (scroll prioritario)
+- [x] `touchAction: 'auto'` sul canvas
+- [x] Versione bump → `0.7.26`, deploy ✅
+
+### ✅ TASK-120 — Color picker missioni: restyle bottoni con icona Target (06/05/2026)
+- [x] Cerchi 48px con radial gradient e glow colorato
+- [x] Icona `Target` (lucide-react) al centro di ogni bottone
+- [x] Nome colore + hex code sotto ogni bottone
+- [x] Colore `#60d4ff` → `#00D4FF` (Azzurro Fluo)
+- [x] `COLOR_NAMES` map aggiunta per etichette in italiano
+- [x] Versione bump → `0.7.25`, deploy ✅
+
+### ✅ TASK-119 — Impostazioni: icone lucide-react al posto delle emoji (06/05/2026)
+- [x] `SettingsRow`: prop `icon` da `string` a `React.ReactNode`, rimossa font-size emoji
+- [x] Menu principale: Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive
+- [x] Dest. backup: Download, FolderOpen invece di 📥 📁
+- [x] Tema section: Moon, Sun, Rocket invece di 🌑 ☀️ 🚀 (con `flex items-center gap-1.5`)
+- [x] Versione bump → `0.7.24`, deploy ✅
+
+### ✅ TASK-118 — Fix auto backup: download non automatico, toggle solo con cartella (06/05/2026)
+- [x] `autoBackup.ts performAutoBackup`: skip se `dest !== 'folder'` (solo cartella fa auto backup)
+- [x] `SettingsPage BackupSection`: toggle visibile solo quando `dest === 'folder' && isFSASupported()`
+- [x] Nota informativa mostrata quando `dest === 'download'`
+- [x] `AUTO_BACKUP.soloCartella` aggiunto a `labels.ts`
+- [x] Versione bump → `0.7.23`, deploy ✅
+
 ### ✅ TASK-116 — Grafico: arco esterno pulsante azzurro (non raggiunto) invece di rosso (05/05/2026)
 - [x] `SpaceDonutChart.drawSavingsGoalArc`: `baseColor` cambiato da `239,68,68` (rosso) a `96,165,250` (azzurro) quando obiettivo non raggiunto
 - [x] Verde mantenuto quando obiettivo raggiunto
