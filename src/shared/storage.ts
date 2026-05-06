@@ -962,7 +962,7 @@ function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok
 
   if (data.missionCardData && typeof data.missionCardData === 'object') {
     for (const [key, value] of Object.entries(data.missionCardData)) {
-      if (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-')) {
+      if (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-')) {
         localStorage.setItem(key, value)
       }
     }
@@ -976,7 +976,7 @@ export async function exportAllData(password: string): Promise<void> {
   const missionCardData: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-'))) {
+    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-'))) {
       missionCardData[key] = localStorage.getItem(key) ?? ''
     }
   }
@@ -1035,7 +1035,7 @@ export async function buildQrTransferLinks(password: string): Promise<string[]> 
   const missionCardData: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-'))) {
+    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-'))) {
       missionCardData[key] = localStorage.getItem(key) ?? ''
     }
   }
@@ -1074,7 +1074,7 @@ export async function buildTransferCode(password: string): Promise<string> {
   const missionCardData: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-'))) {
+    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-'))) {
       missionCardData[key] = localStorage.getItem(key) ?? ''
     }
   }

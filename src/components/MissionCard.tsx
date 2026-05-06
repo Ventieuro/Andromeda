@@ -853,22 +853,17 @@ export default function MissionCard({
         }}>
           {PIECE_ORDER.map((piece) => {
             const unlocked = pct >= THRESHOLDS[piece]
+            const isConfirmed = confirmedPieces.has(piece)
             const isActive = pendingPiece === piece
             return (
               <div
                 key={piece}
-                onClick={() => {
-                  if (!unlocked) return
-                  if (pendingPiece === piece) return
-                  setPendingQueue(q => q.includes(piece) ? q : [piece, ...q.filter(p => p !== piece)])
-                  setSelectedColor(colors[piece])
-                }}
-                style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: unlocked ? 'pointer' : 'default' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'default' }}>
                 {unlocked ? (
                   <div style={{
                     width: '14px', height: '14px', borderRadius: '50%',
                     background: colors[piece],
-                    boxShadow: isActive ? `0 0 0 2px #fff, 0 0 8px ${colors[piece]}` : `0 0 5px ${colors[piece]}`,
+                    boxShadow: isActive ? `0 0 0 2px #fff, 0 0 8px ${colors[piece]}` : isConfirmed ? 'none' : `0 0 5px ${colors[piece]}`,
                     flexShrink: 0,
                   }}/>
                 ) : (
