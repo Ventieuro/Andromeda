@@ -220,6 +220,48 @@
   --tx-balance-neg-label: #a855f7;
 }
 
+/* ========== TEMA: Luna ========== */
+[data-theme="luna"] {
+  --bg-primary: #eef0f8;           /* bianco lunare freddo */
+  --bg-secondary: #e4e7f4;
+  --bg-card: #f8f9fe;              /* quasi bianco con tinta blu */
+  --text-primary: #0e1233;         /* navy profondo */
+  --text-secondary: #3a4172;
+  --text-muted: #7c84aa;
+  --border: #d2d6ed;
+  --accent: #7c85c8;               /* argento-indigo lunare */
+  --accent-hover: #636cb5;
+  --accent-light: rgba(124,133,200,0.12);
+  --nav-bg: #0e1233;               /* spazio visto dalla luna — dark navy */
+  --nav-text: #eef0f8;
+  --btn-bg: #f8f9fe;
+  --btn-text: #0e1233;
+  --input-bg: #f8f9fe;
+  --input-border: #c8ccdf;
+  --highlight: #7c85c8;
+  --gold: #b8a060;                 /* oro pallido */
+  --water: #5588bb;                /* blu freddo */
+  --tropical: #7c85c8;
+  --fab-bg: #0e1233;               /* FAB dark navy */
+  --fab-text: #eef0f8;
+  --tx-income-bg: #edf7f0;
+  --tx-income-border: #b8dcc4;
+  --tx-income-text: #1d5c32;
+  --tx-income-label: #2d7a48;
+  --tx-expense-bg: #f7edf0;
+  --tx-expense-border: #d8b8c0;
+  --tx-expense-text: #7a1d2d;
+  --tx-expense-label: #9c2e40;
+  --tx-balance-pos-bg: rgba(124,133,200,0.08);
+  --tx-balance-pos-border: rgba(124,133,200,0.25);
+  --tx-balance-pos-text: #4a55a8;
+  --tx-balance-pos-label: #636cb5;
+  --tx-balance-neg-bg: rgba(160,120,80,0.08);
+  --tx-balance-neg-border: rgba(160,120,80,0.22);
+  --tx-balance-neg-text: #8a5c20;
+  --tx-balance-neg-label: #a87030;
+}
+
 /* ========== Stili globali basati su variabili ========== */
 body {
   background-color: var(--bg-primary);

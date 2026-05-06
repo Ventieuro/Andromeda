@@ -233,11 +233,53 @@ const AURORA: ThemeTokens = {
   txBalanceNegLabel: '#a855f7',
 }
 
+const LUNA: ThemeTokens = {
+  bgPrimary: '#eef0f8',
+  bgSecondary: '#e4e7f4',
+  bgCard: '#f8f9fe',
+  textPrimary: '#0e1233',
+  textSecondary: '#3a4172',
+  textMuted: '#7c84aa',
+  border: '#d2d6ed',
+  accent: '#7c85c8',
+  accentHover: '#636cb5',
+  accentLight: 'rgba(124,133,200,0.12)',
+  navBg: '#0e1233',
+  navText: '#eef0f8',
+  btnBg: '#f8f9fe',
+  btnText: '#0e1233',
+  inputBg: '#f8f9fe',
+  inputBorder: '#c8ccdf',
+  highlight: '#7c85c8',
+  gold: '#b8a060',
+  water: '#5588bb',
+  tropical: '#7c85c8',
+  fabBg: '#0e1233',
+  fabText: '#eef0f8',
+  txIncomeBg: '#edf7f0',
+  txIncomeBorder: '#b8dcc4',
+  txIncomeText: '#1d5c32',
+  txIncomeLabel: '#2d7a48',
+  txExpenseBg: '#f7edf0',
+  txExpenseBorder: '#d8b8c0',
+  txExpenseText: '#7a1d2d',
+  txExpenseLabel: '#9c2e40',
+  txBalancePosBg: 'rgba(124,133,200,0.08)',
+  txBalancePosBorder: 'rgba(124,133,200,0.25)',
+  txBalancePosText: '#4a55a8',
+  txBalancePosLabel: '#636cb5',
+  txBalanceNegBg: 'rgba(160,120,80,0.08)',
+  txBalanceNegBorder: 'rgba(160,120,80,0.22)',
+  txBalanceNegText: '#8a5c20',
+  txBalanceNegLabel: '#a87030',
+}
+
 const THEME_MAP: Record<Theme, ThemeTokens> = {
   nebula: NEBULA,
   mission: MISSION,
   nasa: NASA,
   aurora: AURORA,
+  luna: LUNA,
 }
 
 /** Returns the full token set for a given theme name. */
