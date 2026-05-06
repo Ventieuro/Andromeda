@@ -1,11 +1,12 @@
 import { useTheme } from '../shared/ThemeContext'
+import { NebulaIcon, MissionIcon, NasaIcon, AuroraIcon } from '../shared/themeIcons'
+import type { ComponentType } from 'react'
 
-const THEME_META: Record<string, { icon: string; label: string; bg: string; text: string; border: string }> = {
-  nebula:  { icon: '🌌', label: 'Nebula',  bg: '#0b0d17', text: '#b388ff', border: '#7c4dff' },
-  mission: { icon: '🚀', label: 'Mission', bg: '#0d1323', text: '#ff9800', border: '#ff9800' },
-  nasa:    { icon: '☀️', label: 'NASA',    bg: '#f5f5f5', text: '#FC3D21', border: '#FC3D21' },
-  aurora:  { icon: '�', label: 'Aurora',  bg: '#071a14', text: '#00e5b0', border: '#00e5b0' },
-  luna:    { icon: '🌙', label: 'Luna',    bg: '#eef0f6', text: '#6366f1', border: '#6366f1' },
+const THEME_META: Record<string, { Icon: ComponentType<{ size?: number }>; label: string; bg: string; text: string; border: string }> = {
+  nebula:  { Icon: NebulaIcon,  label: 'Nebula',  bg: '#0b0d17', text: '#b388ff', border: '#7c4dff' },
+  mission: { Icon: MissionIcon, label: 'Mission', bg: '#0d1323', text: '#ff9800', border: '#ff9800' },
+  nasa:    { Icon: NasaIcon,    label: 'NASA',    bg: '#f4f6fc', text: '#FC3D21', border: '#FC3D21' },
+  aurora:  { Icon: AuroraIcon,  label: 'Aurora',  bg: '#080c1a', text: '#00e5b0', border: '#00e5b0' },
 }
 
 function ThemeSwitcher() {
@@ -22,7 +23,7 @@ function ThemeSwitcher() {
           boxShadow: `0 0 8px ${meta.border}50`,
         }}
       >
-        <span>{meta.icon}</span>
+        <meta.Icon size={16} />
         <span className="hidden sm:inline">{meta.label}</span>
       </span>
     </div>

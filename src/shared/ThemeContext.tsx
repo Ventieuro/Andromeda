@@ -3,9 +3,9 @@ import type { ReactNode } from 'react'
 import { getThemeTokens } from './themeTokens'
 import type { ThemeTokens } from './themeTokens'
 
-export type Theme = 'nebula' | 'nasa' | 'mission' | 'aurora' | 'luna'
+export type Theme = 'nebula' | 'nasa' | 'mission' | 'aurora'
 
-const ALL_THEMES: Theme[] = ['nebula', 'nasa', 'mission', 'aurora', 'luna']
+const ALL_THEMES: Theme[] = ['nebula', 'nasa', 'mission', 'aurora']
 
 const THEME_KEY = 'andromeda-theme'
 

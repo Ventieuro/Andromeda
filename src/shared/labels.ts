@@ -60,7 +60,6 @@ const STRINGS = {
     nasa:    t('NASA',     'NASA',     'NASA'),
     mission: t('Mission',  'Mission',  'Misión'),
     aurora:  t('Aurora',   'Aurora',   'Aurora'),
-    luna:    t('Luna',     'Moon',     'Luna'),
   },
 
   // ── Dashboard ──────────────────────────────────────────

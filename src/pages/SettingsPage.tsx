@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import type { ComponentType } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Download, FolderOpen } from 'lucide-react'
 import { PageHeader } from '../components/ui'
 import { useTheme } from '../shared/ThemeContext'
+import { NebulaIcon, MissionIcon, NasaIcon, AuroraIcon } from '../shared/themeIcons'
 import MoneyPlusImporter from '../components/MoneyPlusImporter'
 import {
   loadNotificationSettings,
@@ -68,26 +70,25 @@ export function AspettoSection() {
         <BackButton />
         <div>
           <SectionLabel>{SETTINGS.tema}</SectionLabel>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {([
-              { t: 'nebula',  icon: '🌌', label: 'Nebula',  bg: '#0b0d17', text: '#b388ff', accent: '#7c4dff' },
-              { t: 'mission', icon: '🚀', label: 'Mission', bg: '#0d1323', text: '#ff9800', accent: '#ff9800' },
-              { t: 'nasa',    icon: '☀️', label: 'NASA',    bg: '#e8ecf5', text: '#FC3D21', accent: '#FC3D21' },
-              { t: 'aurora',  icon: '🌠', label: 'Aurora',  bg: '#071a14', text: '#00e5b0', accent: '#00e5b0' },
-              { t: 'luna',    icon: '🌙', label: 'Luna',    bg: '#e0e4f4', text: '#6366f1', accent: '#6366f1' },
-            ] as { t: Parameters<typeof setTheme>[0]; icon: string; label: string; bg: string; text: string; accent: string }[]).map(({ t, icon, label, bg, text, accent }) => (
+              { t: 'nebula',  Icon: NebulaIcon,  label: 'Nebula',  bg: '#0b0d17', text: '#b388ff', accent: '#7c4dff' },
+              { t: 'mission', Icon: MissionIcon, label: 'Mission', bg: '#0d1323', text: '#ff9800', accent: '#ff9800' },
+              { t: 'nasa',    Icon: NasaIcon,    label: 'NASA',    bg: '#f4f6fc', text: '#FC3D21', accent: '#FC3D21' },
+              { t: 'aurora',  Icon: AuroraIcon,  label: 'Aurora',  bg: '#080c1a', text: '#00e5b0', accent: '#00e5b0' },
+            ] as { t: Parameters<typeof setTheme>[0]; Icon: ComponentType<{ size?: number }>; label: string; bg: string; text: string; accent: string }[]).map(({ t, Icon, label, bg, text, accent }) => (
               <button
                 key={t}
                 onClick={() => setTheme(t)}
-                className="rounded-xl text-xs font-semibold transition-transform active:scale-95 flex flex-col items-center gap-1 py-3"
+                className="rounded-xl text-xs font-semibold transition-transform active:scale-95 flex flex-col items-center gap-1.5 py-3"
                 style={{
                   backgroundColor: bg,
                   color: text,
                   border: `2px solid ${theme === t ? accent : accent + '30'}`,
-                  boxShadow: theme === t ? `0 0 10px ${accent}50` : 'none',
+                  boxShadow: theme === t ? `0 0 12px ${accent}55` : 'none',
                 }}
               >
-                <span style={{ fontSize: '18px' }}>{icon}</span>
+                <Icon size={24} />
                 <span>{label}</span>
                 <span style={{ width: 20, height: 2, backgroundColor: accent, borderRadius: 2, display: 'block', opacity: theme === t ? 1 : 0 }} />
               </button>
