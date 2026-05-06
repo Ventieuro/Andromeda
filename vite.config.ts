@@ -18,8 +18,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['mascot.svg', 'vite.svg', 'pwa-192x192.svg', 'pwa-512x512.svg'],
       manifest: {
-        name: 'Hermes',
-        short_name: 'Hermes',
+        name: 'Andromeda',
+        short_name: 'Andromeda',
         description: 'Gestisci entrate, uscite e risparmi come un astronauta 🚀',
         theme_color: '#0b0d17',
         background_color: '#0b0d17',

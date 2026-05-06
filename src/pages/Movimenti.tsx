@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { ListFilter } from 'lucide-react'
+import { ListFilter, Pencil, Trash2 } from 'lucide-react'
 import { loadTransactions, deleteTransaction, deleteTransactionsByGroupId, loadSettings, loadGoals, updateGoal } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import { MOVIMENTI, PRODOTTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '../shared/labels'
@@ -476,6 +476,25 @@ function Movimenti() {
               </div>
 
               {/* Importo */}
+              {tx.isReceipt && (
+                <button
+                  onClick={() => setReceiptDetailTx(tx)}
+                  style={{
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '11px',
+                    padding: '4px 8px',
+                    color: 'var(--text-secondary)',
+                    fontWeight: 600,
+                    flexShrink: 0,
+                  }}
+                  aria-label={MOVIMENTI.dettaglioScontrino}
+                >
+                  {MOVIMENTI.dettaglioScontrino}
+                </button>
+              )}
               <span style={{
                 fontSize: '15px',
                 fontWeight: 700,
@@ -486,38 +505,20 @@ function Movimenti() {
               </span>
 
               {/* Azioni */}
-              <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                {tx.isReceipt && (
-                  <button
-                    onClick={() => setReceiptDetailTx(tx)}
-                    style={{
-                      background: 'var(--bg-secondary)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontSize: '11px',
-                      padding: '4px 8px',
-                      color: 'var(--text-secondary)',
-                      fontWeight: 600,
-                    }}
-                    aria-label={MOVIMENTI.dettaglioScontrino}
-                  >
-                    {MOVIMENTI.dettaglioScontrino}
-                  </button>
-                )}
+              <div style={{ display: 'flex', gap: '2px', flexShrink: 0 }}>
                 <button
                   onClick={() => setEditingTx(tx)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', color: 'var(--text-muted)' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}
                   aria-label="Modifica"
                 >
-                  ✏️
+                  <Pencil size={16} />
                 </button>
                 <button
                   onClick={() => handleDelete(tx)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', color: 'var(--text-muted)' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}
                   aria-label="Elimina"
                 >
-                  🗑️
+                  <Trash2 size={16} />
                 </button>
               </div>
             </div>

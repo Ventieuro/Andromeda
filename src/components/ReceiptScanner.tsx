@@ -11,6 +11,7 @@
  */
 
 import { useReducer, useRef, useEffect, useState } from 'react'
+import { Trash2 } from 'lucide-react'
 import { createWorker } from 'tesseract.js'
 import { processImage, parseReceiptText, type ReceiptItem } from '../shared/receiptUtils'
 import { addTransaction, generateId, findMatchingProduct, upsertProductFromReceipt } from '../shared/storage'
@@ -997,11 +998,11 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                           onClick={() => dispatch({ type: 'RIMUOVI_ARTICOLO', id: item.id })}
                           style={{
                             background: 'none', border: 'none', cursor: 'pointer',
-                            fontSize: '14px', color: 'var(--text-muted)',
+                            color: 'var(--text-muted)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                           }}
                           aria-label="Rimuovi articolo"
-                        >🗑</button>
+                        ><Trash2 size={14} /></button>
                       </div>
                     )
                   })}

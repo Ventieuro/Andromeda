@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Pencil, Trash2 } from 'lucide-react'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
 import ReceiptDetailModal from '../components/ReceiptDetailModal'
@@ -354,12 +355,6 @@ function Dashboard() {
                       : translateCategory(tx.category)} · {formatDay(tx.date)}
                   </p>
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 700, flexShrink: 0, color: tx.goalId ? '#7c9eff' : (tx.type === 'entrata' ? 'var(--tx-income-text)' : 'var(--tx-expense-text)') }}>
-                  {tx.type === 'entrata'
-                    ? (!amountsVisible ? HIDDEN : `+${formatEuro(tx.amount)}`)
-                    : `-${formatEuro(tx.amount)}`}
-                </span>
-                <button onClick={() => setEditingTx(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px', padding: '4px', color: 'var(--text-muted)' }} aria-label="Modifica">✏️</button>
                 {tx.isReceipt && (
                   <button
                     onClick={() => setReceiptDetailTx(tx)}
@@ -378,7 +373,13 @@ function Dashboard() {
                     {DASHBOARD.dettaglioScontrino}
                   </button>
                 )}
-                <button onClick={() => handleDelete(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px', padding: '4px', color: 'var(--text-muted)' }} aria-label={DASHBOARD.eliminaLabel}>🗑</button>
+                <span style={{ fontSize: '14px', fontWeight: 700, flexShrink: 0, color: tx.goalId ? '#7c9eff' : (tx.type === 'entrata' ? 'var(--tx-income-text)' : 'var(--tx-expense-text)') }}>
+                  {tx.type === 'entrata'
+                    ? (!amountsVisible ? HIDDEN : `+${formatEuro(tx.amount)}`)
+                    : `-${formatEuro(tx.amount)}`}
+                </span>
+                <button onClick={() => setEditingTx(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }} aria-label="Modifica"><Pencil size={15} /></button>
+                <button onClick={() => handleDelete(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }} aria-label={DASHBOARD.eliminaLabel}><Trash2 size={15} /></button>
               </div>
             ))}
           </div>

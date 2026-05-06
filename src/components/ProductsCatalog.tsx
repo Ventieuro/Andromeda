@@ -6,7 +6,7 @@
  */
 
 import { useState, useMemo } from 'react'
-import { ListFilter } from 'lucide-react'
+import { ListFilter, Pencil, Trash2 } from 'lucide-react'
 import type { ProductEntry } from '../shared/types'
 import { loadProducts, saveProducts, deleteProduct, updateProductName } from '../shared/storage'
 import { PRODOTTI } from '../shared/labels'
@@ -309,13 +309,13 @@ function ProductsCatalog() {
                           onClick={() => startEdit(p)}
                           style={actionBtnStyle('ghost')}
                         >
-                          ✏️ {PRODOTTI.modifica}
+                          <Pencil size={13} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} />{PRODOTTI.modifica}
                         </button>
                         <button
                           onClick={() => handleDelete(p)}
                           style={actionBtnStyle('danger')}
                         >
-                          🗑️ {PRODOTTI.elimina}
+                          <Trash2 size={13} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} />{PRODOTTI.elimina}
                         </button>
                       </>
                     )}

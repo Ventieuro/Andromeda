@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect, useRef } from 'react'
+import { Pencil, Trash2 } from 'lucide-react'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -598,8 +599,8 @@ export default function MissionCard({
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
         <span style={{ fontSize: '24px', marginRight: '8px' }}>{icon}</span>
         <span style={{ fontWeight: 700, fontSize: '16px', flex: 1, color: '#e0e6ff' }}>{name}</span>
-        <button onClick={onEdit} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', color: '#6070a0' }} aria-label="Modifica">✏️</button>
-        <button onClick={onDelete} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', color: '#6070a0' }} aria-label="Elimina">🗑️</button>
+        <button onClick={onEdit} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#6070a0', display: 'flex', alignItems: 'center' }} aria-label="Modifica"><Pencil size={16} /></button>
+        <button onClick={onDelete} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#6070a0', display: 'flex', alignItems: 'center' }} aria-label="Elimina"><Trash2 size={16} /></button>
       </div>
 
       {/* ─── Main visual area — unified SVG (no flash, stars always visible) ─── */}

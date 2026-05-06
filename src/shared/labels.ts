@@ -41,8 +41,8 @@ const STRINGS = {
 
   // ── Layout ─────────────────────────────────────────────
   layout: {
-    appName:       t('🚀 Hermes',  '🚀 Hermes',     '🚀 Hermes'),
-    footerText:    t('Hermes',     'Hermes',        'Hermes'),
+    appName:       t('🚀 Andromeda',  '🚀 Andromeda',     '🚀 Andromeda'),
+    footerText:    t('Andromeda',     'Andromeda',        'Andromeda'),
     navHome:        t('Home',         'Home',          'Inicio'),
     navCategories:  t('Categorie',    'Categories',    'Categorias'),
     navMovimenti:   t('Movimenti',    'Transactions',  'Movimientos'),
@@ -187,7 +187,7 @@ const STRINGS = {
     inserisciTramiteScontrino: t('Inserisci tramite scontrino',       'Add via receipt',                'Añadir mediante ticket'),
     inserisciManualmente:   t('Inserisci manualmente',                'Add manually',                   'Añadir manualmente'),
     scontrinoTitolo:        t('Compila da scontrino',                 'Fill from receipt',              'Completar desde ticket'),
-    scontrinoDescrizione:   t('Scatta o carica una foto dello scontrino (serve accesso alla fotocamera). Hermes legge gli articoli e prepara automaticamente le uscite.', 'Take or upload a photo of your receipt (camera access required). Hermes reads the items and prepares the expenses automatically.', 'Saca o sube una foto del ticket (se necesita acceso a la c\u00e1mara). Hermes lee los art\u00edculos y prepara los gastos autom\u00e1ticamente.'),
+    scontrinoDescrizione:   t('Scatta o carica una foto dello scontrino (serve accesso alla fotocamera). Andromeda legge gli articoli e prepara automaticamente le uscite.', 'Take or upload a photo of your receipt (camera access required). Andromeda reads the items and prepares the expenses automatically.', 'Saca o sube una foto del ticket (se necesita acceso a la cámara). Andromeda lee los artículos y prepara los gastos automáticamente.'),
     apriScannerNelForm:     t('Apri scanner scontrino',               'Open receipt scanner',           'Abrir escáner de ticket'),
     modificaRicorrenteScope: t('Aggiornare anche le altre occorrenze collegate?', 'Update the other linked occurrences too?', '¿Actualizar también las demás ocurrencias?'),
     modificaRicorrenteScopeNoGroup: t('Questa spesa è ricorrente ma non ha un gruppo collegato. Aggiornare tutte le spese ricorrenti della stessa categoria?', 'This expense is recurring but has no linked group. Update all recurring expenses in the same category?', '¿Esta transacción no tiene grupo. ¿Actualizar todas las recurrentes de la misma categoría?'),
@@ -249,8 +249,8 @@ const STRINGS = {
 
   // ── Home ───────────────────────────────────────────────
   home: {
-    altMascotte:  t('Astronauta mascotte di Hermes',                   'Astronaut mascot of Hermes',             'Astronauta mascota de Hermes'),
-    titolo:       t('Hermes',                                            'Hermes',                                 'Hermes'),
+    altMascotte:  t('Astronauta mascotte di Andromeda',                   'Astronaut mascot of Andromeda',             'Astronauta mascota de Andromeda'),
+    titolo:       t('Andromeda',                                            'Andromeda',                                 'Andromeda'),
     sottotitolo:  t('Tieni sotto controllo entrate, uscite e risparmi', 'Keep track of income, expenses and savings', 'Controla tus ingresos, gastos y ahorros'),
     vaiDashboard: t('Vai alla Dashboard',                               'Go to Dashboard',                        'Ir al Panel'),
   },
@@ -491,7 +491,7 @@ const STRINGS = {
 
   // ── PWA Install ────────────────────────────────────────
   pwa: {
-    installTitle:   t('Installa Hermes',                                'Install Hermes',                         'Instalar Hermes'),
+    installTitle:   t('Installa Andromeda',                                'Install Andromeda',                         'Instalar Andromeda'),
     installMessage: t('Aggiungi alla schermata home per accesso rapido', 'Add to home screen for quick access',    'Añade a la pantalla de inicio para acceso rápido'),
     installButton:  t('Installa',                                       'Install',                                'Instalar'),
     chiudi:         t('Non ora',                                        'Not now',                                'Ahora no'),

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { GESTIONE_CATEGORIE, CATEGORIE } from '../shared/labels'
 import { PageHeader } from '../components/ui'
 import { loadCustomCategories, addCustomCategory, deleteCustomCategory, renameCustomCategory, saveCustomIcon, deleteCustomIcon } from '../shared/storage'
@@ -113,17 +114,17 @@ function Categories() {
                 <span className="flex-1 text-sm font-medium" style={{ color: 'var(--accent)' }}>{cat}</span>
                 <button
                   onClick={() => startEditing(type, cat)}
-                  className="text-xs px-2 py-1 rounded-lg transition hover:opacity-80"
+                  className="text-xs px-2 py-1 rounded-lg transition hover:opacity-80 flex items-center gap-1"
                   style={{ color: 'var(--text-muted)' }}
                 >
-                  ✏️ {GESTIONE_CATEGORIE.rinomina}
+                  <Pencil size={13} /> {GESTIONE_CATEGORIE.rinomina}
                 </button>
                 <button
                   onClick={() => handleDelete(type, cat)}
-                  className="text-xs px-2 py-1 rounded-lg transition hover:text-red-500"
+                  className="text-xs px-2 py-1 rounded-lg transition hover:text-red-500 flex items-center"
                   style={{ color: 'var(--text-muted)' }}
                 >
-                  🗑
+                  <Trash2 size={13} />
                 </button>
               </>
             )}
