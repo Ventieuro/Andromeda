@@ -939,7 +939,8 @@ function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok
   }
 
   if (typeof data.theme === 'string' && data.theme) {
-    localStorage.setItem('andromeda-theme', data.theme)
+    const t = data.theme === 'spazio' ? 'nebula' : data.theme // migrate legacy
+    localStorage.setItem('andromeda-theme', t)
   }
 
   if (typeof data.lang === 'string' && data.lang) {

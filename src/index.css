@@ -51,7 +51,7 @@
 
 /* ========== TEMA: Spazio ========== */
 :root,
-[data-theme="spazio"] {
+[data-theme="nebula"] {
   --bg-primary: #0b0d17;           /* buio cosmico */
   --bg-secondary: #141829;         /* blu notte profonda */
   --bg-card: #1a1f35;              /* pannello spaziale */
@@ -137,10 +137,10 @@
 
 /* ========== TEMA: NASA Light ========== */
 [data-theme="nasa"] {
-  --bg-primary: #f5f5f5;
-  --bg-secondary: #e8e8e8;
-  --bg-card: #ffffff;
-  --text-primary: #1a1a1a;
+  --bg-primary: #e8ecf5;
+  --bg-secondary: #dde2ef;
+  --bg-card: #f2f4fb;
+  --text-primary: #1a1a2e;
   --text-secondary: #4a4a4a;
   --text-muted: #8a8a8a;
   --border: #d0d0d0;
@@ -176,6 +176,90 @@
   --tx-balance-neg-border: #ffe0b2;
   --tx-balance-neg-text: #e65100;
   --tx-balance-neg-label: #ef6c00;
+}
+
+/* ========== TEMA: Aurora ========== */
+[data-theme="aurora"] {
+  --bg-primary: #080c1a;
+  --bg-secondary: #0d1228;
+  --bg-card: #101630;
+  --text-primary: #e0f0ff;
+  --text-secondary: #7eb8d4;
+  --text-muted: #4a6a80;
+  --border: rgba(100, 200, 255, 0.12);
+  --accent: #00e5b0;
+  --accent-hover: #00c99a;
+  --accent-light: rgba(0, 229, 176, 0.12);
+  --nav-bg: rgba(5, 8, 20, 0.94);
+  --nav-text: #e0f0ff;
+  --btn-bg: rgba(100, 150, 255, 0.07);
+  --btn-text: #e0f0ff;
+  --input-bg: rgba(100, 150, 255, 0.06);
+  --input-border: rgba(100, 150, 255, 0.20);
+  --highlight: #00e5b0;
+  --gold: #ffd740;
+  --water: #40a9ff;
+  --tropical: #c77dff;
+  --fab-bg: #00e5b0;
+  --fab-text: #080c1a;
+  --tx-income-bg: rgba(0, 229, 176, 0.07);
+  --tx-income-border: rgba(0, 229, 176, 0.22);
+  --tx-income-text: #00e5b0;
+  --tx-income-label: #00c99a;
+  --tx-expense-bg: rgba(199, 125, 255, 0.07);
+  --tx-expense-border: rgba(199, 125, 255, 0.22);
+  --tx-expense-text: #c77dff;
+  --tx-expense-label: #a855f7;
+  --tx-balance-pos-bg: rgba(64, 169, 255, 0.07);
+  --tx-balance-pos-border: rgba(64, 169, 255, 0.22);
+  --tx-balance-pos-text: #40a9ff;
+  --tx-balance-pos-label: #2196f3;
+  --tx-balance-neg-bg: rgba(199, 125, 255, 0.07);
+  --tx-balance-neg-border: rgba(199, 125, 255, 0.22);
+  --tx-balance-neg-text: #c77dff;
+  --tx-balance-neg-label: #a855f7;
+}
+
+/* ========== TEMA: Luna ========== */
+[data-theme="luna"] {
+  --bg-primary: #e0e4f4;
+  --bg-secondary: #d5daf0;
+  --bg-card: #eceffe;
+  --text-primary: #1e2030;
+  --text-secondary: #4a5070;
+  --text-muted: #9298b0;
+  --border: #d0d4e8;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-light: #ede9fe;
+  --nav-bg: #ffffff;
+  --nav-text: #1e2030;
+  --btn-bg: #ffffff;
+  --btn-text: #1e2030;
+  --input-bg: #ffffff;
+  --input-border: #d0d4e8;
+  --highlight: #818cf8;
+  --gold: #f59e0b;
+  --water: #0ea5e9;
+  --tropical: #f97316;
+  --fab-bg: #6366f1;
+  --fab-text: #ffffff;
+  --tx-income-bg: #f0fdf4;
+  --tx-income-border: #bbf7d0;
+  --tx-income-text: #166534;
+  --tx-income-label: #16a34a;
+  --tx-expense-bg: #fef2f2;
+  --tx-expense-border: #fecaca;
+  --tx-expense-text: #dc2626;
+  --tx-expense-label: #b91c1c;
+  --tx-balance-pos-bg: #ede9fe;
+  --tx-balance-pos-border: #ddd6fe;
+  --tx-balance-pos-text: #6366f1;
+  --tx-balance-pos-label: #7c3aed;
+  --tx-balance-neg-bg: #fff7ed;
+  --tx-balance-neg-border: #fed7aa;
+  --tx-balance-neg-text: #ea580c;
+  --tx-balance-neg-label: #c2410c;
 }
 
 /* ========== Stili globali basati su variabili ========== */

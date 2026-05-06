@@ -56,9 +56,11 @@ const STRINGS = {
 
   // ── Temi ───────────────────────────────────────────────
   temi: {
-    spazio:  t('Spazio',   'Space',   'Espacio'),
-    nasa:    t('NASA',     'NASA',    'NASA'),
-    mission: t('Mission',  'Mission', 'Misión'),
+    nebula:  t('Nebula',   'Nebula',   'Nebulosa'),
+    nasa:    t('NASA',     'NASA',     'NASA'),
+    mission: t('Mission',  'Mission',  'Misión'),
+    aurora:  t('Aurora',   'Aurora',   'Aurora'),
+    luna:    t('Luna',     'Moon',     'Luna'),
   },
 
   // ── Dashboard ──────────────────────────────────────────
@@ -426,7 +428,7 @@ const STRINGS = {
     impostazioni:      t('Configurazioni',               'Settings',                    'Configuración'),
     aspetto:           t('Aspetto',                      'Appearance',                  'Apariencia'),
     tema:              t('Tema',                         'Theme',                       'Tema'),
-    darkMode:          t('Spazio',                       'Space',                       'Espacio'),
+    darkMode:          t('Nebula',                       'Nebula',                      'Nebulosa'),
     lightMode:         t('NASA',                         'NASA',                        'NASA'),
     lingua:            t('Lingua',                       'Language',                    'Idioma'),
     notifiche:         t('Notifiche',                    'Notifications',               'Notificaciones'),

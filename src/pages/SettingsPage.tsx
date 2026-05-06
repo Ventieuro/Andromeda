@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Moon, Sun, Rocket, Download, FolderOpen } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Download, FolderOpen } from 'lucide-react'
 import { PageHeader } from '../components/ui'
 import { useTheme } from '../shared/ThemeContext'
 import MoneyPlusImporter from '../components/MoneyPlusImporter'
@@ -70,21 +70,26 @@ export function AspettoSection() {
           <SectionLabel>{SETTINGS.tema}</SectionLabel>
           <div className="grid grid-cols-3 gap-2">
             {([
-              { t: 'spazio', icon: <Moon size={14} />, label: SETTINGS.darkMode },
-              { t: 'nasa', icon: <Sun size={14} />, label: SETTINGS.lightMode },
-              { t: 'mission', icon: <Rocket size={14} />, label: 'Mission' },
-            ] as { t: Parameters<typeof setTheme>[0]; icon: React.ReactNode; label: string }[]).map(({ t, icon, label }) => (
+              { t: 'nebula',  icon: '🌌', label: 'Nebula',  bg: '#0b0d17', text: '#b388ff', accent: '#7c4dff' },
+              { t: 'mission', icon: '🚀', label: 'Mission', bg: '#0d1323', text: '#ff9800', accent: '#ff9800' },
+              { t: 'nasa',    icon: '☀️', label: 'NASA',    bg: '#e8ecf5', text: '#FC3D21', accent: '#FC3D21' },
+              { t: 'aurora',  icon: '🌠', label: 'Aurora',  bg: '#071a14', text: '#00e5b0', accent: '#00e5b0' },
+              { t: 'luna',    icon: '🌙', label: 'Luna',    bg: '#e0e4f4', text: '#6366f1', accent: '#6366f1' },
+            ] as { t: Parameters<typeof setTheme>[0]; icon: string; label: string; bg: string; text: string; accent: string }[]).map(({ t, icon, label, bg, text, accent }) => (
               <button
                 key={t}
                 onClick={() => setTheme(t)}
-                className={`py-2.5 px-2 rounded-xl text-sm font-medium transition flex items-center justify-center gap-1.5 ${theme === t ? 'ring-2' : ''}`}
+                className="rounded-xl text-xs font-semibold transition-transform active:scale-95 flex flex-col items-center gap-1 py-3"
                 style={{
-                  backgroundColor: theme === t ? 'var(--accent-light)' : 'var(--bg-secondary)',
-                  color: theme === t ? 'var(--accent)' : 'var(--text-secondary)',
-                  '--tw-ring-color': 'var(--accent)',
-                } as React.CSSProperties}
+                  backgroundColor: bg,
+                  color: text,
+                  border: `2px solid ${theme === t ? accent : accent + '30'}`,
+                  boxShadow: theme === t ? `0 0 10px ${accent}50` : 'none',
+                }}
               >
-                {icon} {label}
+                <span style={{ fontSize: '18px' }}>{icon}</span>
+                <span>{label}</span>
+                <span style={{ width: 20, height: 2, backgroundColor: accent, borderRadius: 2, display: 'block', opacity: theme === t ? 1 : 0 }} />
               </button>
             ))}
           </div>

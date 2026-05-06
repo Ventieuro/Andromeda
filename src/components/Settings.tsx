@@ -251,45 +251,29 @@ function SettingsContent() {
           {SETTINGS.tema}
         </h3>
         <div className="grid grid-cols-3 gap-2">
-          <button
-            onClick={() => setTheme('spazio')}
-            className={`py-2.5 px-2 rounded-xl text-sm font-medium transition ${
-              theme === 'spazio' ? 'ring-2' : ''
-            }`}
-            style={{
-              backgroundColor: theme === 'spazio' ? 'var(--accent-light)' : 'var(--bg-secondary)',
-              color: theme === 'spazio' ? 'var(--accent)' : 'var(--text-secondary)',
-              '--tw-ring-color': 'var(--accent)',
-            } as React.CSSProperties}
-          >
-            🌑 {SETTINGS.darkMode}
-          </button>
-          <button
-            onClick={() => setTheme('nasa')}
-            className={`py-2.5 px-2 rounded-xl text-sm font-medium transition ${
-              theme === 'nasa' ? 'ring-2' : ''
-            }`}
-            style={{
-              backgroundColor: theme === 'nasa' ? 'var(--accent-light)' : 'var(--bg-secondary)',
-              color: theme === 'nasa' ? 'var(--accent)' : 'var(--text-secondary)',
-              '--tw-ring-color': 'var(--accent)',
-            } as React.CSSProperties}
-          >
-            ☀️ {SETTINGS.lightMode}
-          </button>
-          <button
-            onClick={() => setTheme('mission')}
-            className={`py-2.5 px-2 rounded-xl text-sm font-medium transition ${
-              theme === 'mission' ? 'ring-2' : ''
-            }`}
-            style={{
-              backgroundColor: theme === 'mission' ? 'var(--accent-light)' : 'var(--bg-secondary)',
-              color: theme === 'mission' ? 'var(--accent)' : 'var(--text-secondary)',
-              '--tw-ring-color': 'var(--accent)',
-            } as React.CSSProperties}
-          >
-            🚀 Mission
-          </button>
+          {([
+            { id: 'nebula',  icon: '🌌', label: 'Nebula',  bg: '#0b0d17', text: '#b388ff', accent: '#7c4dff' },
+            { id: 'mission', icon: '🚀', label: 'Mission', bg: '#0d1323', text: '#ff9800', accent: '#ff9800' },
+            { id: 'nasa',    icon: '☀️', label: 'NASA',    bg: '#e8ecf5', text: '#FC3D21', accent: '#FC3D21' },
+            { id: 'aurora',  icon: '🌠', label: 'Aurora',  bg: '#071a14', text: '#00e5b0', accent: '#00e5b0' },
+            { id: 'luna',    icon: '🌙', label: 'Luna',    bg: '#e0e4f4', text: '#6366f1', accent: '#6366f1' },
+          ] as { id: Parameters<typeof setTheme>[0]; icon: string; label: string; bg: string; text: string; accent: string }[]).map(({ id, icon, label, bg, text, accent }) => (
+            <button
+              key={id}
+              onClick={() => setTheme(id)}
+              className="rounded-xl text-xs font-semibold transition-transform active:scale-95 flex flex-col items-center gap-1 py-3"
+              style={{
+                backgroundColor: bg,
+                color: text,
+                border: `2px solid ${theme === id ? accent : accent + '30'}`,
+                boxShadow: theme === id ? `0 0 10px ${accent}50` : 'none',
+              }}
+            >
+              <span style={{ fontSize: '18px' }}>{icon}</span>
+              <span>{label}</span>
+              <span style={{ width: 20, height: 2, backgroundColor: accent, borderRadius: 2, display: 'block', opacity: theme === id ? 1 : 0 }} />
+            </button>
+          ))}
         </div>
       </div>
 

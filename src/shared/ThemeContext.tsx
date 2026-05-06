@@ -3,7 +3,9 @@ import type { ReactNode } from 'react'
 import { getThemeTokens } from './themeTokens'
 import type { ThemeTokens } from './themeTokens'
 
-export type Theme = 'spazio' | 'nasa' | 'mission'
+export type Theme = 'nebula' | 'nasa' | 'mission' | 'aurora' | 'luna'
+
+const ALL_THEMES: Theme[] = ['nebula', 'nasa', 'mission', 'aurora', 'luna']
 
 const THEME_KEY = 'andromeda-theme'
 
@@ -20,10 +22,11 @@ const ThemeContext = createContext<ThemeContextValue>({
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     try {
-      const saved = localStorage.getItem(THEME_KEY) as Theme
-      return saved === 'spazio' || saved === 'nasa' || saved === 'mission' ? saved : 'mission'
+      const saved = localStorage.getItem(THEME_KEY)
+      if (saved === 'spazio') return 'nebula' // migrate legacy key
+      return ALL_THEMES.includes(saved as Theme) ? (saved as Theme) : 'mission'
     } catch {
-      return 'spazio'
+      return 'mission' as Theme
     }
   })
 
