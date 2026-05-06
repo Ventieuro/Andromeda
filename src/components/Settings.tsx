@@ -111,7 +111,7 @@ function SettingsContent() {
       try {
         // Try to open IndexedDB and calculate size
         const db = await new Promise<IDBDatabase>((resolve, reject) => {
-          const req = indexedDB.open('hermes-db', 1)
+          const req = indexedDB.open('andromeda-db', 1)
           req.onsuccess = () => resolve(req.result)
           req.onerror = () => reject(req.error)
         })
@@ -364,14 +364,14 @@ function SettingsContent() {
               onClick={() => {
                 if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
                   navigator.serviceWorker.ready.then((reg) => {
-                    reg.showNotification('🚀 Hermes', {
+                    reg.showNotification('🚀 Andromeda', {
                       body: NOTIFICHE.messaggioPromemoria,
-                      icon: '/Hermes/pwa-192x192.svg',
-                      badge: '/Hermes/pwa-192x192.svg',
+                      icon: '/Andromeda/pwa-192x192.svg',
+                      badge: '/Andromeda/pwa-192x192.svg',
                     })
                   })
                 } else if ('Notification' in window && Notification.permission === 'granted') {
-                  new Notification('🚀 Hermes', { body: NOTIFICHE.messaggioPromemoria })
+                  new Notification('🚀 Andromeda', { body: NOTIFICHE.messaggioPromemoria })
                 }
               }}
               className="w-full py-2 rounded-xl text-xs font-medium transition active:scale-95"

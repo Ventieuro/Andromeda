@@ -11,10 +11,10 @@ function BottomNav() {
   function handleAddClick() {
     if (location.pathname !== '/') {
       navigate('/')
-      setTimeout(() => window.dispatchEvent(new Event('hermes:add-transaction')), 120)
+      setTimeout(() => window.dispatchEvent(new Event('andromeda:add-transaction')), 120)
       return
     }
-    window.dispatchEvent(new Event('hermes:add-transaction'))
+    window.dispatchEvent(new Event('andromeda:add-transaction'))
   }
 
   return (

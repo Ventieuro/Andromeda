@@ -172,7 +172,7 @@ export function NotificheSection() {
             <button
               onClick={() => {
                 if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                  navigator.serviceWorker.ready.then((reg) => reg.showNotification(LAYOUT.appName, { body: NOTIFICHE.messaggioPromemoria, icon: '/Hermes/pwa-192x192.svg' }))
+                  navigator.serviceWorker.ready.then((reg) => reg.showNotification(LAYOUT.appName, { body: NOTIFICHE.messaggioPromemoria, icon: '/Andromeda/pwa-192x192.svg' }))
                 } else if ('Notification' in window && Notification.permission === 'granted') {
                   new Notification(LAYOUT.appName, { body: NOTIFICHE.messaggioPromemoria })
                 }
@@ -257,7 +257,7 @@ export function SpazioLocaleSection() {
     async function calc() {
       try {
         const db = await new Promise<IDBDatabase>((resolve, reject) => {
-          const req = indexedDB.open('hermes-db', 1)
+          const req = indexedDB.open('andromeda-db', 1)
           req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error)
         })
         const keys = await new Promise<IDBValidKey[]>((resolve, reject) => {

@@ -1,5 +1,5 @@
 /**
- * MoneyPlusImporter — Converte backup .MoneyPlusPack nell'app Hermes.
+ * MoneyPlusImporter — Converte backup .MoneyPlusPack nell'app Andromeda.
  *
  * Il file .MoneyPlusPack è un archivio ZIP contenente:
  *  - account.db  → database SQLite con le transazioni
@@ -10,7 +10,7 @@
  *  2. Apre il database SQLite con sql.js (WASM)
  *  3. Auto-rileva lo schema fra i pattern noti
  *  4. Mostra anteprima e mappa le categorie
- *  5. Importa le transazioni in Hermes via addTransaction()
+ *  5. Importa le transazioni in Andromeda via addTransaction()
  */
 import { useState, useCallback } from 'react'
 import { unzipSync } from 'fflate'
@@ -27,14 +27,14 @@ interface RawTransaction {
 }
 
 interface PreviewTransaction extends RawTransaction {
-  hermesType: 'entrata' | 'uscita'
-  hermesCategory: string
+  andromedaType: 'entrata' | 'uscita'
+  andromedaCategory: string
   isDuplicate: boolean
 }
 
 type ImportStep = 'idle' | 'loading' | 'preview' | 'done' | 'error'
 
-// ─── Mapping categorie MoneyPlus → Hermes ───────────────
+// ─── Mapping categorie MoneyPlus → Andromeda ───────────────
 
 const MONEYPLUS_CATEGORY_MAP: Record<string, string> = {
   // Uscite
@@ -264,23 +264,23 @@ function MoneyPlusImporter({ onDone }: MoneyPlusImporterProps) {
       const raw = await parseSqlite(files[dbEntry])
       if (raw.length === 0) throw new Error('Nessuna transazione trovata nel database')
 
-      // Costruisci set di chiavi già presenti in Hermes per deduplicazione
+      // Costruisci set di chiavi già presenti in Andromeda per deduplicazione
       const existingKeys = new Set(
         loadTransactions().map((t) => `${t.date}|${t.amount}|${t.type}`),
       )
 
-      // Converti in formato Hermes preview
+      // Converti in formato Andromeda preview
       const mapped: PreviewTransaction[] = raw
         .filter((r) => r.amount !== 0)
         .map((r) => {
-          const hermesType: 'entrata' | 'uscita' = r.amount >= 0 ? 'entrata' : 'uscita'
+          const andromedaType: 'entrata' | 'uscita' = r.amount >= 0 ? 'entrata' : 'uscita'
           const amount = Math.abs(r.amount)
-          const isDuplicate = existingKeys.has(`${r.date}|${amount}|${hermesType}`)
+          const isDuplicate = existingKeys.has(`${r.date}|${amount}|${andromedaType}`)
           return {
             ...r,
             amount,
-            hermesType,
-            hermesCategory: mapMoneyPlusCategory(r.category, hermesType),
+            andromedaType,
+            andromedaCategory: mapMoneyPlusCategory(r.category, andromedaType),
             isDuplicate,
           }
         })
@@ -306,17 +306,17 @@ function MoneyPlusImporter({ onDone }: MoneyPlusImporterProps) {
     let imported = 0
     preview.forEach((tx, i) => {
       if (!selected.has(i)) return
-      const hermesTx: Transaction = {
+      const andromedaTx: Transaction = {
         id: generateId(),
-        type: tx.hermesType,
-        description: tx.description || tx.hermesCategory,
+        type: tx.andromedaType,
+        description: tx.description || tx.andromedaCategory,
         amount: tx.amount,
         date: tx.date,
-        category: tx.hermesCategory,
+        category: tx.andromedaCategory,
         recurring: false,
         recurringMonths: 0,
       }
-      addTransaction(hermesTx)
+      addTransaction(andromedaTx)
       imported++
     })
     setStep('done')
@@ -482,7 +482,7 @@ function MoneyPlusImporter({ onDone }: MoneyPlusImporterProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                          {tx.description || tx.hermesCategory}
+                          {tx.description || tx.andromedaCategory}
                         </p>
                         {tx.isDuplicate && (
                           <span
@@ -494,14 +494,14 @@ function MoneyPlusImporter({ onDone }: MoneyPlusImporterProps) {
                         )}
                       </div>
                       <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                        {tx.date} · {tx.hermesCategory}
+                        {tx.date} · {tx.andromedaCategory}
                       </p>
                     </div>
                     <span
                       className="text-sm font-bold flex-shrink-0"
-                      style={{ color: tx.hermesType === 'entrata' ? 'var(--accent)' : '#ef4444' }}
+                      style={{ color: tx.andromedaType === 'entrata' ? 'var(--accent)' : '#ef4444' }}
                     >
-                      {tx.hermesType === 'entrata' ? '+' : '-'}{tx.amount.toFixed(2)} €
+                      {tx.andromedaType === 'entrata' ? '+' : '-'}{tx.amount.toFixed(2)} €
                     </span>
                   </div>
                 ))}

@@ -112,12 +112,12 @@ describe('storage.ts', () => {
 
   describe('handles corrupt data gracefully', () => {
     it('returns empty array on invalid JSON', () => {
-      localStorage.setItem('hermes-transactions', 'not json')
+      localStorage.setItem('andromeda-transactions', 'not json')
       expect(loadTransactions()).toEqual([])
     })
 
     it('filters out invalid transactions', () => {
-      localStorage.setItem('hermes-transactions', JSON.stringify([
+      localStorage.setItem('andromeda-transactions', JSON.stringify([
         makeTx({ description: 'Valid' }),
         { id: '123', type: 'entrata', description: 'Missing fields' },
         { broken: true },

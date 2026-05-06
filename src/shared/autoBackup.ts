@@ -32,8 +32,8 @@ export interface AutoBackupSettings {
 }
 
 // ─── Chiavi storage ──────────────────────────────────────
-const SETTINGS_KEY = 'hermes-autobackup-settings'
-const IDB_NAME = 'hermes-fsa'
+const SETTINGS_KEY = 'andromeda-autobackup-settings'
+const IDB_NAME = 'andromeda-fsa'
 const IDB_STORE = 'handles'
 const HANDLE_KEY = 'dir'
 
@@ -111,11 +111,11 @@ export function isFSASupported(): boolean {
 
 // ─── Dati backup ─────────────────────────────────────────
 async function buildBackupContent(password: string | null): Promise<string> {
-  // Raccogli chiavi MissionCard dinamiche (astrocoin-mc-colors-* e astrocoin-mc-launched-*)
+  // Raccogli chiavi MissionCard dinamiche (andromeda-mc-colors-* e andromeda-mc-launched-*)
   const missionCardData: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-'))) {
+    if (key && (key.startsWith('andromeda-mc-colors-') || key.startsWith('andromeda-mc-launched-') || key.startsWith('andromeda-mc-confirmed-'))) {
       missionCardData[key] = localStorage.getItem(key) ?? ''
     }
   }
@@ -131,6 +131,8 @@ async function buildBackupContent(password: string | null): Promise<string> {
     products: loadProducts(),
     goals: loadGoals(),
     missionCardData,
+    theme: localStorage.getItem('andromeda-theme') ?? undefined,
+    lang: localStorage.getItem('andromeda-lang') ?? undefined,
   }
   if (password) {
     const encrypted = await encryptJson(JSON.stringify(backup), password)
@@ -142,7 +144,7 @@ async function buildBackupContent(password: string | null): Promise<string> {
 function buildFilename(): string {
   const now = new Date()
   const date = now.toISOString().slice(0, 10)
-  return `hermes-backup-${date}.json`
+  return `andromeda-backup-${date}.json`
 }
 
 // ─── Operazioni backup ───────────────────────────────────

@@ -2,20 +2,20 @@ import { useEffect } from 'react'
 import { loadNotificationSettings } from './storage'
 import { NOTIFICHE } from './labels'
 
-const LAST_NOTIF_KEY = 'hermes-last-notification'
+const LAST_NOTIF_KEY = 'andromeda-last-notification'
 
 function showNotification(body: string) {
   // Try SW notification first (works even when tab is in background on mobile)
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     navigator.serviceWorker.ready.then((reg) => {
-      reg.showNotification('🚀 Hermes', {
+      reg.showNotification('🚀 Andromeda', {
         body,
-        icon: '/Hermes/pwa-192x192.svg',
-        badge: '/Hermes/pwa-192x192.svg',
+        icon: '/Andromeda/pwa-192x192.svg',
+        badge: '/Andromeda/pwa-192x192.svg',
       })
     })
   } else if ('Notification' in window) {
-    new Notification('🚀 Hermes', { body })
+    new Notification('🚀 Andromeda', { body })
   }
 }
 

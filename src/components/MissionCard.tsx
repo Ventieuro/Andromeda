@@ -61,7 +61,7 @@ const DEFAULT_COLORS: PieceColors = {
 
 function loadConfirmedPieces(id: string): Set<PieceKey> {
   try {
-    const raw = localStorage.getItem(`astrocoin-mc-confirmed-${id}`)
+    const raw = localStorage.getItem(`andromeda-mc-confirmed-${id}`)
     return raw ? new Set(JSON.parse(raw) as PieceKey[]) : new Set()
   } catch { return new Set() }
 }
@@ -462,7 +462,7 @@ export default function MissionCard({
 
   const [colors, setColors] = useState<PieceColors>(() => {
     try {
-      const raw = localStorage.getItem(`astrocoin-mc-colors-${id}`)
+      const raw = localStorage.getItem(`andromeda-mc-colors-${id}`)
       return raw ? (JSON.parse(raw) as PieceColors) : { ...DEFAULT_COLORS }
     } catch { return { ...DEFAULT_COLORS } }
   })
@@ -478,7 +478,7 @@ export default function MissionCard({
   const [newlyUnlocked, setNewlyUnlocked] = useState<PieceKey | null>(null)
   const [launchPhase, setLaunchPhase] = useState<'idle' | 'ready' | 'countdown' | 'ignition' | 'travel'>(() => {
     try {
-      if (localStorage.getItem(`astrocoin-mc-launched-${id}`) === 'true' && pct >= 100) return 'travel'
+      if (localStorage.getItem(`andromeda-mc-launched-${id}`) === 'true' && pct >= 100) return 'travel'
     } catch { return 'idle' }
     return pct >= 100 ? 'ready' : 'idle'
   })
@@ -538,7 +538,7 @@ export default function MissionCard({
         ignTimeout.current = setTimeout(() => {
           setLaunchPhase('travel')
           setLiftOff(false)
-          try { localStorage.setItem(`astrocoin-mc-launched-${id}`, 'true') } catch { /* ignore */ }
+          try { localStorage.setItem(`andromeda-mc-launched-${id}`, 'true') } catch { /* ignore */ }
         }, 7300)
       }
     }, 1000)
@@ -548,10 +548,10 @@ export default function MissionCard({
     if (!pendingPiece) return
     const newColors = { ...colors, [pendingPiece]: selectedColor }
     setColors(newColors)
-    try { localStorage.setItem(`astrocoin-mc-colors-${id}`, JSON.stringify(newColors)) } catch { setColors(newColors) }
+    try { localStorage.setItem(`andromeda-mc-colors-${id}`, JSON.stringify(newColors)) } catch { setColors(newColors) }
     const newConfirmed = new Set([...confirmedPieces, pendingPiece])
     setConfirmedPieces(newConfirmed)
-    try { localStorage.setItem(`astrocoin-mc-confirmed-${id}`, JSON.stringify([...newConfirmed])) } catch { /* ignore */ }
+    try { localStorage.setItem(`andromeda-mc-confirmed-${id}`, JSON.stringify([...newConfirmed])) } catch { /* ignore */ }
     const nextQueue = pendingQueue.slice(1)
     setPendingQueue(nextQueue)
     setSelectedColor(nextQueue[0] ? colors[nextQueue[0]] : COLORS[0])

@@ -9,7 +9,7 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
-  base: '/Hermes/',
+  base: '/Andromeda/',
   plugins: [
     react(),
     tailwindcss(),
@@ -24,8 +24,8 @@ export default defineConfig({
         theme_color: '#0b0d17',
         background_color: '#0b0d17',
         display: 'standalone',
-        scope: '/Hermes/',
-        start_url: '/Hermes/',
+        scope: '/Andromeda/',
+        start_url: '/Andromeda/',
         icons: [
           {
             src: 'pwa-192x192.svg',

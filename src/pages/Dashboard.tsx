@@ -91,8 +91,8 @@ function Dashboard() {
 
   useEffect(() => {
     const handleAddTransaction = () => setShowForm(true)
-    window.addEventListener('hermes:add-transaction', handleAddTransaction)
-    return () => window.removeEventListener('hermes:add-transaction', handleAddTransaction)
+    window.addEventListener('andromeda:add-transaction', handleAddTransaction)
+    return () => window.removeEventListener('andromeda:add-transaction', handleAddTransaction)
   }, [])
 
   const { start, end } = getPeriod(payDay, monthOffset)

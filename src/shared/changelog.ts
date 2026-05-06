@@ -85,19 +85,19 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-04-19',
     changes: {
       it: [
-        '🪐 Nuovo nome: Hermes!',
+        '🪐 Nuovo nome: Andromeda!',
         '🎨 Grafico a ciambella spaziale animato su canvas',
         '🌍 Sistema solare animato: pianeti orbitanti con scie luminose',
         '📱 Supporto installazione PWA su iPhone/iPad',
       ],
       en: [
-        '🪐 New name: Hermes!',
+        '🪐 New name: Andromeda!',
         '🎨 Animated space donut chart on canvas',
         '🌍 Animated solar system: orbiting planets with light trails',
         '📱 PWA install support on iPhone/iPad',
       ],
       es: [
-        '🪐 ¡Nuevo nombre: Hermes!',
+        '🪐 ¡Nuevo nombre: Andromeda!',
         '🎨 Gráfico de dona espacial animado en canvas',
         '🌍 Sistema solar animado: planetas orbitando con estelas de luz',
         '📱 Soporte de instalación PWA en iPhone/iPad',
@@ -109,22 +109,22 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-04-19',
     changes: {
       it: [
-        '📱 Hermes è ora una PWA! Installabile sul telefono',
+        '📱 Andromeda è ora una PWA! Installabile sul telefono',
         '🔔 Notifiche push anche con app in background',
         '💾 Funziona offline grazie al Service Worker',
-        '⬇️ Banner "Installa Hermes" sulla home screen',
+        '⬇️ Banner "Installa Andromeda" sulla home screen',
       ],
       en: [
-        '📱 Hermes is now a PWA! Installable on your phone',
+        '📱 Andromeda is now a PWA! Installable on your phone',
         '🔔 Push notifications even with app in background',
         '💾 Works offline thanks to Service Worker',
-        '⬇️ "Install Hermes" banner on home screen',
+        '⬇️ "Install Andromeda" banner on home screen',
       ],
       es: [
-        '📱 ¡Hermes es ahora una PWA! Instalable en tu teléfono',
+        '📱 ¡Andromeda es ahora una PWA! Instalable en tu teléfono',
         '🔔 Notificaciones push incluso con la app en segundo plano',
         '💾 Funciona sin conexión gracias al Service Worker',
-        '⬇️ Banner "Instalar Hermes" en la pantalla de inicio',
+        '⬇️ Banner "Instalar Andromeda" en la pantalla de inicio',
       ],
     },
   },

@@ -1,18 +1,18 @@
 import type { Transaction, AppSettings, ProductEntry, SavingsGoal } from './types'
 import { normalizeCategoryKey } from './labels'
 
-const STORAGE_KEY = 'hermes-transactions'
-const SETTINGS_KEY = 'hermes-settings'
-const CUSTOM_CAT_KEY = 'hermes-custom-categories'
-const CUSTOM_ICONS_KEY = 'hermes-custom-icons'
-const NOTIFICATIONS_KEY = 'hermes-notifications'
-const PRODUCTS_KEY = 'hermes-products'
-const GOALS_KEY = 'hermes-goals'
+const STORAGE_KEY = 'andromeda-transactions'
+const SETTINGS_KEY = 'andromeda-settings'
+const CUSTOM_CAT_KEY = 'andromeda-custom-categories'
+const CUSTOM_ICONS_KEY = 'andromeda-custom-icons'
+const NOTIFICATIONS_KEY = 'andromeda-notifications'
+const PRODUCTS_KEY = 'andromeda-products'
+const GOALS_KEY = 'andromeda-goals'
 
-const QR_TRANSFER_PREFIX = 'hermes-xfer-session-'
-const QR_TRANSFER_READY_KEY = 'hermes-xfer-ready-payload'
+const QR_TRANSFER_PREFIX = 'andromeda-xfer-session-'
+const QR_TRANSFER_READY_KEY = 'andromeda-xfer-ready-payload'
 
-const INDEXED_DB_NAME = 'hermes-db'
+const INDEXED_DB_NAME = 'andromeda-db'
 const INDEXED_DB_VERSION = 1
 const INDEXED_DB_STORE = 'kv'
 
@@ -37,7 +37,7 @@ const storageCache = new Map<ManagedKey, string | null>()
 let storageEngine: 'localStorage' | 'indexeddb' = 'localStorage'
 let indexedDbReady = false
 
-function openHermesDb(): Promise<IDBDatabase> {
+function openAndromedaDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(INDEXED_DB_NAME, INDEXED_DB_VERSION)
     request.onupgradeneeded = () => {
@@ -88,7 +88,7 @@ export async function initPersistentStorage(): Promise<void> {
   }
 
   try {
-    const db = await openHermesDb()
+    const db = await openAndromedaDb()
 
     for (const key of MANAGED_KEYS) {
       const fromDb = await idbGet(db, key)
@@ -134,11 +134,11 @@ export function clearAllUserData() {
   setManagedItem(PRODUCTS_KEY, '[]')
   setManagedItem(CUSTOM_CAT_KEY, '{}')
   setManagedItem(CUSTOM_ICONS_KEY, '{}')
-  // rimuovi customizzazioni navicella (prefix astrocoin-mc-*)
+  // rimuovi customizzazioni navicella (prefix andromeda-mc-*)
   const toRemove: string[] = []
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i)
-    if (k && k.startsWith('astrocoin-mc-')) toRemove.push(k)
+    if (k && k.startsWith('andromeda-mc-')) toRemove.push(k)
   }
   for (const k of toRemove) localStorage.removeItem(k)
 }
@@ -153,7 +153,7 @@ function getManagedItem(key: ManagedKey): string | null {
 function setManagedItem(key: ManagedKey, value: string) {
   storageCache.set(key, value)
   if (storageEngine === 'indexeddb' && typeof indexedDB !== 'undefined') {
-    void openHermesDb()
+    void openAndromedaDb()
       .then((db) => idbSet(db, key, value).finally(() => db.close()))
       .catch(() => {
         localStorage.setItem(key, value)
@@ -530,8 +530,8 @@ export function updateProductName(id: string, newName: string) {
 }
 
 
-const PIN_KEY = 'hermes-pin'
-const PIN_SESSION_KEY = 'hermes-unlocked'
+const PIN_KEY = 'andromeda-pin'
+const PIN_SESSION_KEY = 'andromeda-unlocked'
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
 
 async function sha256(text: string): Promise<string> {
@@ -591,7 +591,7 @@ export function setUnlocked() {
 }
 
 // ─── WebAuthn Biometric ───────────────────────────────────
-const BIOMETRIC_KEY = 'hermes-biometric-credential'
+const BIOMETRIC_KEY = 'andromeda-biometric-credential'
 
 export function isBiometricCredentialSaved(): boolean {
   return !!localStorage.getItem(BIOMETRIC_KEY)
@@ -618,8 +618,8 @@ export async function registerBiometric(): Promise<boolean> {
     const credential = await navigator.credentials.create({
       publicKey: {
         challenge,
-        rp: { name: 'Hermes', id: window.location.hostname },
-        user: { id: userId, name: 'hermes-user', displayName: 'Hermes' },
+        rp: { name: 'Andromeda', id: window.location.hostname },
+        user: { id: userId, name: 'andromeda-user', displayName: 'Andromeda' },
         pubKeyCredParams: [
           { type: 'public-key', alg: -7 },   // ES256
           { type: 'public-key', alg: -257 },  // RS256
@@ -787,6 +787,8 @@ export interface AppBackup {
   products?: ProductEntry[]
   goals?: SavingsGoal[]
   missionCardData?: Record<string, string>
+  theme?: string
+  lang?: string
 }
 
 // ─── Crypto helpers ──────────────────────────────────────
@@ -907,9 +909,7 @@ function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok
   }
 
   if (data.settings && typeof data.settings === 'object') {
-    if (options.mode !== 'merge') {
-      saveSettings(data.settings as AppSettings)
-    }
+    saveSettings(data.settings as AppSettings)
   }
 
   if (data.customCategories && typeof data.customCategories === 'object') {
@@ -935,9 +935,15 @@ function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok
   }
 
   if (data.notificationSettings && typeof data.notificationSettings === 'object') {
-    if (options.mode !== 'merge') {
-      saveNotificationSettings(data.notificationSettings as NotificationSettings)
-    }
+    saveNotificationSettings(data.notificationSettings as NotificationSettings)
+  }
+
+  if (typeof data.theme === 'string' && data.theme) {
+    localStorage.setItem('andromeda-theme', data.theme)
+  }
+
+  if (typeof data.lang === 'string' && data.lang) {
+    localStorage.setItem('andromeda-lang', data.lang)
   }
 
   if (Array.isArray(data.products)) {
@@ -962,7 +968,7 @@ function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok
 
   if (data.missionCardData && typeof data.missionCardData === 'object') {
     for (const [key, value] of Object.entries(data.missionCardData)) {
-      if (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-')) {
+      if (key.startsWith('andromeda-mc-colors-') || key.startsWith('andromeda-mc-launched-') || key.startsWith('andromeda-mc-confirmed-')) {
         localStorage.setItem(key, value)
       }
     }
@@ -976,7 +982,7 @@ export async function exportAllData(password: string): Promise<void> {
   const missionCardData: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-'))) {
+    if (key && (key.startsWith('andromeda-mc-colors-') || key.startsWith('andromeda-mc-launched-') || key.startsWith('andromeda-mc-confirmed-'))) {
       missionCardData[key] = localStorage.getItem(key) ?? ''
     }
   }
@@ -991,13 +997,15 @@ export async function exportAllData(password: string): Promise<void> {
     products: loadProducts(),
     goals: loadGoals(),
     missionCardData,
+    theme: localStorage.getItem('andromeda-theme') ?? undefined,
+    lang: localStorage.getItem('andromeda-lang') ?? undefined,
   }
   const encrypted = await encryptJson(JSON.stringify(backup), password)
   const blob = new Blob([JSON.stringify(encrypted)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `hermes-backup-${new Date().toISOString().slice(0, 10)}.json`
+  a.download = `andromeda-backup-${new Date().toISOString().slice(0, 10)}.json`
   a.click()
   URL.revokeObjectURL(url)
 }
@@ -1035,7 +1043,7 @@ export async function buildQrTransferLinks(password: string): Promise<string[]> 
   const missionCardData: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-'))) {
+    if (key && (key.startsWith('andromeda-mc-colors-') || key.startsWith('andromeda-mc-launched-') || key.startsWith('andromeda-mc-confirmed-'))) {
       missionCardData[key] = localStorage.getItem(key) ?? ''
     }
   }
@@ -1050,6 +1058,8 @@ export async function buildQrTransferLinks(password: string): Promise<string[]> 
     products: loadProducts(),
     goals: loadGoals(),
     missionCardData,
+    theme: localStorage.getItem('andromeda-theme') ?? undefined,
+    lang: localStorage.getItem('andromeda-lang') ?? undefined,
   }
 
   const encrypted = await encryptJson(JSON.stringify(backup), password)
@@ -1074,7 +1084,7 @@ export async function buildTransferCode(password: string): Promise<string> {
   const missionCardData: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith('astrocoin-mc-colors-') || key.startsWith('astrocoin-mc-launched-') || key.startsWith('astrocoin-mc-confirmed-'))) {
+    if (key && (key.startsWith('andromeda-mc-colors-') || key.startsWith('andromeda-mc-launched-') || key.startsWith('andromeda-mc-confirmed-'))) {
       missionCardData[key] = localStorage.getItem(key) ?? ''
     }
   }
@@ -1089,6 +1099,8 @@ export async function buildTransferCode(password: string): Promise<string> {
     products: loadProducts(),
     goals: loadGoals(),
     missionCardData,
+    theme: localStorage.getItem('andromeda-theme') ?? undefined,
+    lang: localStorage.getItem('andromeda-lang') ?? undefined,
   }
 
   const encrypted = await encryptJson(JSON.stringify(backup), password)

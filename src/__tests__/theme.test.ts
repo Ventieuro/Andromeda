@@ -6,12 +6,12 @@ describe('ThemeContext', () => {
   })
 
   it('defaults to spazio theme in localStorage', () => {
-    expect(localStorage.getItem('hermes-theme')).toBeNull()
+    expect(localStorage.getItem('andromeda-theme')).toBeNull()
   })
 
   it('stores and reads spazio theme', () => {
-    localStorage.setItem('hermes-theme', 'spazio')
-    expect(localStorage.getItem('hermes-theme')).toBe('spazio')
+    localStorage.setItem('andromeda-theme', 'spazio')
+    expect(localStorage.getItem('andromeda-theme')).toBe('spazio')
   })
 
   it('data-theme attribute defaults correctly', () => {

@@ -5,7 +5,7 @@ import type { ThemeTokens } from './themeTokens'
 
 export type Theme = 'spazio' | 'nasa' | 'mission'
 
-const THEME_KEY = 'hermes-theme'
+const THEME_KEY = 'andromeda-theme'
 
 interface ThemeContextValue {
   theme: Theme
@@ -13,7 +13,7 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: 'spazio',
+  theme: 'mission',
   setTheme: () => {},
 })
 
@@ -21,7 +21,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     try {
       const saved = localStorage.getItem(THEME_KEY) as Theme
-      return saved === 'spazio' || saved === 'nasa' || saved === 'mission' ? saved : 'spazio'
+      return saved === 'spazio' || saved === 'nasa' || saved === 'mission' ? saved : 'mission'
     } catch {
       return 'spazio'
     }

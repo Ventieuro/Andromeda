@@ -581,7 +581,7 @@ type Resolve<S> = { [K in keyof S]: S[K] extends I18n<infer V> ? V : Resolve<S[K
 export type Labels = Resolve<typeof STRINGS>
 
 // ─── Lingua attiva ───────────────────────────────────────
-const LANG_KEY = 'hermes-lang'
+const LANG_KEY = 'andromeda-lang'
 
 function getStoredLocale(): Locale {
   try {

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 
-const STORAGE_KEY = 'hermes-amounts-visible'
+const STORAGE_KEY = 'andromeda-amounts-visible'
 
 interface AmountsContextValue {
   amountsVisible: boolean
