@@ -52,45 +52,45 @@
 /* ========== TEMA: Spazio ========== */
 :root,
 [data-theme="nebula"] {
-  --bg-primary: #0b0d17;           /* buio cosmico */
-  --bg-secondary: #141829;         /* blu notte profonda */
-  --bg-card: #1a1f35;              /* pannello spaziale */
-  --text-primary: #e8eaf6;         /* bianco stellare */
-  --text-secondary: #9fa8da;       /* lavanda nebulosa */
-  --text-muted: #5c6bc0;           /* indaco sfumato */
-  --border: #283060;               /* bordo galattico */
-  --accent: #7c4dff;               /* viola warp */
-  --accent-hover: #651fff;         /* viola profondo */
-  --accent-light: #1a1040;         /* viola scuro sfondo */
-  --nav-bg: #0d1025;               /* barra di comando */
-  --nav-text: #e8eaf6;             /* bianco stellare */
-  --btn-bg: #1a1f35;               /* pannello */
-  --btn-text: #e8eaf6;             /* bianco stellare */
-  --input-bg: #141829;             /* campo input scuro */
-  --input-border: #3949ab;         /* indaco bordo */
-  --highlight: #00e5ff;            /* ciano neon */
-  --gold: #ffd740;                 /* giallo stella */
-  --water: #18ffff;                /* turchese cosmico */
-  --tropical: #ff6e40;             /* arancione marte */
-  --fab-bg: #7c4dff;               /* viola warp */
-  --fab-text: #ffffff;
-  /* Transaction colors — NASA-inspired dark */
-  --tx-income-bg: #0a2e1a;
-  --tx-income-border: #15572f;
-  --tx-income-text: #00E676;
-  --tx-income-label: #66BB6A;
-  --tx-expense-bg: #2e0a0a;
-  --tx-expense-border: #571515;
-  --tx-expense-text: #FC3D21;
-  --tx-expense-label: #ef5350;
-  --tx-balance-pos-bg: #1a1040;
-  --tx-balance-pos-border: #2a1d5e;
-  --tx-balance-pos-text: #b388ff;
-  --tx-balance-pos-label: #9575cd;
-  --tx-balance-neg-bg: #2e1a0a;
-  --tx-balance-neg-border: #573515;
-  --tx-balance-neg-text: #FF6633;
-  --tx-balance-neg-label: #FF8A65;
+  --bg-primary: #0e0814;           /* alone galattico */
+  --bg-secondary: #160d24;         /* spazio profondo */
+  --bg-card: #1f1238;              /* nebulosa scura */
+  --text-primary: #fff5e4;         /* nucleo stellare caldo */
+  --text-secondary: #b8a8d0;       /* lavanda andromeda */
+  --text-muted: #6b5a8a;           /* alone violaceo */
+  --border: #3b2a4a;               /* bordo alone */
+  --accent: #6ba3d6;               /* bracci spirali blu */
+  --accent-hover: #4a87c5;         /* blu profondo */
+  --accent-light: #1a2a3d;         /* riflesso azzurro scuro */
+  --nav-bg: #080512;               /* nucleo scuro */
+  --nav-text: #fff5e4;             /* bianco caldo stellare */
+  --btn-bg: #1f1238;               /* pannello nebulosa */
+  --btn-text: #fff5e4;             /* bianco caldo */
+  --input-bg: #160d24;             /* campo input alone */
+  --input-border: #3b2a4a;         /* bordo alone */
+  --highlight: #c4507a;            /* regioni HII */
+  --gold: #ffd580;                 /* nucleo giallo caldo */
+  --water: #6ba3d6;                /* blu bracci spirali */
+  --tropical: #c4507a;             /* rosso HII */
+  --fab-bg: #6ba3d6;               /* bracci spirali */
+  --fab-text: #0e0814;
+  /* Transaction colors — Andromeda palette */
+  --tx-income-bg: #0a2015;
+  --tx-income-border: #0f4028;
+  --tx-income-text: #5cb87a;
+  --tx-income-label: #4da86a;
+  --tx-expense-bg: #2a0e18;
+  --tx-expense-border: #4a1028;
+  --tx-expense-text: #c4507a;
+  --tx-expense-label: #a83e65;
+  --tx-balance-pos-bg: #1a0e2e;
+  --tx-balance-pos-border: #2a1a48;
+  --tx-balance-pos-text: #b09ad0;
+  --tx-balance-pos-label: #9080b8;
+  --tx-balance-neg-bg: #2a0e18;
+  --tx-balance-neg-border: #4a1028;
+  --tx-balance-neg-text: #c4507a;
+  --tx-balance-neg-label: #a83e65;
 }
 
 /* ========== TEMA: Mission Control ========== */
