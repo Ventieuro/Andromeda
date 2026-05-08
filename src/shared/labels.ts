@@ -87,9 +87,9 @@ const STRINGS = {
     eliminaSoloQuesta:            t('Solo questa',                                      'Just this one',                          'Solo esta'),
     dettaglioScontrino:           t('Dettaglio',                                        'Details',                                'Detalle'),
     aggiungiMovimento:            t('Aggiungi movimento',                              'Add transaction',                        'Añadir movimiento'),
-    graficoSpese:                 t('Come spendi i tuoi soldi',                        'How you spend your money',               'Cómo gastas tu dinero'),
+    graficoSpese:                 t('Il tuo universo finanziario',                    'Your financial universe',                'Tu universo financiero'),
     nessunGrafico:                t('Nessuna uscita in questo periodo.',               'No expenses in this period.',            'No hay gastos en este período.'),
-    risparmiLabel:                t('Rimasto',                                         'Remaining',                              'Restante'),
+    risparmiLabel:                t('Saldo',                                           'Balance',                                'Saldo'),
     missioniRisparmio:            t('Risparmi Obiettivi',                              'Goal Savings',                           'Ahorros Objetivos'),
     obiettivoRisparmio:           t('Obiettivo risparmio',                             'Savings goal',                           'Meta de ahorro'),
     legendaMostraTutte: tf(
@@ -105,6 +105,8 @@ const STRINGS = {
     vistaTorta:                   t('Riepilogo',                                       'Overview',                               'Resumen'),
     vistaSolare:                  t('Spese',                                           'Expenses',                               'Gastos'),
     vistaCometa:                  t('Annuale',                                         'Yearly',                                 'Anual'),
+    cometaCumulativo:             t('Totale accumulato',                               'Total accumulated',                      'Total acumulado'),
+    cometaMensile:                t('Per mese',                                        'Per month',                              'Por mes'),
   },
 
   // ── Mascotte ───────────────────────────────────────────
@@ -129,6 +131,16 @@ const STRINGS = {
         (importo: string) => `Allerta! Sei in rosso di ${importo}... Rientro d'emergenza! 🆘`,
         (importo: string) => `Alert! You're ${importo} in the red... Emergency landing! 🆘`,
         (importo: string) => `¡Alerta! Estás en rojo por ${importo}... ¡Aterrizaje de emergencia! 🆘`,
+      ),
+      majorTom: t(
+        'Ground Control to Major Tom... stiamo perdendo il segnale 📡',
+        'Ground Control to Major Tom... we are losing your signal 📡',
+        'Ground Control to Major Tom... estamos perdiendo tu señal 📡',
+      ),
+      majorTomRientro: t(
+        'Major Tom ha riacquistato la rotta! Benvenuto di nuovo nello spazio positivo 🚀',
+        'Major Tom is back on track! Welcome back to positive space 🚀',
+        '¡Major Tom ha recuperado la ruta! Bienvenido de nuevo al espacio positivo 🚀',
       ),
       obiettivoRaggiunto: t(
         '"Alla velocità della luce!" 🚀 Obiettivo mese centrato — missione compiuta!',

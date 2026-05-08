@@ -6,6 +6,7 @@ import AddTransactionForm from '../components/AddTransactionForm'
 import ReceiptDetailModal from '../components/ReceiptDetailModal'
 import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings, loadGoals, updateGoal } from '../shared/storage'
 import type { Transaction } from '../shared/types'
+import type { MonthDetail } from '../components/CometChart'
 import ExpensePieChart from '../components/ExpensePieChart'
 import { DASHBOARD, MASCOTTE, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
@@ -47,8 +48,19 @@ function getMascotMessage(
   count: number,
   monthlyGoal: number,
   carryover: number,
+  consecutiveNegative: number,
+  wasNegative: boolean,
 ): { mood: 'happy' | 'sad' | 'neutral' | 'excited'; message: string } {
   if (count === 0) return { mood: 'neutral', message: MASCOTTE.messaggi.vuoto }
+
+  // Easter egg Bowie — 3+ mesi consecutivi in rosso
+  if (consecutiveNegative >= 3) {
+    return { mood: 'sad', message: MASCOTTE.messaggi.majorTom }
+  }
+  // Rientro positivo dopo periodo negativo
+  if (wasNegative && saldo > 0) {
+    return { mood: 'excited', message: MASCOTTE.messaggi.majorTomRientro }
+  }
 
   // Con obiettivo di risparmio attivo
   if (monthlyGoal > 0) {
@@ -86,6 +98,13 @@ function Dashboard() {
   const [receiptDetailTx, setReceiptDetailTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [chartView, setChartView] = useState<'pie' | 'solar' | 'comet'>('pie')
+  const [selectedMonth, setSelectedMonth] = useState<MonthDetail | null>(null)
+  const [cometTotals, setCometTotals] = useState<{ income: number; expenses: number; savings: number } | null>(null)
+
+  // Reset mese selezionato quando si cambia vista o periodo
+  useEffect(() => {
+    setSelectedMonth(null)
+  }, [chartView, monthOffset])
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
 
@@ -133,7 +152,23 @@ function Dashboard() {
     return total + co
   }, 0)
 
-  const mascot = getMascotMessage(saldo, periodTx.length, baseGoal, carryoverAmount)
+  const mascot = getMascotMessage(saldo, periodTx.length, baseGoal, carryoverAmount, (() => {
+    let count = 0
+    for (let o = -1; o >= -6; o--) {
+      const { start: ps, end: pe } = getPeriod(payDay, o)
+      const ptx = getTransactionsInPeriod(allTx, ps, pe)
+      const s = ptx.filter(t => t.type === 'entrata').reduce((a, t) => a + t.amount, 0)
+             - ptx.filter(t => t.type === 'uscita').reduce((a, t) => a + t.amount, 0)
+      if (s < 0) count++; else break
+    }
+    return count
+  })(), (() => {
+    const { start: ps, end: pe } = getPeriod(payDay, -1)
+    const ptx = getTransactionsInPeriod(allTx, ps, pe)
+    const s = ptx.filter(t => t.type === 'entrata').reduce((a, t) => a + t.amount, 0)
+           - ptx.filter(t => t.type === 'uscita').reduce((a, t) => a + t.amount, 0)
+    return s < 0
+  })())
 
   function handlePayDayChange(day: number) {
     setPayDay(day)
@@ -279,38 +314,60 @@ function Dashboard() {
           payDay={payDay}
           onCategoryClick={handleCategoryClick}
           onViewChange={setChartView}
+          onMonthSelect={setSelectedMonth}
+          selectedMonthIndex={selectedMonth?.index ?? null}
+          onTotalsChange={setCometTotals}
         />
       </div>
 
       {/* ── 3. Riepilogo Entrate / Uscite / Risparmi ─────── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', padding: '12px 16px 0' }}>
-        <div style={{
-          borderRadius: '16px', padding: '12px 8px', textAlign: 'center',
-          background: 'var(--tx-income-bg)', border: '1px solid var(--tx-income-border)',
-          boxShadow: '0 0 14px color-mix(in srgb, var(--tx-income-border) 90%, transparent)',
-        }}>
-          <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--tx-income-label)' }}>{DASHBOARD.entrate}</p>
-          <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: 'var(--tx-income-text)', lineHeight: 1.2 }}>{amountsVisible ? formatEuro(entrate) : HIDDEN}</p>
-        </div>
+        {selectedMonth && (
+          <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '-2px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'capitalize', color: 'var(--text-muted)' }}>
+              📅 {selectedMonth.label}
+            </span>
+            <button
+              onClick={() => setSelectedMonth(null)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '13px', padding: '0 2px' }}
+              aria-label="Torna al mese corrente"
+            >✕ torna al periodo</button>
+          </div>
+        )}
+        {(() => {
+          const displayIncome  = selectedMonth?.income   ?? cometTotals?.income   ?? entrate
+          const displayExpense = selectedMonth?.expenses ?? cometTotals?.expenses ?? uscite
+          const displaySaldo   = selectedMonth?.savings  ?? cometTotals?.savings  ?? saldo
+          return (<>
+            <div style={{
+              borderRadius: '16px', padding: '12px 8px', textAlign: 'center',
+              background: 'var(--tx-income-bg)', border: '1px solid var(--tx-income-border)',
+              boxShadow: '0 0 14px color-mix(in srgb, var(--tx-income-border) 90%, transparent)',
+            }}>
+              <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--tx-income-label)' }}>{DASHBOARD.entrate}</p>
+              <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: 'var(--tx-income-text)', lineHeight: 1.2 }}>{amountsVisible ? formatEuro(displayIncome) : HIDDEN}</p>
+            </div>
 
-        <div style={{
-          borderRadius: '16px', padding: '12px 8px', textAlign: 'center',
-          background: 'var(--tx-expense-bg)', border: '1px solid var(--tx-expense-border)',
-          boxShadow: '0 0 14px color-mix(in srgb, var(--tx-expense-border) 90%, transparent)',
-        }}>
-          <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--tx-expense-label)' }}>{DASHBOARD.uscite}</p>
-          <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: 'var(--tx-expense-text)', lineHeight: 1.2 }}>{formatEuro(uscite)}</p>
-        </div>
+            <div style={{
+              borderRadius: '16px', padding: '12px 8px', textAlign: 'center',
+              background: 'var(--tx-expense-bg)', border: '1px solid var(--tx-expense-border)',
+              boxShadow: '0 0 14px color-mix(in srgb, var(--tx-expense-border) 90%, transparent)',
+            }}>
+              <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--tx-expense-label)' }}>{DASHBOARD.uscite}</p>
+              <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: 'var(--tx-expense-text)', lineHeight: 1.2 }}>{formatEuro(displayExpense)}</p>
+            </div>
 
-        <div style={{
-          borderRadius: '16px', padding: '12px 8px', textAlign: 'center',
-          background: saldo >= 0 ? 'var(--tx-balance-pos-bg)' : 'var(--tx-balance-neg-bg)',
-          border: `1px solid ${saldo >= 0 ? 'var(--tx-balance-pos-border)' : 'var(--tx-balance-neg-border)'}`,
-          boxShadow: `0 0 14px color-mix(in srgb, ${saldo >= 0 ? 'var(--tx-balance-pos-border)' : 'var(--tx-balance-neg-border)'} 90%, transparent)`,
-        }}>
-          <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: saldo >= 0 ? 'var(--tx-balance-pos-label)' : 'var(--tx-balance-neg-label)' }}>{DASHBOARD.risparmi}</p>
-          <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: saldo >= 0 ? 'var(--tx-balance-pos-text)' : 'var(--tx-balance-neg-text)', lineHeight: 1.2 }}>{formatEuro(saldo)}</p>
-        </div>
+            <div style={{
+              borderRadius: '16px', padding: '12px 8px', textAlign: 'center',
+              background: displaySaldo >= 0 ? 'var(--tx-balance-pos-bg)' : 'var(--tx-balance-neg-bg)',
+              border: `1px solid ${displaySaldo >= 0 ? 'var(--tx-balance-pos-border)' : 'var(--tx-balance-neg-border)'}`,
+              boxShadow: `0 0 14px color-mix(in srgb, ${displaySaldo >= 0 ? 'var(--tx-balance-pos-border)' : 'var(--tx-balance-neg-border)'} 90%, transparent)`,
+            }}>
+              <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: displaySaldo >= 0 ? 'var(--tx-balance-pos-label)' : 'var(--tx-balance-neg-label)' }}>{DASHBOARD.risparmi}</p>
+              <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: displaySaldo >= 0 ? 'var(--tx-balance-pos-text)' : 'var(--tx-balance-neg-text)', lineHeight: 1.2 }}>{formatEuro(displaySaldo)}</p>
+            </div>
+          </>)
+        })()}
       </div>
 
       {/* ── 4. Messaggio mascotte (spostato in cima) ───────────────── */}

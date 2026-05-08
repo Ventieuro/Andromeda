@@ -4,6 +4,7 @@ import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/la
 import SolarSystemChart from './SolarSystemChart'
 import SpaceDonutChart from './SpaceDonutChart'
 import CometChart from './CometChart'
+import type { MonthDetail } from './CometChart'
 import { useAmounts } from '../shared/AmountsContext'
 import { loadGoals, getTransactionsInPeriod } from '../shared/storage'
 
@@ -94,6 +95,9 @@ interface ExpensePieChartProps {
   payDay?: number
   onCategoryClick?: (canonicalKey: string) => void
   onViewChange?: (view: 'pie' | 'solar' | 'comet') => void
+  onMonthSelect?: (detail: MonthDetail | null) => void
+  selectedMonthIndex?: number | null
+  onTotalsChange?: (totals: { income: number; expenses: number; savings: number } | null) => void
 }
 
 function buildSlices(transactions: Transaction[]): Slice[] {
@@ -147,7 +151,7 @@ function buildSlices(transactions: Transaction[]): Slice[] {
   return [...expenseSlices, ...savingsSlices]
 }
 
-function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart, payDay = 27, onCategoryClick, onViewChange }: ExpensePieChartProps) {
+function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart, payDay = 27, onCategoryClick, onViewChange, onMonthSelect, selectedMonthIndex, onTotalsChange }: ExpensePieChartProps) {
   const rawSlices = buildSlices(transactions)
   const missionTotal = transactions.filter((t) => t.type === 'uscita' && t.goalId).reduce((s, t) => s + t.amount, 0)
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
@@ -275,7 +279,7 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
         // Nessuna transazione ma ci sono obiettivi: mostra donut vuoto con arco obiettivo
         <SpaceDonutChart slices={[]} totalIncome={0} totalExpenses={0} size={280} hideIncome={!amountsVisible} savingsGoal={totalMonthlyGoal} missionSaved={0} />
       ) : view === 'comet' ? (
-        <CometChart />
+        <CometChart allTransactions={allTransactions ?? transactions} payDay={payDay} onMonthSelect={onMonthSelect} selectedMonthIndex={selectedMonthIndex} onTotalsChange={onTotalsChange} />
       ) : view === 'solar' ? (
         <SolarSystemChart transactions={transactions} onCategoryClick={onCategoryClick} sortMode={sortMode} />
       ) : (
