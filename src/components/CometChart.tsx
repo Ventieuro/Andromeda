@@ -201,7 +201,6 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
 
   // ─── Dati mensili ─────────────────────────────────────
   const monthlyData = useMemo(() => {
-    if (import.meta.env.DEV) return DEV_FAKE_DATA
     const result: { label: string; income: number; expenses: number; savings: number }[] = []
     for (let offset = -11; offset <= 0; offset++) {
       const { start, end } = getPeriodDates(payDay, offset)
