@@ -195,7 +195,7 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
             </div>
             <div style={{ marginBottom: '20px' }}>
               <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {MISSIONI.importoTotale} (opzionale)
+                {MISSIONI.importoTotale} {MISSIONI.opzionale}
               </div>
               <Input
                 type="number"
@@ -239,7 +239,7 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
                 border: '1px solid var(--accent)',
               }}>
                 <span style={{ color: 'var(--accent)', fontWeight: 600, fontSize: '14px' }}>
-                  📊 {MISSIONI.mensileCalc(formatEuro(previewMonthly))} × {months} {months === 1 ? 'mese' : 'mesi'}
+                  {MISSIONI.mensileCalc(formatEuro(previewMonthly))} × {months} {MISSIONI.mesiPlurali(months)}
                 </span>
               </div>
             )}

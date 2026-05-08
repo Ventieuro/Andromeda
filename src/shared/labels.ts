@@ -89,7 +89,7 @@ const STRINGS = {
     aggiungiMovimento:            t('Aggiungi movimento',                              'Add transaction',                        'Añadir movimiento'),
     graficoSpese:                 t('Come spendi i tuoi soldi',                        'How you spend your money',               'Cómo gastas tu dinero'),
     nessunGrafico:                t('Nessuna uscita in questo periodo.',               'No expenses in this period.',            'No hay gastos en este período.'),
-    risparmiLabel:                t('Risparmi',                                        'Savings',                                'Ahorros'),
+    risparmiLabel:                t('Rimasto',                                         'Remaining',                              'Restante'),
     missioniRisparmio:            t('Risparmi Obiettivi',                              'Goal Savings',                           'Ahorros Objetivos'),
     obiettivoRisparmio:           t('Obiettivo risparmio',                             'Savings goal',                           'Meta de ahorro'),
     legendaMostraTutte: tf(
@@ -421,6 +421,44 @@ const STRINGS = {
       (d: string) => `Antes del ${d}`,
     ),
     suggerimento:     t('Gli obiettivi di risparmio ti aiutano a pianificare le spese future.', 'Savings goals help you plan future expenses.', 'Los objetivos de ahorro te ayudan a planificar gastos futuros.'),
+    opzionale:          t('(opzionale)', '(optional)', '(opcional)'),
+    mesiPlurali:        tf(
+      (n: number) => n === 1 ? 'mese' : 'mesi',
+      (n: number) => n === 1 ? 'month' : 'months',
+      (n: number) => n === 1 ? 'mes' : 'meses',
+    ),
+    pezziNomi: {
+      engine:  t('motore',     'engine',  'motor'),
+      body:    t('corpo',      'body',    'cuerpo'),
+      wings:   t('ali',        'wings',   'alas'),
+      nose:    t('punta',      'nose',    'punta'),
+      cockpit: t('finestrino', 'cockpit', 'cabina'),
+    },
+    navicellaPrima:     t('🔧 Aggiungi transazioni per iniziare a costruire la tua navicella', '🔧 Add transactions to start building your spacecraft', '🔧 Añade transacciones para empezar a construir tu nave'),
+    prossimo15:         t('🔧 Prossimo: corpo navicella al 15%', '🔧 Next: spacecraft body at 15%', '🔧 Siguiente: cuerpo de nave al 15%'),
+    prossimo35:         t('Prossimo: ali al 35%', 'Next: wings at 35%', 'Siguiente: alas al 35%'),
+    prossimo55:         t('Prossimo: punta al 55%', 'Next: nose at 55%', 'Siguiente: punta al 55%'),
+    prossimo75:         t('Prossimo: finestrino al 75%', 'Next: cockpit at 75%', 'Siguiente: cabina al 75%'),
+    prossimo100:        t('🚀 Al 100% potrai lanciare la navicella!', '🚀 At 100% you can launch the spacecraft!', '🚀 ¡Al 100% podrás lanzar la nave!'),
+    inViaggio:          t('IN VIAGGIO NELLO SPAZIO', 'TRAVELING THROUGH SPACE', 'VIAJANDO POR EL ESPACIO'),
+    missioneCompletata: tf(
+      (a: string) => `🚀 Missione completata — ${a}`,
+      (a: string) => `🚀 Mission complete — ${a}`,
+      (a: string) => `🚀 Misión completada — ${a}`,
+    ),
+    navicellaPronta:    t('🎉 Navicella pronta al lancio!', '🎉 Spacecraft ready for launch!', '🎉 ¡Nave lista para el lanzamiento!'),
+    lanciaBtn:          t('🚀 LANCIA', '🚀 LAUNCH', '🚀 LANZAR'),
+    lancioTra:          t('Lancio tra', 'Launch in', 'Lanzamiento en'),
+    nuovoPezzo:         t('★ Nuovo pezzo sbloccato!', '★ New piece unlocked!', '★ ¡Nueva pieza desbloqueada!'),
+    modificaColoreBtn:  t('✎ Modifica colore', '✎ Edit color', '✎ Editar color'),
+    scegliColore:       tf(
+      (nome: string, femPl: boolean) => `Scegli il colore ${femPl ? 'delle' : 'del'} ${nome}:`,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (nome: string, _femPl: boolean) => `Choose the color for the ${nome}:`,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (nome: string, _femPl: boolean) => `Elige el color del ${nome}:`,
+    ),
+    applicaColore:      t('✓ Applica colore', '✓ Apply color', '✓ Aplicar color'),
   },
 
   // ── Settings ───────────────────────────────────────────
