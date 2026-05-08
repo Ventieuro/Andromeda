@@ -14,33 +14,6 @@ const STARS = Array.from({ length: 70 }, () => ({
   offset: Math.random() * Math.PI * 2,
 }))
 
-// ─── Dati fake per sviluppo locale (rimossi in produzione) ─
-const FAKE_MONTHS = [
-  { income: 1800, expenses: 1720 },
-  { income: 2200, expenses: 1860 },
-  { income: 1600, expenses: 1720 },
-  { income: 2100, expenses: 1890 },
-  { income: 2400, expenses: 1920 },
-  { income: 1900, expenses: 2100 },
-  { income: 2500, expenses: 1880 },
-  { income: 2000, expenses: 1850 },
-  { income: 2300, expenses: 1910 },
-  { income: 1800, expenses: 1890 },
-  { income: 2600, expenses: 2060 },
-  { income: 2100, expenses: 1790 },
-]
-const DEV_FAKE_DATA: { label: string; income: number; expenses: number; savings: number }[] = Array.from({ length: 12 }, (_, i) => {
-  const d = new Date()
-  d.setMonth(d.getMonth() - 11 + i)
-  const { income, expenses } = FAKE_MONTHS[i]
-  return {
-    label: d.toLocaleDateString('it-IT', { month: 'short' }),
-    income,
-    expenses,
-    savings: income - expenses,
-  }
-})
-
 const PADDING = { top: 40, right: 20, bottom: 36, left: 62 }
 const ANIM_DURATION = 2200
 const BG = '#080b18'
