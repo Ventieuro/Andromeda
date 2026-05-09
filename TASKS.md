@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-127 — Lightbox scanner: swipe tra foto caricate (09/05/2026)
+- [x] In lightbox aggiunto swipe touch orizzontale per navigare foto precedenti/successive
+- [x] Navigazione ciclica tra immagini (prima/ultima)
+- [x] Aggiunto indicatore `indice/totale` con hint rapido
+- [x] Versione bump → `0.10.0`, deploy ✅
+
 ### ✅ TASK-126 — Scanner scontrino: componentizzazione card riusabili (09/05/2026)
 - [x] Creati componenti riusabili: `ReceiptItemRow`, `ReceiptTable`, `ReceiptProgress`
 - [x] `ReceiptScanner` alleggerito: sostituita UI inline con componenti dedicati

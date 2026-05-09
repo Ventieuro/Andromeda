@@ -217,6 +217,8 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const tableContainerRef = useRef<HTMLDivElement>(null)
+  const lightboxTouchStartXRef = useRef<number | null>(null)
+  const lightboxTouchStartYRef = useRef<number | null>(null)
   const today = new Date().toISOString().slice(0, 10)
 
   const categorieUscita = getCanonicalCategories('uscita')
@@ -458,11 +460,45 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   // LIGHTBOX foto
   // ─────────────────────────────────────────────────────
   if (fotoLightbox !== null && state.foto[fotoLightbox]) {
+    const fotoCount = state.foto.length
+    const goToPrevFoto = () => setFotoLightbox((prev) => {
+      if (prev === null || fotoCount === 0) return prev
+      return (prev - 1 + fotoCount) % fotoCount
+    })
+    const goToNextFoto = () => setFotoLightbox((prev) => {
+      if (prev === null || fotoCount === 0) return prev
+      return (prev + 1) % fotoCount
+    })
     const file = state.foto[fotoLightbox]
     const objectUrl = getFotoUrl(file)
     return (
       <div
         onClick={() => setFotoLightbox(null)}
+        onTouchStart={(e) => {
+          const touch = e.touches[0]
+          if (!touch) return
+          lightboxTouchStartXRef.current = touch.clientX
+          lightboxTouchStartYRef.current = touch.clientY
+        }}
+        onTouchEnd={(e) => {
+          const startX = lightboxTouchStartXRef.current
+          const startY = lightboxTouchStartYRef.current
+          lightboxTouchStartXRef.current = null
+          lightboxTouchStartYRef.current = null
+          if (startX === null || startY === null) return
+          const touch = e.changedTouches[0]
+          if (!touch) return
+          const deltaX = touch.clientX - startX
+          const deltaY = touch.clientY - startY
+          const minSwipeX = 50
+          const maxSwipeY = 80
+          if (Math.abs(deltaY) > maxSwipeY) return
+          if (deltaX >= minSwipeX) {
+            goToPrevFoto()
+          } else if (deltaX <= -minSwipeX) {
+            goToNextFoto()
+          }
+        }}
         style={{
           position: 'fixed', inset: 0, zIndex: 9300,
           background: 'rgba(0,0,0,0.92)',
@@ -477,6 +513,14 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
           onClick={e => e.stopPropagation()}
           style={{ maxWidth: '100%', maxHeight: 'calc(100dvh - 80px)', objectFit: 'contain', borderRadius: '8px' }}
         />
+        {fotoCount > 1 && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ marginTop: '10px', color: 'rgba(255,255,255,0.8)', fontSize: '12px', fontWeight: 600 }}
+          >
+            {fotoLightbox + 1} / {fotoCount} · scorri per cambiare foto
+          </div>
+        )}
         {/* Toolbar */}
         <div
           onClick={e => e.stopPropagation()}

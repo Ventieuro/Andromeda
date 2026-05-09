@@ -6,6 +6,14 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-127 (feature): Scanner lightbox — swipe orizzontale tra foto
+**File modificati:** `src/components/ReceiptScanner.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Lightbox foto: swipe touch sinistra/destra per passare alla foto successiva/precedente
+- ✅ Navigazione ciclica per velocizzare confronto tra 2+ immagini
+- ✅ Indicatore foto aggiunto: `corrente / totale` con hint `scorri per cambiare foto`
+- ✅ Versione bump → `0.10.0`
+
 ### TASK-126 (refactor): Scanner scontrino — componentizzazione UI revisione
 **File modificati:** `src/components/ReceiptScanner.tsx`, `src/components/ReceiptItemRow.tsx` (new), `src/components/ReceiptTable.tsx` (new), `src/components/ReceiptProgress.tsx` (new), `package.json`, `TASKS.md`, `CHANGELOG.md`
 
