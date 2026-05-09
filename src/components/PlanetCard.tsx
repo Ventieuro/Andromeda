@@ -77,11 +77,18 @@ function PlanetCard({ categoryKey, alias, source, lore, rarity }: PlanetCardProp
           </div>
         )}
 
-        {/* Name */}
+        {/* Name + source */}
         {isUnlocked ? (
-          <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>
-            {alias}
-          </p>
+          <>
+            <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>
+              {alias}
+            </p>
+            {source && (
+              <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)' }}>
+                {source}
+              </p>
+            )}
+          </>
         ) : null}
 
         {/* Rarity badge */}
