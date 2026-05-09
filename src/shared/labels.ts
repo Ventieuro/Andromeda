@@ -57,8 +57,8 @@ const STRINGS = {
   // ── Temi ───────────────────────────────────────────────
   temi: {
     nebula:  t('Nebula',   'Nebula',   'Nebulosa'),
-    nasa:    t('NASA',     'NASA',     'NASA'),
-    mission: t('Mission',  'Mission',  'Misión'),
+    nasa:    t('Orbiter',  'Orbiter',  'Orbiter'),
+    mission: t('Campfire', 'Campfire', 'Campfire'),
     aurora:  t('Aurora',   'Aurora',   'Aurora'),
     luna:    t('Luna',     'Moon',     'Luna'),
     supernova: t('Supernova', 'Supernova', 'Supernova'),
@@ -480,7 +480,7 @@ const STRINGS = {
     aspetto:           t('Aspetto',                      'Appearance',                  'Apariencia'),
     tema:              t('Tema',                         'Theme',                       'Tema'),
     darkMode:          t('Nebula',                       'Nebula',                      'Nebulosa'),
-    lightMode:         t('NASA',                         'NASA',                        'NASA'),
+    lightMode:         t('Orbiter',                      'Orbiter',                     'Orbiter'),
     lingua:            t('Lingua',                       'Language',                    'Idioma'),
     notifiche:         t('Notifiche',                    'Notifications',               'Notificaciones'),
     promemoria:        t('Promemoria giornaliero',       'Daily reminder',              'Recordatorio diario'),

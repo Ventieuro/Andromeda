@@ -5,15 +5,13 @@ interface Props { size?: number; style?: CSSProperties; className?: string }
 export default function NasaIcon({ size = 20, style, className }: Props) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={style} className={className}>
-      <circle cx="12" cy="12" r="4.5" fill="currentColor" />
-      <line x1="12" y1="1.5" x2="12" y2="5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="12" y1="19" x2="12" y2="22.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="1.5" y1="12" x2="5" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="19" y1="12" x2="22.5" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="4.4" y1="4.4" x2="6.8" y2="6.8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="17.2" y1="17.2" x2="19.6" y2="19.6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="19.6" y1="4.4" x2="17.2" y2="6.8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="6.8" y1="17.2" x2="4.4" y2="19.6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <rect x="5" y="3" width="14" height="16" rx="6" fill="currentColor" opacity="0.2" />
+      <rect x="6.5" y="4.5" width="11" height="11" rx="5.5" fill="currentColor" />
+      <path d="M9 9.5C9 7.85 10.35 6.5 12 6.5H12.6C13.93 6.5 15 7.57 15 8.9V9.1C15 10.43 13.93 11.5 12.6 11.5H9V9.5Z" fill="white" opacity="0.88" />
+      <rect x="8" y="16" width="8" height="3" rx="1.2" fill="currentColor" />
+      <circle cx="10" cy="17.5" r="0.7" fill="white" opacity="0.85" />
+      <circle cx="12" cy="17.5" r="0.7" fill="white" opacity="0.65" />
+      <circle cx="14" cy="17.5" r="0.7" fill="white" opacity="0.45" />
     </svg>
   )
 }

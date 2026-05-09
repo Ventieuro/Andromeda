@@ -38,6 +38,17 @@
 
 ## Completati
 
+### ✅ TASK-133 — Rename tema Mission → Campfire (09/05/2026)
+- [x] Mantenuta chiave tema interna `mission` per compatibilità storage
+- [x] Aggiornato nome visibile tema a `Campfire` in labels e UI
+- [x] Versione bump → `0.11.4`, deploy ✅
+
+### ✅ TASK-132 — Rename tema NASA → Orbiter + nuova icona casco (09/05/2026)
+- [x] Mantenuta chiave tema interna `nasa` per compatibilità storage/backup
+- [x] Aggiornato nome visibile tema a `Orbiter` in UI e labels
+- [x] Sostituita icona tema con SVG stile casco/tuta astronauta
+- [x] Versione bump → `0.11.3`, deploy ✅
+
 ### ✅ TASK-131 — Rename IT→EN (scanner flow) + Luna Perla lunare (09/05/2026)
 - [x] Rinominati metodi scanner in inglese (`openCamera`, `closeCamera`, `capturePhoto`, `handleAnalyze`, `handleCreateTotal`, `getPhotoUrl`)
 - [x] Rinominati payload action principali IT→EN (`value`, `category`, `description`, `error`, `currentPhoto`, `items`, `total`, `isTotalValid`)

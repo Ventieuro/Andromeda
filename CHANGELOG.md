@@ -6,6 +6,21 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-133 (theme): Rename tema Mission in Campfire
+**File modificati:** `src/shared/labels.ts`, `src/components/ThemeSwitcher.tsx`, `src/pages/SettingsPage.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Nome visibile tema `mission` aggiornato a `Campfire` (chiave interna invariata)
+- ✅ Aggiornata UI tema in switcher e impostazioni
+- ✅ Versione bump → `0.11.4`
+
+### TASK-132 (theme): Rename tema NASA in Orbiter + nuova icona casco
+**File modificati:** `src/shared/labels.ts`, `src/components/ThemeSwitcher.tsx`, `src/pages/SettingsPage.tsx`, `src/shared/icons/NasaIcon.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Nome visibile tema `nasa` aggiornato a `Orbiter` (chiave interna invariata per retrocompatibilità)
+- ✅ Aggiornate label tema in i18n e nei componenti impostazioni/switcher
+- ✅ Nuova icona SVG tema in stile casco/tuta astronauta
+- ✅ Versione bump → `0.11.3`
+
 ### TASK-131 (refactor+theme): Rename IT→EN (scanner) + Luna Perla lunare
 **File modificati:** `src/components/ReceiptScanner.tsx`, `src/components/ReceiptTable.tsx`, `src/components/ReceiptProgress.tsx`, `src/index.css`, `src/shared/themeTokens.ts`, `package.json`, `TASKS.md`, `CHANGELOG.md`
 
