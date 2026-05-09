@@ -166,7 +166,8 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
   const [mode, setMode] = useState<CometMode>('monthly')
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [hover, setHover] = useState<number | null>(null)
+  const hoverRef = useRef<number | null>(null)
+  const drawFnRef = useRef<((time: number) => void) | null>(null)
   const animStartRef = useRef<number | null>(null)
   const animDoneRef = useRef(false)
   const rafRef = useRef(0)
@@ -227,6 +228,7 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
     function resize() {
       if (!canvas || !container) return
       const rect = container.getBoundingClientRect()
+      if (rect.width === 0 || rect.height === 0) return
       w = rect.width
       h = rect.height
       canvas.width = w * dpr
@@ -280,6 +282,7 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
 
     function draw(time: number) {
       if (cancelled || !ctx) return
+      drawFnRef.current = draw
       ctx.save()
       ctx.scale(dpr, dpr)
 
@@ -389,7 +392,7 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
       // Punti dati
       for (let i = 0; i < visibleCount; i++) {
         const p = m.points[i]
-        const isHovered = hover === i && animDoneRef.current
+        const isHovered = hoverRef.current === i && animDoneRef.current
         const dotColor = p.value >= 0 ? '#38bdf8' : '#f87171'
 
         if (isHovered) {
@@ -434,7 +437,7 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
       cancelAnimationFrame(rafRef.current)
       ro.disconnect()
     }
-  }, [hover, selectedMonthIndex, values, labels, mode, amountsVisible])
+  }, [values, labels, mode, amountsVisible])
 
   // ─── Hover / Touch ────────────────────────────────────
   function findClosestIdx(clientX: number, rect: DOMRect): number | null {
@@ -450,15 +453,22 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
     return closest
   }
 
+  function scheduleHoverRedraw() {
+    if (animDoneRef.current && drawFnRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = requestAnimationFrame(drawFnRef.current)
+    }
+  }
+
   function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
     const rect = canvasRef.current?.getBoundingClientRect()
-    if (rect) setHover(findClosestIdx(e.clientX, rect))
+    if (rect) { hoverRef.current = findClosestIdx(e.clientX, rect); scheduleHoverRedraw() }
   }
 
   function handleTouchMove(e: React.TouchEvent<HTMLCanvasElement>) {
     if (e.touches.length === 0) return
     const rect = canvasRef.current?.getBoundingClientRect()
-    if (rect) setHover(findClosestIdx(e.touches[0].clientX, rect))
+    if (rect) { hoverRef.current = findClosestIdx(e.touches[0].clientX, rect); scheduleHoverRedraw() }
   }
 
   function handleClick(e: React.MouseEvent<HTMLCanvasElement>) {
@@ -472,7 +482,8 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
   }
 
   function handleTouchEnd(e: React.TouchEvent<HTMLCanvasElement>) {
-    setHover(null)
+    hoverRef.current = null
+    scheduleHoverRedraw()
     if (e.changedTouches.length === 0) return
     const rect = canvasRef.current?.getBoundingClientRect()
     if (!rect) return
@@ -520,7 +531,7 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
           <canvas
             ref={canvasRef}
             onMouseMove={handleMouseMove}
-            onMouseLeave={() => setHover(null)}
+            onMouseLeave={() => { hoverRef.current = null; scheduleHoverRedraw() }}
             onClick={handleClick}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
