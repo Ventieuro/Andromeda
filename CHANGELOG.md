@@ -4,6 +4,18 @@
 
 ---
 
+## [09/05/2026] — Sessione 23
+
+### TASK-124 (fix): Scanner scontrino — ricalcolo prezzo netto al cambio sconto
+**File modificati:** `src/components/ReceiptScanner.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Bug: quando utente modificava sconto, il prezzo netto non si ricalcolava
+- ✅ Fix: ora `discountAmount` cambio → `price = grossPrice - discountAmount` automaticamente
+- ✅ Lordo mantenuto come riferimento, netto sempre coerente con formula corretta
+- ✅ Versione bump → `0.9.3`
+
+---
+
 ## [09/05/2026] — Sessione 22
 
 ### TASK-123 (fix): Cometa cumulato — scala corretta con risparmi iniziali negativi

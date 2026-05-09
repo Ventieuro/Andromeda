@@ -153,9 +153,15 @@ function scanReducer(state: ScanState, action: ScanAction): ScanState {
       const amount = parseFloat(action.valore.replace(',', '.'))
       return {
         ...state,
-        articoli: state.articoli.map((a) =>
-          a.id === action.id ? { ...a, discountAmount: isNaN(amount) ? undefined : amount } : a,
-        ),
+        articoli: state.articoli.map((a) => {
+          if (a.id !== action.id) return a
+          if (isNaN(amount)) return { ...a, discountAmount: undefined }
+          // Calcola il grossPrice dal prezzo e sconto attuali
+          const currentGrossPrice = a.grossPrice ?? (a.price + (a.discountAmount ?? 0))
+          // Calcola il nuovo prezzo netto: lordo - nuovo sconto
+          const newPrice = parseFloat((currentGrossPrice - amount).toFixed(2))
+          return { ...a, discountAmount: amount, price: newPrice, grossPrice: currentGrossPrice }
+        }),
       }
     }
 

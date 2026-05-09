@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-124 — Scanner scontrino: fix calcolo sconto (09/05/2026)
+- [x] Bug: modificare lo sconto non ricalcolava il prezzo netto
+- [x] Fix: al cambio sconto → prezzo netto = lordo - nuovo sconto
+- [x] Lordo (grossPrice) mantenuto come riferimento durante modifica
+- [x] Versione bump → `0.9.3`, deploy ✅
+
 ### ✅ TASK-123 — Cometa cumulato: fix scala con risparmi negativi (09/05/2026)
 - [x] Causa identificata: scala Y forzava sempre lo zero e comprimiva la curva cumulata tutta negativa
 - [x] Fix in `CometChart`: in modalità cumulativa lo zero viene incluso solo se i dati lo attraversano
