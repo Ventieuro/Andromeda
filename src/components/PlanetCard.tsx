@@ -43,7 +43,7 @@ function RarityBadge({ rarity }: { rarity: PlanetRarity }) {
   )
 }
 
-function PlanetCard({ categoryKey, categoryLabel, alias, source, lore, rarity }: PlanetCardProps) {
+function PlanetCard({ categoryKey, alias, source, lore, rarity }: PlanetCardProps) {
   const [open, setOpen] = useState(false)
   const isUnlocked = !!alias
   const color = categoryColor(categoryKey)
