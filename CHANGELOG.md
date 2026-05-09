@@ -6,6 +6,14 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-126 (refactor): Scanner scontrino — componentizzazione UI revisione
+**File modificati:** `src/components/ReceiptScanner.tsx`, `src/components/ReceiptItemRow.tsx` (new), `src/components/ReceiptTable.tsx` (new), `src/components/ReceiptProgress.tsx` (new), `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Estratte card riusabili dalla revisione scontrino in 3 componenti separati
+- ✅ `ReceiptScanner` ora delega rendering/gestione tabella e barra progresso ai componenti dedicati
+- ✅ Comportamenti preservati: drag&drop, auto-scroll bordo, editing sconto, validazione totale
+- ✅ Versione bump → `0.9.5`
+
 ### TASK-125 (feature): Scanner scontrino — UX improvements (toast, auto-scroll drag, drag handle visivo)
 **File modificati:** `src/main.tsx`, `src/components/ReceiptScanner.tsx`, `src/shared/ToastContext.tsx` (new), `package.json`, `TASKS.md`, `CHANGELOG.md`
 

@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-126 — Scanner scontrino: componentizzazione card riusabili (09/05/2026)
+- [x] Creati componenti riusabili: `ReceiptItemRow`, `ReceiptTable`, `ReceiptProgress`
+- [x] `ReceiptScanner` alleggerito: sostituita UI inline con componenti dedicati
+- [x] Preservata UX esistente: drag&drop, auto-scroll, sconto editabile, totale modificabile
+- [x] Versione bump → `0.9.5`, deploy ✅
+
 ### ✅ TASK-125 — Scanner scontrino: UX improvements (09/05/2026)
 - [x] Notifica "✓ Movimento inserito" al completamento transazione (toast 2.5s)
 - [x] Auto-scroll durante drag articoli: lo schermo scorre quando drag avvicina ai bordi
