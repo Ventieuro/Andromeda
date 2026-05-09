@@ -597,6 +597,9 @@ const STRINGS = {
       (n: number) => `⚠️ ${n} precio${n === 1 ? '' : 's'} por revisar`,
     ),
     prezzoIncerto:     t('Prezzo incerto — verifica e correggi se necessario', 'Uncertain price — check and correct if needed', 'Precio incierto — verifica y corrige si es necesario'),
+    prezzoTotaleArticolo: t('Lordo',                              'Gross',                                   'Bruto'),
+    scontoArticolo:       t('Sconto',                             'Discount',                                'Descuento'),
+    prezzoScontatoArticolo: t('Netto',                            'Net',                                     'Neto'),
   },
 
   // ── Backup Automatico ─────────────────────────────────

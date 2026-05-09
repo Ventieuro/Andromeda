@@ -4,6 +4,19 @@
 
 ---
 
+## [09/05/2026] — Sessione 21
+
+### TASK-122 (feature): Scanner scontrino — prezzo con sconto mostrato come lordo/sconto/netto
+**File modificati:** `src/components/ReceiptScanner.tsx`, `src/shared/labels.ts`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Riga articolo con sconto ora mostra 3 valori distinti: `Lordo`, `Sconto`, `Netto`
+- ✅ `Netto` reso non modificabile in UI per evitare interpretazioni errate (double-discount)
+- ✅ Somma totale invariata: continua a usare i prezzi netti (`item.price`)
+- ✅ Nuove label OCR i18n aggiunte (IT/EN/ES)
+- ✅ Versione bump → `0.9.1`
+
+---
+
 ## [06/05/2026] — Sessione 20
 
 ### TASK-121 (fix): Grafico torta — scroll libero, long press per interazione

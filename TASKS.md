@@ -38,6 +38,13 @@
 
 ## Completati
 
+### ✅ TASK-122 — Scanner scontrino: prezzo articolo con sconto in 3 righe (09/05/2026)
+- [x] In revisione articolo con sconto: mostrati `Lordo`, `Sconto`, `Netto`
+- [x] Campo `Netto` reso non modificabile per evitare doppie sottrazioni
+- [x] Somma totale confermata sui prezzi netti (`item.price`)
+- [x] Label OCR i18n aggiunte per le tre voci (IT/EN/ES)
+- [x] Versione bump → `0.9.1`, deploy ✅
+
 ### ✅ TASK-121 — Grafico torta: scroll libero, interazione con long press (06/05/2026)
 - [x] `SpaceDonutChart`: `touchstart` non chiama più `preventDefault()` → scroll libero
 - [x] Long press 400ms sul donut attiva la selezione fetta + haptic 20ms

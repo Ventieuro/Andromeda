@@ -225,6 +225,14 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
     return `${item.discountType} -${formatEuro(item.discountAmount)}`
   }
 
+  function getGrossPrice(item: ReceiptItem): number {
+    if (typeof item.grossPrice === 'number') return item.grossPrice
+    if (item.discountAmount && item.discountAmount > 0) {
+      return parseFloat((item.price + item.discountAmount).toFixed(2))
+    }
+    return item.price
+  }
+
   // ── Setup camera quando la fase diventa 'camera' ──────
   useEffect(() => {
     if (state.fase !== 'camera') return
@@ -871,6 +879,8 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                       : null
                     const priceDiffers = knownPrice !== null && Math.abs(knownPrice - item.price) > 0.01
                     const discountLine = formatDiscountLine(item)
+                    const hasDiscount = !!item.discountAmount && item.discountAmount > 0
+                    const grossPrice = getGrossPrice(item)
 
                     return (
                       <div
@@ -970,26 +980,61 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                         </div>
 
                         {/* Prezzo */}
-                        <input
-                          type="text"
-                          inputMode="decimal"
-                          key={item.id}
-                          defaultValue={item.price.toFixed(2).replace('.', ',')}
-                          onBlur={(e) => dispatch({ type: 'MODIFICA_PREZZO', id: item.id, valore: e.target.value })}
-                          title={item.confidence === 'uncertain' ? OCR.prezzoIncerto : undefined}
-                          style={{
-                            fontSize: '13px',
-                            fontWeight: 600,
-                            textAlign: 'right',
-                            background: 'var(--input-bg)',
-                            border: item.confidence === 'uncertain' ? '1px solid #f59e0b' : '1px solid var(--input-border)',
-                            borderRadius: '8px',
-                            padding: '4px 6px',
-                            outline: 'none',
-                            color: item.confidence === 'uncertain' ? '#d97706' : 'var(--text-primary)',
-                            width: '100%',
-                          }}
-                        />
+                        {hasDiscount ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>{OCR.prezzoTotaleArticolo}</span>
+                              <span style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: 600 }}>{formatEuro(grossPrice)}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '4px' }}>
+                              <span style={{ fontSize: '9px', color: '#d97706' }}>{OCR.scontoArticolo}</span>
+                              <span style={{ fontSize: '10px', color: '#d97706', fontWeight: 700 }}>-{formatEuro(item.discountAmount ?? 0)}</span>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontSize: '9px', color: 'var(--text-muted)', textAlign: 'right' }}>{OCR.prezzoScontatoArticolo}</span>
+                              <input
+                                type="text"
+                                readOnly
+                                value={item.price.toFixed(2).replace('.', ',')}
+                                title={OCR.prezzoScontatoArticolo}
+                                style={{
+                                  fontSize: '13px',
+                                  fontWeight: 700,
+                                  textAlign: 'right',
+                                  background: 'var(--bg-secondary)',
+                                  border: '1px solid var(--border)',
+                                  borderRadius: '8px',
+                                  padding: '4px 6px',
+                                  outline: 'none',
+                                  color: 'var(--text-primary)',
+                                  width: '100%',
+                                  cursor: 'default',
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            key={item.id}
+                            defaultValue={item.price.toFixed(2).replace('.', ',')}
+                            onBlur={(e) => dispatch({ type: 'MODIFICA_PREZZO', id: item.id, valore: e.target.value })}
+                            title={item.confidence === 'uncertain' ? OCR.prezzoIncerto : undefined}
+                            style={{
+                              fontSize: '13px',
+                              fontWeight: 600,
+                              textAlign: 'right',
+                              background: 'var(--input-bg)',
+                              border: item.confidence === 'uncertain' ? '1px solid #f59e0b' : '1px solid var(--input-border)',
+                              borderRadius: '8px',
+                              padding: '4px 6px',
+                              outline: 'none',
+                              color: item.confidence === 'uncertain' ? '#d97706' : 'var(--text-primary)',
+                              width: '100%',
+                            }}
+                          />
+                        )}
 
 
 
