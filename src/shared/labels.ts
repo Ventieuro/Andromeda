@@ -260,6 +260,15 @@ const STRINGS = {
     biometriaTitolo:      t('Sicurezza',                                          'Security',                                   'Seguridad'),
     biometriaFallitoReg:  t('Registrazione fallita. Riprova.',                    'Registration failed. Try again.',            'Registro fallido. Inténtalo de nuevo.'),
     usaPin:               t('Usa PIN',                                            'Use PIN',                                    'Usar PIN'),
+    cambiaPinTitolo:      t('Cambia PIN',                                         'Change PIN',                                 'Cambiar PIN'),
+    pinAttuale:           t('PIN attuale',                                        'Current PIN',                                'PIN actual'),
+    nuovoPin:             t('Nuovo PIN',                                          'New PIN',                                    'Nuevo PIN'),
+    confermaNuovoPin:     t('Conferma nuovo PIN',                                 'Confirm new PIN',                            'Confirmar nuevo PIN'),
+    cambiaPinAzione:      t('Aggiorna PIN',                                       'Update PIN',                                 'Actualizar PIN'),
+    cambioPinFormato:     t('Il PIN deve avere 4 cifre.',                         'PIN must be 4 digits.',                      'El PIN debe tener 4 dígitos.'),
+    cambioPinSuccesso:    t('PIN aggiornato con successo.',                       'PIN updated successfully.',                  'PIN actualizado correctamente.'),
+    impostaPinPrima:      t('Imposta un PIN dall\'app per abilitare le opzioni di sicurezza.', 'Set a PIN in the app to enable security options.', 'Configura un PIN en la app para habilitar opciones de seguridad.'),
+    biometriaNonDisp:     t('Biometria non disponibile su questo dispositivo.',    'Biometrics not available on this device.',   'Biometría no disponible en este dispositivo.'),
   },
 
   // ── Home ───────────────────────────────────────────────

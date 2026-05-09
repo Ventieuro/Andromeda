@@ -12,6 +12,8 @@ import {
   exportAllData,
   importAllData,
   loadPin,
+  savePin,
+  verifyPin,
   isBiometricAvailable,
   isBiometricCredentialSaved,
   registerBiometric,
@@ -211,6 +213,10 @@ export function SicurezzaSection() {
   const [biometricSupported, setBiometricSupported] = useState(false)
   const [biometricEnabled, setBiometricEnabled] = useState(isBiometricCredentialSaved)
   const [biometricError, setBiometricError] = useState('')
+  const [currentPin, setCurrentPin] = useState('')
+  const [newPin, setNewPin] = useState('')
+  const [confirmPin, setConfirmPin] = useState('')
+  const [pinFeedback, setPinFeedback] = useState<{ type: 'ok' | 'error'; message: string } | null>(null)
   const pinIsSet = !!loadPin()
 
   useEffect(() => { isBiometricAvailable().then(setBiometricSupported) }, [])
@@ -224,6 +230,35 @@ export function SicurezzaSection() {
       if (ok) setBiometricEnabled(true)
       else setBiometricError(PIN.biometriaFallitoReg)
     }
+  }
+
+  async function handleChangePin() {
+    setPinFeedback(null)
+    if (currentPin.length !== 4 || newPin.length !== 4 || confirmPin.length !== 4) {
+      setPinFeedback({ type: 'error', message: PIN.cambioPinFormato })
+      return
+    }
+
+    const validCurrentPin = await verifyPin(currentPin)
+    if (!validCurrentPin) {
+      setPinFeedback({ type: 'error', message: PIN.pinErrato })
+      return
+    }
+
+    if (newPin !== confirmPin) {
+      setPinFeedback({ type: 'error', message: PIN.pinNonCoincide })
+      return
+    }
+
+    await savePin(newPin)
+    setCurrentPin('')
+    setNewPin('')
+    setConfirmPin('')
+    setPinFeedback({ type: 'ok', message: PIN.cambioPinSuccesso })
+  }
+
+  function normalizePin(value: string) {
+    return value.replace(/\D/g, '').slice(0, 4)
   }
 
   return (
@@ -248,9 +283,59 @@ export function SicurezzaSection() {
         ) : (
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
             {!pinIsSet
-              ? "Imposta un PIN dall'app per abilitare le opzioni di sicurezza."
-              : 'Biometria non disponibile su questo dispositivo.'}
+              ? PIN.impostaPinPrima
+              : PIN.biometriaNonDisp}
           </p>
+        )}
+
+        {pinIsSet && (
+          <div className="rounded-xl p-3.5 space-y-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{PIN.cambiaPinTitolo}</p>
+            <input
+              type="password"
+              inputMode="numeric"
+              autoComplete="current-password"
+              placeholder={PIN.pinAttuale}
+              value={currentPin}
+              onChange={(e) => setCurrentPin(normalizePin(e.target.value))}
+              className="w-full px-3 py-2 rounded-xl text-sm"
+              style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+            />
+            <input
+              type="password"
+              inputMode="numeric"
+              autoComplete="new-password"
+              placeholder={PIN.nuovoPin}
+              value={newPin}
+              onChange={(e) => setNewPin(normalizePin(e.target.value))}
+              className="w-full px-3 py-2 rounded-xl text-sm"
+              style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+            />
+            <input
+              type="password"
+              inputMode="numeric"
+              autoComplete="new-password"
+              placeholder={PIN.confermaNuovoPin}
+              value={confirmPin}
+              onChange={(e) => setConfirmPin(normalizePin(e.target.value))}
+              className="w-full px-3 py-2 rounded-xl text-sm"
+              style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
+            />
+
+            {pinFeedback && (
+              <p className="text-xs" style={{ color: pinFeedback.type === 'ok' ? '#22c55e' : '#ef4444' }}>
+                {pinFeedback.message}
+              </p>
+            )}
+
+            <button
+              onClick={() => { void handleChangePin() }}
+              className="w-full py-2 rounded-xl text-sm font-medium transition active:scale-95"
+              style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
+            >
+              {PIN.cambiaPinAzione}
+            </button>
+          </div>
         )}
       </div>
     </div>

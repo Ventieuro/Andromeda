@@ -6,6 +6,15 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-135 (feature): Sicurezza — sezione cambio PIN nelle impostazioni
+**File modificati:** `src/pages/SettingsPage.tsx`, `src/shared/labels.ts`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Aggiunto form cambio PIN nella pagina Sicurezza
+- ✅ Verifica PIN attuale prima del salvataggio
+- ✅ Validazioni: PIN 4 cifre, conferma nuovo PIN, messaggi di errore/successo
+- ✅ Messaggi hardcoded sicurezza sostituiti con label i18n
+- ✅ Versione bump → `0.11.6`
+
 ### TASK-134 (theme): Campfire — icona dedicata
 **File modificati:** `src/shared/icons/CampfireIcon.tsx`, `src/shared/icons/index.ts`, `src/components/ThemeSwitcher.tsx`, `src/pages/SettingsPage.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
 

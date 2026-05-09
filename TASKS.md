@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-135 — Impostazioni Sicurezza: cambio PIN (09/05/2026)
+- [x] Aggiunta sezione cambio PIN in Sicurezza con verifica PIN attuale
+- [x] Validazioni: 4 cifre, conferma nuovo PIN, feedback errore/successo
+- [x] Nuove label i18n per flusso cambio PIN
+- [x] Versione bump → `0.11.6`, deploy ✅
+
 ### ✅ TASK-134 — Tema Campfire: icona dedicata (09/05/2026)
 - [x] Creata nuova icona `CampfireIcon` (falò minimal)
 - [x] Collegata ai selettori tema in switcher e settings
