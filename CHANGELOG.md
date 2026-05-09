@@ -4,6 +4,37 @@
 
 ---
 
+## [09/05/2026] — Sessione 26
+
+### TASK-140 (feature): Planet Catalog overhaul — rarità Mythic + lore primo piano orbitale
+**File modificati:** `src/shared/labels.ts`, `src/shared/storage.ts`, `src/components/PlanetCard.tsx`, `src/pages/PlanetsCatalog.tsx`, `package.json`
+
+- ✅ Aggiunta rarità `mythic` a `PlanetRarity` type, `RARITY_WEIGHT` (0.5), `RARITY_CONFIG` (fuchsia), `RARITY_ORDER` (5)
+- ✅ Label `pianetiRaritaMythic` aggiunta in SETTINGS (IT/EN/ES)
+- ✅ `PLANET_CATALOG` completamente riscritto: 44 pianeti con lore in prima persona dall'orbita
+- ✅ Rimossi non-pianeti: Mordor, Xen, Pandemonium, The Citadel, Asgard, Zion, The Ark, Hyrule, Olympus, Midgar, Cybele
+- ✅ Aggiunti: Timber Hearth, Giant's Deep, Brittle Hollow, Dark Bramble (Outer Wilds), Hillys, Spira, Qo'noS, Skaro, Zebes, Ilos
+- ✅ Rarità riviste: Solaris → epic, Krypton → legendary, Ego → epic, Harvest → common, Pandora/Mustafar/Xandar → rare
+- ✅ Versione bump → `0.11.11`
+
+---
+
+## [09/05/2026] — Sessione 25
+
+### TASK-137 (feature): Planet Discovery System + Archivio Pianeti redesign
+**File modificati:** `src/shared/labels.ts`, `src/shared/storage.ts`, `src/components/SpaceDonutChart.tsx`, `src/components/ExpensePieChart.tsx`, `src/components/PlanetCard.tsx` (nuovo), `src/pages/PlanetsCatalog.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- ✅ `PLANET_CATALOG` ristrutturato: array 3 pianeti/categoria, rarity `common|uncommon|rare|epic|legendary`
+- ✅ `resolveMonthPlanet()`: seeded RNG (LCG), priorità 4 livelli, unicità mensile per categoria
+- ✅ Persistenza log scoperte in `andromeda-planet-log` (plain localStorage)
+- ✅ `PlanetCard.tsx`: card 3-colonne, MiniPlanet animato, silhouette `?` bloccata, modal dettaglio lore
+- ✅ `PlanetsCatalog.tsx`: navigazione mese (offset), griglia 3-col, unlock da tx reali (no mock)
+- ✅ `SpaceDonutChart`: footer `🪐 alias · source` per ogni riga uscita nel periodo
+- ✅ `ExpensePieChart`: passa `periodYear/periodMonth` a SpaceDonutChart
+- ✅ Versione bump → `0.11.10`
+
+---
+
 ## [09/05/2026] — Sessione 24
 
 ### TASK-139 (feature): Archivio Pianeti — filtro sbloccati + dati mock locali

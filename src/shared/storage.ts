@@ -1,5 +1,6 @@
 import type { Transaction, AppSettings, ProductEntry, SavingsGoal } from './types'
-import { normalizeCategoryKey } from './labels'
+import { normalizeCategoryKey, getAllPlanets } from './labels'
+import type { PlanetRarity } from './labels'
 
 const STORAGE_KEY = 'andromeda-transactions'
 const SETTINGS_KEY = 'andromeda-settings'
@@ -8,6 +9,7 @@ const CUSTOM_ICONS_KEY = 'andromeda-custom-icons'
 const NOTIFICATIONS_KEY = 'andromeda-notifications'
 const PRODUCTS_KEY = 'andromeda-products'
 const GOALS_KEY = 'andromeda-goals'
+const PLANET_LOG_KEY = 'andromeda-planet-log'
 
 const QR_TRANSFER_PREFIX = 'andromeda-xfer-session-'
 const QR_TRANSFER_READY_KEY = 'andromeda-xfer-ready-payload'
@@ -771,6 +773,144 @@ export function loadNotificationSettings(): NotificationSettings {
 
 export function saveNotificationSettings(settings: NotificationSettings) {
   setManagedItem(NOTIFICATIONS_KEY, JSON.stringify(settings))
+}
+
+// ─── Planet Discovery Log ────────────────────────────────
+//
+// RULES — do not change without updating all four priorities below:
+//
+// 1. Each (category, year, month) tuple gets exactly one planet, stored in
+//    andromeda-planet-log. Once assigned it never changes (deterministic).
+//
+// 2. Within the same month, no two categories may share the same planet alias.
+//    → candidates exclude aliases already assigned to other categories this month.
+//
+// 3. Per-category discovery cycle: candidates prefer planets not yet discovered
+//    in that category across all months (collector progression).
+//    → when all planets in the category have been discovered, the cycle resets
+//      (they can reappear), but monthly uniqueness still applies.
+//
+// 4. Planet is chosen via weighted RNG seeded on (year, month, categoryKey):
+//    same inputs always yield the same pick — fully deterministic.
+//    Weights by rarity: common 50 · uncommon 30 · rare 15 · epic 4 · legendary 1.
+//
+// Fallback chain (in order):
+//   P1 — not discovered in category AND not used this month  (ideal)
+//   P2 — cycle reset (all discovered), but still avoid month conflicts
+//   P3 — all planets already used this month → ignore month constraint
+//   P4 — full list (absolute last resort)
+
+export interface PlanetLogEntry {
+  category: string
+  alias: string
+  rarity: PlanetRarity
+  year: number
+  month: number // 0-indexed
+}
+
+const RARITY_WEIGHT: Record<PlanetRarity, number> = {
+  common: 50,
+  uncommon: 30,
+  rare: 15,
+  epic: 4,
+  legendary: 1,
+  mythic: 0.5,
+}
+
+function seededRandom(seed: number) {
+  let s = seed >>> 0
+  return () => {
+    s = (Math.imul(1664525, s) + 1013904223) >>> 0
+    return s / 4294967296
+  }
+}
+
+function strHash(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) >>> 0
+  return h
+}
+
+export function loadPlanetLog(): PlanetLogEntry[] {
+  try {
+    const raw = localStorage.getItem(PLANET_LOG_KEY)
+    return raw ? (JSON.parse(raw) as PlanetLogEntry[]) : []
+  } catch {
+    return []
+  }
+}
+
+function savePlanetLog(log: PlanetLogEntry[]) {
+  try {
+    localStorage.setItem(PLANET_LOG_KEY, JSON.stringify(log))
+  } catch { /* noop */ }
+}
+
+export function resolveMonthPlanet(
+  categoryKey: string,
+  year: number,
+  month: number,
+): { alias: string; source: string; lore: string; rarity: PlanetRarity } | null {
+  const allPlanets = getAllPlanets()
+  if (allPlanets.length === 0) return null
+
+  const log = loadPlanetLog()
+
+  // Already assigned for this (category, year, month)?
+  const existing = log.find((e) => e.category === categoryKey && e.year === year && e.month === month)
+  if (existing) {
+    return allPlanets.find((p) => p.alias === existing.alias) ?? null
+  }
+
+  // Aliases already discovered globally (across all categories/months)
+  const discoveredGlobally = new Set(log.map((e) => e.alias))
+  // Aliases used this month (any category)
+  const usedThisMonth = new Set(
+    log.filter((e) => e.year === year && e.month === month).map((e) => e.alias)
+  )
+
+  // P1: not discovered globally AND not used this month
+  let candidates = allPlanets.filter((p) => !discoveredGlobally.has(p.alias) && !usedThisMonth.has(p.alias))
+
+  // P2: not used this month (cycle reset — all discovered globally)
+  if (candidates.length === 0) {
+    candidates = allPlanets.filter((p) => !usedThisMonth.has(p.alias))
+  }
+
+  // P3: ignore month constraint (every planet used this month somewhere)
+  if (candidates.length === 0) {
+    candidates = allPlanets.filter((p) => !discoveredGlobally.has(p.alias))
+  }
+
+  // P4: all discovered → absolute fallback
+  if (candidates.length === 0) candidates = allPlanets
+
+  // Weighted pick using seeded RNG
+  const seed = (year * 12 + month) * 65537 + strHash(categoryKey)
+  const rand = seededRandom(seed)
+  const totalWeight = candidates.reduce((s, p) => s + RARITY_WEIGHT[p.rarity], 0)
+  let pick = rand() * totalWeight
+  let chosen = candidates[candidates.length - 1]
+  for (const p of candidates) {
+    pick -= RARITY_WEIGHT[p.rarity]
+    if (pick <= 0) { chosen = p; break }
+  }
+
+  // Save to log
+  savePlanetLog([...log, { category: categoryKey, alias: chosen.alias, rarity: chosen.rarity, year, month }])
+  return chosen
+}
+
+// Read-only: returns assigned planet for (category, year, month) if already in log, no side effect
+export function getLoggedPlanet(
+  categoryKey: string,
+  year: number,
+  month: number,
+): { alias: string; source: string; lore: string; rarity: PlanetRarity } | null {
+  const log = loadPlanetLog()
+  const entry = log.find((e) => e.category === categoryKey && e.year === year && e.month === month)
+  if (!entry) return null
+  return getAllPlanets().find((p) => p.alias === entry.alias) ?? null
 }
 
 // ─── Export / Import JSON ────────────────────────────────

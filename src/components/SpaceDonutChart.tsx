@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
 import { DASHBOARD } from '../shared/labels'
+import { resolveMonthPlanet } from '../shared/storage'
 import { haptic } from '../shared/platform'
 import MiniPlanet from './MiniPlanet'
 
@@ -25,6 +26,8 @@ interface SpaceDonutChartProps {
   onCategoryClick?: (canonicalKey: string) => void
   savingsGoal?: number
   missionSaved?: number
+  periodYear?: number
+  periodMonth?: number
 }
 
 // ─── Helpers ─────────────────────────────────────────────
@@ -331,7 +334,9 @@ function drawCenter(
 }
 
 // ─── Component ───────────────────────────────────────────
-function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideIncome = false, onCategoryClick, savingsGoal = 0, missionSaved = 0 }: SpaceDonutChartProps) {
+function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideIncome = false, onCategoryClick, savingsGoal = 0, missionSaved = 0, periodYear, periodMonth }: SpaceDonutChartProps) {
+  const _year = periodYear ?? new Date().getFullYear()
+  const _month = periodMonth ?? new Date().getMonth()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const animRef = useRef<number>(0)
@@ -656,26 +661,23 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
                 >
                   <MiniPlanet color={s.color} size={18} />
                   <div className="flex-1 min-w-0">
-                    {onCategoryClick && s.canonicalKey ? (
-                      <button
-                        className="block text-sm font-medium truncate text-left w-full"
-                        style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                        onClick={() => onCategoryClick(s.canonicalKey)}
-                      >
-                        {s.category} ›
-                      </button>
-                    ) : (
-                      <span className="block text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                        {s.category}
-                      </span>
-                    )}
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                        {formatEuro(s.amount)}
-                      </span>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {onCategoryClick && s.canonicalKey ? (
+                        <button
+                          className="block text-sm font-medium truncate text-left"
+                          style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, minWidth: 0 }}
+                          onClick={() => onCategoryClick(s.canonicalKey)}
+                        >
+                          {s.category} ›
+                        </button>
+                      ) : (
+                        <span className="block text-sm font-medium truncate" style={{ color: 'var(--text-primary)', minWidth: 0 }}>
+                          {s.category}
+                        </span>
+                      )}
                       {(s.importantRatio ?? 0) > 0 && (
                         <span
-                          className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
+                          className="text-xs font-semibold px-1.5 py-0.5 rounded-full shrink-0"
                           style={{ backgroundColor: 'rgba(251,191,36,0.15)', color: '#f59e0b', border: '1px solid rgba(251,191,36,0.4)' }}
                         >
                           ⭐ {DASHBOARD.spesaImportante}
@@ -683,10 +685,26 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
                         </span>
                       )}
                     </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                        {formatEuro(s.amount)}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-sm font-bold tabular-nums" style={{ color: s.color }}>
-                    {s.percent.toFixed(1)}%
-                  </span>
+                  <div className="flex flex-col items-end gap-0.5 shrink-0" style={{ minWidth: '110px' }}>
+                    <span className="text-sm font-bold tabular-nums" style={{ color: s.color }}>
+                      {s.percent.toFixed(1)}%
+                    </span>
+                    {s.type === 'uscita' && s.canonicalKey && (() => {
+                      const planet = resolveMonthPlanet(s.canonicalKey, _year, _month)
+                      if (!planet) return null
+                      return (
+                        <span className="text-[10px] text-right" style={{ color: 'var(--text-muted)', opacity: 0.8, lineHeight: 1.3 }}>
+                          🪐 {planet.alias} · {planet.source}
+                        </span>
+                      )
+                    })()}
+                  </div>
                 </div>
               ))}
               {showAccordion && (

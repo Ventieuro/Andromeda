@@ -540,6 +540,14 @@ const STRINGS = {
       (n: number, total: number) => `Unlocked ${n}/${total}`,
       (n: number, total: number) => `Desbloqueados ${n}/${total}`,
     ),
+    pianetiRaritaCommon:    t('Comune',    'Common',    'Común'),
+    pianetiRaritaUncommon:  t('Non comune', 'Uncommon', 'Poco común'),
+    pianetiRaritaRare:      t('Raro',       'Rare',     'Raro'),
+    pianetiRaritaEpic:      t('Epico',      'Epic',     'Épico'),
+    pianetiRaritaLegendary: t('Leggendario','Legendary','Legendario'),
+    pianetiRaritaMythic:    t('Mitico',    'Mythic',    'Mítico'),
+    pianetiScoperto:    t('Scoperto', 'Discovered', 'Descubierto'),
+    pianetiBloccato:    t('?', '?', '?'),
     esportaVoce:        t('Esporta / Importa',            'Export / Import',               'Exportar / Importar'),
     backupVoce:         t('Backup Automatico',            'Auto Backup',                   'Copia automática'),
     spazioLocaleDettaglio: tf(
@@ -649,125 +657,84 @@ const STRINGS = {
   },
 }
 
-interface PlanetCatalogRawEntry {
+export type PlanetRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic'
+
+interface PlanetEntry {
   alias: string
   source: string
   lore: I18n<string>
+  rarity: PlanetRarity
 }
 
-const PLANET_CATALOG: Record<string, PlanetCatalogRawEntry> = {
-  Cibo: {
-    alias: 'Arrakis',
-    source: 'Dune (film/libri)',
-    lore: t('Pianeta delle necessità quotidiane e risorse vitali.', 'Planet of daily essentials and vital resources.', 'Planeta de necesidades diarias y recursos vitales.'),
-  },
-  Spesa: {
-    alias: 'Coruscant',
-    source: 'Star Wars (film/serie)',
-    lore: t('Hub logistico del budget familiare e dei rifornimenti.', 'Logistics hub for household budget and supplies.', 'Centro logístico del presupuesto familiar y suministros.'),
-  },
-  Trasporti: {
-    alias: 'Reach',
-    source: 'Halo (giochi)',
-    lore: t('Rotta mobilità: spostamenti, viaggi e carburante.', 'Mobility route: commuting, trips, and fuel.', 'Ruta de movilidad: traslados, viajes y combustible.'),
-  },
-  Sociale: {
-    alias: 'Bajor',
-    source: 'Star Trek DS9 (serie)',
-    lore: t('Orbita relazioni: uscite e momenti condivisi.', 'Relationship orbit: outings and shared moments.', 'Órbita de relaciones: salidas y momentos compartidos.'),
-  },
-  Residenza: {
-    alias: 'Caladan',
-    source: 'Dune (film/libri)',
-    lore: t('Settore casa: stabilità abitativa e manutenzione.', 'Home sector: housing stability and upkeep.', 'Sector hogar: estabilidad habitacional y mantenimiento.'),
-  },
-  Regalo: {
-    alias: 'Naboo',
-    source: 'Star Wars (film)',
-    lore: t('Stazione doni: ricorrenze, gesti speciali e sorpresa.', 'Gift station: occasions, special gestures, and surprises.', 'Estación de regalos: ocasiones, gestos especiales y sorpresas.'),
-  },
-  Comunicazioni: {
-    alias: 'Gallifrey',
-    source: 'Doctor Who (serie)',
-    lore: t('Nodo segnali: rete, telefonia e connessioni digitali.', 'Signal node: internet, phone, and digital connectivity.', 'Nodo de señales: internet, telefonía y conectividad digital.'),
-  },
-  Svago: {
-    alias: 'Hyrule',
-    source: 'The Legend of Zelda (giochi)',
-    lore: t('Zona ricreativa: relax, hobby e divertimento.', 'Recreation zone: leisure, hobbies, and fun.', 'Zona recreativa: ocio, hobbies y diversión.'),
-  },
-  Bellezza: {
-    alias: 'Pandora',
-    source: 'Avatar (film)',
-    lore: t('Area cura personale e benessere estetico.', 'Personal care and beauty wellness area.', 'Área de cuidado personal y bienestar estético.'),
-  },
-  Medico: {
-    alias: 'Trantor',
-    source: 'Fondazione (libri/serie)',
-    lore: t('Quadrante salute: visite, farmaci e prevenzione.', 'Health quadrant: visits, medicines, and prevention.', 'Cuadrante de salud: consultas, medicamentos y prevención.'),
-  },
-  Hobby: {
-    alias: 'Tallon IV',
-    source: 'Metroid Prime (giochi)',
-    lore: t('Laboratorio passioni: creatività e tempo personale.', 'Passion lab: creativity and personal time.', 'Laboratorio de pasiones: creatividad y tiempo personal.'),
-  },
-  Bollette: {
-    alias: 'Caprica',
-    source: 'Battlestar Galactica (serie)',
-    lore: t('Settore energia e servizi essenziali ricorrenti.', 'Utilities and recurring essential services sector.', 'Sector de energía y servicios esenciales recurrentes.'),
-  },
-  Finanziamento: {
-    alias: 'Aiur',
-    source: 'StarCraft (giochi)',
-    lore: t('Orbita impegni finanziari e rate periodiche.', 'Financial commitments orbit and recurring installments.', 'Órbita de compromisos financieros y cuotas periódicas.'),
-  },
-  Multe: {
-    alias: 'Mustafar',
-    source: 'Star Wars (film)',
-    lore: t('Area imprevisti normativi e sanzioni non pianificate.', 'Regulatory incidents and unplanned penalties area.', 'Área de imprevistos normativos y sanciones no planificadas.'),
-  },
-  Altro: {
-    alias: 'Magrathea',
-    source: 'Guida galattica (libri)',
-    lore: t('Mondo esplorazione: spese fuori categoria standard.', 'Exploration world: expenses outside standard categories.', 'Mundo exploración: gastos fuera de categoría estándar.'),
-  },
-}
+// ─── Global planet pool (independent from categories) ────
+const PLANET_CATALOG: PlanetEntry[] = [
+  // ── Common ──
+  { alias: 'Timber Hearth', source: 'Outer Wilds',            rarity: 'common',    lore: t("Foreste di pini e geyser che danzano dall'orbita. Sembra un posto accogliente.", 'Pine forests and geysers dancing from orbit. Looks warm and welcoming.', 'Bosques de pinos y géiseres danzando desde la órbita. Parece acogedor.') },
+  { alias: 'Arrakis',       source: 'Dune',                   rarity: 'common',    lore: t("Sabbia ovunque, nessuna traccia d'acqua dall'alto. Come sopravvivono lì sotto?", 'Sand everywhere, no water from above. How do they survive down there?', '¿Arena por todas partes, sin rastro de agua. ¿Cómo sobreviven ahí abajo?') },
+  { alias: 'Coruscant',     source: 'Star Wars',              rarity: 'common',    lore: t("Nessuna superficie naturale: solo luci artificiali fino all'orizzonte. Una città-mondo.", 'No natural surface: just artificial lights to the horizon. A city-world.', 'Sin superficie natural: solo luces artificiales hasta el horizonte. Un mundo-ciudad.') },
+  { alias: 'Naboo',         source: 'Star Wars',              rarity: 'common',    lore: t('Valli verdi e laghi specchianti. Troppo bello per essere reale, ma è lì.', 'Green valleys and mirror lakes. Too beautiful to be real, yet there it is.', 'Valles verdes y lagos espejados. Demasiado hermoso para ser real, pero ahí está.') },
+  { alias: 'Hillys',        source: 'Beyond Good & Evil',     rarity: 'common',    lore: t("Arcipelaghi e fari che brillano nel buio. C'è qualcosa di familiare lì sotto.", 'Archipelagos and lighthouses glowing in the dark. Something familiar below.', 'Archipiélagos y faros brillando en la oscuridad. Algo familiar ahí abajo.') },
+  { alias: 'Bajor',         source: 'Star Trek DS9',          rarity: 'common',    lore: t('Continenti verdeggianti attraversati da catene montuose. Una civiltà antica mi aspetta.', 'Verdant continents crossed by mountain ranges. An ancient civilization awaits.', 'Continentes verdes atravesados por cadenas montañosas. Una civilización antigua me espera.') },
+  { alias: 'Gallifrey',     source: 'Doctor Who',             rarity: 'common',    lore: t('Pianure arancioni sotto cieli dorati. Più bello di quanto le leggende lasciassero credere.', 'Orange plains under golden skies. More beautiful than the legends suggested.', 'Llanuras naranjas bajo cielos dorados. Más hermoso de lo que las leyendas insinuaban.') },
+  { alias: 'Caladan',       source: 'Dune',                   rarity: 'common',    lore: t('Oceani infiniti e coste rocciose. Una calma potente si sente anche da quassù.', 'Endless oceans and rocky coasts. A powerful calm felt even from up here.', 'Océanos infinitos y costas rocosas. Una calma poderosa se siente desde aquí.') },
+  { alias: 'Trantor',       source: 'Foundation',             rarity: 'common',    lore: t("Una cupola metallica copre l'intero pianeta. Non si vede un filo d'erba da qui.", 'A metal dome covers the entire planet. Not a blade of grass from here.', 'Una cúpula metálica cubre todo el planeta. Ni una brizna de hierba desde aquí.') },
+  { alias: 'Harvest',       source: 'Halo',                   rarity: 'common',    lore: t('Campi coltivati geometrici e città ordinate. Era un posto tranquillo, prima.', 'Geometric crop fields and orderly cities. It was a quiet place, before.', 'Campos de cultivo geométricos y ciudades ordenadas. Era un lugar tranquilo, antes.') },
+  { alias: 'Caprica',       source: 'Battlestar Galactica',   rarity: 'common',    lore: t('Metropoli dense tra colline azzurre. Una gemma di civiltà sospesa nel vuoto.', 'Dense metropolises among azure hills. A gem of civilization in the void.', 'Metrópolis densas entre colinas azules. Una joya de civilización en el vacío.') },
+  { alias: 'Magrathea',     source: "The Hitchhiker's Guide", rarity: 'common',    lore: t('Deserto grigio e silenzioso. Difficile credere che qui si costruissero pianeti su commissione.', 'Grey and silent desert. Hard to believe they built planets to order here.', 'Desierto gris y silencioso. Difícil creer que construían planetas por encargo aquí.') },
+  { alias: 'Aiur',          source: 'StarCraft',              rarity: 'common',    lore: t("Foreste ancestrali e templi colossali visibili anche dall'orbita. Un mondo che respira.", 'Ancient forests and colossal temples visible from orbit. A world that breathes.', 'Bosques ancestrales y templos colosales visibles desde la órbita. Un mundo que respira.') },
+  { alias: 'Tallon IV',     source: 'Metroid Prime',          rarity: 'common',    lore: t("Foreste dense e rovine antiche. Qualcosa di oscuro pulsa al centro del pianeta.", "Dense forests and ancient ruins. Something dark pulses at the planet's core.", 'Bosques densos y ruinas antiguas. Algo oscuro pulsa en el centro del planeta.') },
+  // ── Uncommon ──
+  { alias: 'Ferrix',        source: 'Andor',                  rarity: 'uncommon',  lore: t('Una città industriale avvolta di fumo e acciaio. Il ritmo del lavoro si sente da quassù.', 'An industrial city wrapped in smoke and steel. The rhythm of work felt from here.', 'Una ciudad industrial envuelta en humo y acero. El ritmo del trabajo se siente desde aquí.') },
+  { alias: 'Reach',         source: 'Halo',                   rarity: 'uncommon',  lore: t('Catene montuose imponenti e basi militari sparse. Un bastione che sembrava invincibile.', 'Imposing mountain ranges and military bases. A bastion that seemed invincible.', 'Imponentes cadenas montañosas y bases militares. Un bastión que parecía invencible.') },
+  { alias: 'Thessia',       source: 'Mass Effect',            rarity: 'uncommon',  lore: t("Città d'argento immerse in un crepuscolo eterno. Un mondo di conoscenza e bellezza.", 'Silver cities bathed in eternal twilight. A world of ancient knowledge and beauty.', 'Ciudades de plata en un crepúsculo eterno. Un mundo de conocimiento y belleza antigua.') },
+  { alias: 'Spira',         source: 'Final Fantasy X',        rarity: 'uncommon',  lore: t("Isole tropicali e rovine sommerse visibili dall'alto. Una bellezza malinconica.", 'Tropical islands and submerged ruins visible from above. A melancholic beauty.', 'Islas tropicales y ruinas sumergidas visibles desde arriba. Una belleza melancólica.') },
+  { alias: 'Risa',          source: 'Star Trek',              rarity: 'uncommon',  lore: t('Spiagge dorate e acque cristalline. Persino da quassù si sente la voglia di scendere.', 'Golden beaches and crystal waters. Even from up here you feel like going down.', 'Playas doradas y aguas cristalinas. Incluso desde aquí tienes ganas de bajar.') },
+  { alias: 'Ferenginar',    source: 'Star Trek',              rarity: 'uncommon',  lore: t('Nuvole di pioggia permanenti coprono tutto. Ogni goccia, dicono, ha il suo prezzo.', 'Permanent rain clouds cover everything. Every drop, they say, has its price.', 'Nubes de lluvia permanentes lo cubren todo. Cada gota, dicen, tiene su precio.') },
+  { alias: 'Cybertron',     source: 'Transformers',           rarity: 'uncommon',  lore: t('Metallo da polo a polo, nessuna natura. Una macchina grande come un mondo che si muove.', 'Metal from pole to pole, no nature. A machine as large as a world, moving.', 'Metal de polo a polo, sin naturaleza. Una máquina tan grande como un mundo en movimiento.') },
+  { alias: 'Terminus',      source: 'Foundation',             rarity: 'uncommon',  lore: t("Un puntino isolato ai confini della galassia. Eppure da qui nasce qualcosa di enorme.", "A lonely dot at the galaxy's edge. Yet something enormous is born from here.", 'Un punto solitario en el borde de la galaxia. Y sin embargo, algo enorme nace desde aquí.') },
+  { alias: 'Pern',          source: 'Dragonriders of Pern',   rarity: 'uncommon',  lore: t('Continenti verdi solcati da creature alate enormi. Vedo Thread cadere come pioggia argentata.', 'Green continents furrowed by huge winged creatures. Thread falls like silver rain.', 'Continentes verdes surcados por enormes criaturas aladas. Thread cae como lluvia plateada.') },
+  { alias: 'Nirn',          source: 'The Elder Scrolls',      rarity: 'uncommon',  lore: t('Continenti separati da mari tempestosi. Le torri delle capitali si vedono da quassù.', 'Continents separated by stormy seas. The towers of the capitals visible from here.', 'Continentes separados por mares tormentosos. Las torres de las capitales visibles desde aquí.') },
+  { alias: "Qo'noS",        source: 'Star Trek',              rarity: 'uncommon',  lore: t('Un mondo scuro e tempestoso. Nuvole arancioni coprono i continenti come cicatrici antiche.', 'A dark and stormy world. Orange clouds cover the continents like ancient scars.', 'Un mundo oscuro y tormentoso. Nubes naranja cubren los continentes como cicatrices antiguas.') },
+  { alias: 'Oerth',         source: 'Dungeons & Dragons',     rarity: 'uncommon',  lore: t('Foreste magiche e montagne antiche. Qualcosa di potente si sente anche da quassù.', 'Magical forests and ancient mountains. Something powerful felt even from up here.', 'Bosques mágicos y montañas antiguas. Algo poderoso se siente incluso desde aquí.') },
+  { alias: 'Mongo',         source: 'Flash Gordon',           rarity: 'uncommon',  lore: t('Deserti, giungle e tundra compressi in un unico mondo caotico. Nessuna regola visibile.', 'Deserts, jungles, and tundra in one chaotic world. No rules visible from orbit.', 'Desiertos, junglas y tundra en un mundo caótico. Ninguna regla visible desde la órbita.') },
+  // ── Rare ──
+  { alias: "Giant's Deep",  source: 'Outer Wilds',            rarity: 'rare',      lore: t('Un oceano violento che avvolge tutto. I cicloni sollevano isole intere verso di me.', 'A violent ocean wrapping everything. Cyclones lift whole islands toward me.', 'Un océano violento que lo envuelve todo. Los ciclones levantan islas enteras hacia mí.') },
+  { alias: 'Pandora',       source: 'Avatar',                 rarity: 'rare',      lore: t('Una giungla bioluminescente che brilla nel buio. Sento il battito della terra da quassù.', "A bioluminescent jungle glowing in the dark. I feel the earth's heartbeat from up here.", 'Una jungla bioluminiscente que brilla en la oscuridad. Siento el latido de la tierra desde aquí.') },
+  { alias: 'Illium',        source: 'Mass Effect',            rarity: 'rare',      lore: t('Porto cosmopolita di luci e vetro. Le navi commerciali sfrecciano come sciami di stelle.', 'Cosmopolitan port of lights and glass. Trade ships dart like swarms of tiny stars.', 'Puerto cosmopolita de luces y cristal. Las naves comerciales vuelan como enjambres de estrellas.') },
+  { alias: 'Elysium',       source: 'Mass Effect',            rarity: 'rare',      lore: t('Grattacieli e resort tra colline dorate. Un paradiso che brilla troppo per essere onesto.', 'Skyscrapers and resorts among golden hills. A paradise that shines too bright to be honest.', 'Rascacielos y complejos turísticos entre colinas doradas. Un paraíso que brilla demasiado.') },
+  { alias: 'Mustafar',      source: 'Star Wars',              rarity: 'rare',      lore: t("Fuoco e lava ovunque. Un pianeta che brucia se stesso dall'interno. Impossibile non guardarlo.", 'Fire and lava everywhere. A planet burning from within. Impossible not to stare.', 'Fuego y lava por todas partes. Un planeta que se quema desde dentro. Imposible no mirarlo.') },
+  { alias: 'Zenn-La',       source: 'Marvel',                 rarity: 'rare',      lore: t('Un mondo di pace assoluta e civiltà millenaria. Quasi troppo perfetto per essere reale.', 'A world of absolute peace and ancient civilization. Almost too perfect to be real.', 'Un mundo de paz absoluta y civilización milenaria. Casi demasiado perfecto para ser real.') },
+  { alias: 'Xandar',        source: 'Marvel',                 rarity: 'rare',      lore: t("Città luminose e architettura organica. Un mondo florido che irradia ottimismo dall'orbita.", 'Luminous cities and organic architecture. A flourishing world radiating optimism from space.', 'Ciudades luminosas y arquitectura orgánica. Un mundo próspero que irradia optimismo.') },
+  { alias: 'Skaro',         source: 'Doctor Who',             rarity: 'rare',      lore: t('Un pianeta di cenere e desolazione. Qualcosa di metallico si muove lento sulla superficie.', 'A planet of ash and desolation. Something metallic moves slowly on the surface.', 'Un planeta de cenizas y desolación. Algo metálico se mueve lentamente en la superficie.') },
+  { alias: 'Thedas',        source: 'Dragon Age',             rarity: 'rare',      lore: t('Fortezze medievali tra foreste oscure. Il peso della storia è visibile anche da quassù.', 'Medieval fortresses among dark forests. The weight of history visible from up here.', 'Fortalezas medievales entre bosques oscuros. El peso de la historia visible desde aquí.') },
+  { alias: 'New Eden',      source: 'EVE Online',             rarity: 'rare',      lore: t("Sistemi stellari a perdita d'occhio. Una colonia solitaria sospesa nell'immensità.", 'Star systems as far as the eye can see. A lonely colony suspended in immensity.', 'Sistemas estelares a la vista. Una colonia solitaria suspendida en la inmensidad.') },
+  // ── Epic ──
+  { alias: 'Solaris',       source: 'Solaris',                rarity: 'epic',      lore: t('Un oceano senziente che muta forma mentre lo osservo. Forse mi sta osservando anche lui.', "A sentient ocean changing shape as I watch. Perhaps it's watching me back.", 'Un océano sintiente que cambia de forma mientras lo observo. Quizás también me observa.') },
+  { alias: 'Ego',           source: 'Marvel',                 rarity: 'epic',      lore: t("Un pianeta con un volto. Occhi enormi mi guardano dall'orbita. Non so se avvicinarmi.", "A planet with a face. Enormous eyes look at me from orbit. I don't know whether to approach.", 'Un planeta con un rostro. Ojos enormes me miran desde la órbita. No sé si acercarme.') },
+  { alias: 'Zebes',         source: 'Metroid',                rarity: 'epic',      lore: t("Caverne immense visibili anche dall'orbita. Qualcosa di antico e silenzioso abita là sotto.", 'Immense caverns visible even from orbit. Something ancient and silent dwells below.', 'Cavernas inmensas visibles desde la órbita. Algo antiguo y silencioso habita ahí abajo.') },
+  { alias: 'Ilos',          source: 'Mass Effect',            rarity: 'epic',      lore: t('Una giungla che ha inghiottito ogni edificio. I segreti della galassia dormono qui sotto.', "A jungle that has swallowed every building. The galaxy's secrets lie buried here.", 'Una jungla que ha engullido cada edificio. Los secretos de la galaxia duermen enterrados aquí.') },
+  // ── Legendary ──
+  { alias: 'Brittle Hollow', source: 'Outer Wilds',           rarity: 'legendary', lore: t('Un guscio fragile che collassa in un buco nero. Sto guardando un mondo che si autodivora.', "A fragile shell collapsing into a black hole. I'm watching a world devour itself.", 'Una cáscara frágil que colapsa en un agujero negro. Estoy viendo un mundo devorándose a sí mismo.') },
+  { alias: 'Krypton',        source: 'DC Comics',             rarity: 'legendary', lore: t("Un mondo di cristallo sotto un sole rosso morente. Un'intera civiltà sepolta nel silenzio.", 'A crystal world under a dying red sun. An entire civilization buried in silence.', 'Un mundo de cristal bajo un sol rojo moribundo. Una civilización entera enterrada en el silencio.') },
+  // ── Mythic ──
+  { alias: 'Dark Bramble',  source: 'Outer Wilds',            rarity: 'mythic',    lore: t('Non è un pianeta normale: spine enormi hanno consumato un mondo intero. Luci spettrali nella nebbia.', 'Not a normal planet: enormous thorns consumed an entire world. Spectral lights in the fog.', 'No es un planeta normal: enormes espinas consumieron un mundo entero. Luces espectrales en la niebla.') },
+]
 
-const PLANET_LORE_FALLBACK = t(
-  'Pianeta in esplorazione.',
-  'Planet under exploration.',
-  'Planeta en exploración.',
-)
-
-export function getPlanetLore(categoryKey: string): string {
-  return (PLANET_CATALOG[categoryKey]?.lore ?? PLANET_LORE_FALLBACK)[currentLocale]
-}
-
-export function getPlanetAlias(categoryKey: string): string {
-  return PLANET_CATALOG[categoryKey]?.alias ?? categoryKey
-}
-
-export function getPlanetSource(categoryKey: string): string {
-  return PLANET_CATALOG[categoryKey]?.source ?? 'Universo originale'
+// All planets from the global pool (locale-resolved)
+export function getAllPlanets(): { alias: string; source: string; lore: string; rarity: PlanetRarity }[] {
+  return PLANET_CATALOG.map((p) => ({
+    alias: p.alias,
+    source: p.source,
+    lore: p.lore[currentLocale],
+    rarity: p.rarity,
+  }))
 }
 
 export interface PlanetCatalogEntry {
-  categoryKey: string
-  categoryLabel: string
   alias: string
   source: string
   lore: string
-}
-
-export function getPlanetCatalog(type: 'entrata' | 'uscita' = 'uscita'): PlanetCatalogEntry[] {
-  const canonical = getCanonicalCategories(type)
-  return canonical.map((categoryKey) => ({
-    categoryKey,
-    categoryLabel: translateCategory(categoryKey, type),
-    alias: getPlanetAlias(categoryKey),
-    source: getPlanetSource(categoryKey),
-    lore: getPlanetLore(categoryKey),
-  }))
+  rarity: PlanetRarity
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

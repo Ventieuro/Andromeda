@@ -25,12 +25,7 @@
 
 <!-- TASK-083 completato: vedi sezione Completati -->
 
-### 🔜 TASK-137 — Registro pianeti sbloccati per mese (09/05/2026)
-- [ ] Definire modello dati per tracciare pianeti sbloccati per periodo mensile
-- [ ] Progettare UI dedicata per visualizzare storico sblocchi (lista/collezione)
-- [ ] Integrare entry point non invasivo da dashboard/legenda (tap o drawer)
-- [ ] Aggiungere filtri periodo e stato (sbloccato, in corso, bloccato)
-- [ ] Validare persistenza su localStorage/backup mantenendo retrocompatibilità
+<!-- TASK-137 completato: vedi sezione Completati -->
 
 ### 🔜 TASK-054 — Promemoria gestione spazio dati (non implementare ora)
 - [ ] Valutare strategia archiviazione storica (es. export annuale + pulizia dati vecchi)
@@ -44,6 +39,23 @@
 - [ ] Progettare impatto su backup/sync/export prima di attivare in produzione
 
 ## Completati
+
+### ✅ TASK-140 — Planet Catalog overhaul: rarity Mythic + lore primo piano orbitale (09/05/2026)
+- [x] Aggiunta rarity `mythic` al tipo, pesi, config colore (fuchsia), label i18n
+- [x] PLANET_CATALOG riscritto: 44 pianeti reali (no regni/città/dimensioni)
+- [x] Lore riscritta: prima persona dall'orbita, pianeta non ancora esplorato
+- [x] Aggiunti: Timber Hearth, Giant's Deep, Brittle Hollow, Dark Bramble, Hillys, Spira, Qo'noS, Skaro, Zebes, Ilos
+- [x] Rimossi: Mordor, Xen, Pandemonium, The Citadel, Asgard, Zion, The Ark, Hyrule, Olympus, Midgar, Cybele
+- [x] Versione bump → `0.11.11`
+
+### ✅ TASK-137 — Planet Discovery System + Archivio Pianeti redesign (09/05/2026)
+- [x] Struttura PLANET_CATALOG: array multipli per categoria con rarity (common/uncommon/rare/epic/legendary)
+- [x] `resolveMonthPlanet()` in storage.ts: seeded RNG + 4-priority fallback + monthly uniqueness
+- [x] `PlanetCard.tsx`: card griglia con MiniPlanet, silhouette bloccata, modal dettaglio, rarity badge
+- [x] `PlanetsCatalog.tsx`: redesign 3-colonne + navigazione mese (offset) + unlock da transazioni reali
+- [x] `SpaceDonutChart`: footer 🪐 alias · source per ogni riga uscita
+- [x] Nuove label rarity in SETTINGS (pianetiRaritaCommon/.Uncommon/.Rare/.Epic/.Legendary)
+- [x] Persistenza log scoperte in `andromeda-planet-log` (plain localStorage)
 
 ### ✅ TASK-139 — Archivio Pianeti: filtro sbloccati + mock locale (09/05/2026)
 - [x] Aggiunto filtro "solo sbloccati nel mese"
