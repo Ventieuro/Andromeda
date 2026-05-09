@@ -4,6 +4,18 @@
 
 ---
 
+## [09/05/2026] — Sessione 22
+
+### TASK-123 (fix): Cometa cumulato — scala corretta con risparmi iniziali negativi
+**File modificati:** `src/components/CometChart.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Identificata causa visuale: scala Y includeva sempre `0`, comprimendo il tracciato quando il cumulato restava tutto sotto zero
+- ✅ Fix: in modalità cumulativa lo zero viene incluso solo se la serie attraversa realmente lo zero
+- ✅ Risultato: curva più leggibile e niente macro-sezione nera “vuota”
+- ✅ Versione bump → `0.9.2`
+
+---
+
 ## [09/05/2026] — Sessione 21
 
 ### TASK-122 (feature): Scanner scontrino — prezzo con sconto mostrato come lordo/sconto/netto

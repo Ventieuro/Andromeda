@@ -239,8 +239,14 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
     if (!ctx) return
 
     function getMetrics() {
-      const minV = Math.min(...values, 0)
-      const maxV = Math.max(...values, 0)
+      const rawMin = Math.min(...values)
+      const rawMax = Math.max(...values)
+      const crossesZero = rawMin <= 0 && rawMax >= 0
+      // In vista mensile teniamo lo zero come riferimento;
+      // in cumulativo lo includiamo solo se i dati lo attraversano.
+      const includeZero = mode === 'monthly' || crossesZero
+      const minV = includeZero ? Math.min(rawMin, 0) : rawMin
+      const maxV = includeZero ? Math.max(rawMax, 0) : rawMax
       const pad = (maxV - minV) * 0.12 || 50
       const lo = minV - pad
       const hi = maxV + pad

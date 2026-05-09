@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-123 — Cometa cumulato: fix scala con risparmi negativi (09/05/2026)
+- [x] Causa identificata: scala Y forzava sempre lo zero e comprimiva la curva cumulata tutta negativa
+- [x] Fix in `CometChart`: in modalità cumulativa lo zero viene incluso solo se i dati lo attraversano
+- [x] Ridotta area nera percepita: curva ora usa meglio l'altezza disponibile
+- [x] Versione bump → `0.9.2`, deploy ✅
+
 ### ✅ TASK-122 — Scanner scontrino: prezzo articolo con sconto in 3 righe (09/05/2026)
 - [x] In revisione articolo con sconto: mostrati `Lordo`, `Sconto`, `Netto`
 - [x] Campo `Netto` reso non modificabile per evitare doppie sottrazioni
