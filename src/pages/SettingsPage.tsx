@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Download, FolderOpen } from 'lucide-react'
 import { PageHeader } from '../components/ui'
 import { useTheme } from '../shared/ThemeContext'
-import { NebulaIcon, MissionIcon, NasaIcon, AuroraIcon, LunaIcon, SupernovaIcon } from '../shared/icons'
+import { NebulaIcon, CampfireIcon, NasaIcon, AuroraIcon, LunaIcon, SupernovaIcon } from '../shared/icons'
 import MoneyPlusImporter from '../components/MoneyPlusImporter'
 import {
   loadNotificationSettings,
@@ -73,7 +73,7 @@ export function AspettoSection() {
           <div className="grid grid-cols-3 gap-2">
             {([
               { t: 'nebula',  Icon: NebulaIcon,  label: 'Nebula',  bg: '#0b0d17', text: '#b388ff', accent: '#7c4dff' },
-              { t: 'mission', Icon: MissionIcon, label: 'Campfire', bg: '#0d1323', text: '#ff9800', accent: '#ff9800' },
+              { t: 'mission', Icon: CampfireIcon, label: 'Campfire', bg: '#0d1323', text: '#ff9800', accent: '#ff9800' },
               { t: 'nasa',    Icon: NasaIcon,    label: 'Orbiter', bg: '#f4f6fc', text: '#FC3D21', accent: '#FC3D21' },
               { t: 'aurora',  Icon: AuroraIcon,  label: 'Aurora',  bg: '#080c1a', text: '#00e5b0', accent: '#00e5b0' },
               { t: 'luna',    Icon: LunaIcon,    label: 'Luna',    bg: '#eef0f8', text: '#4a55a8', accent: '#7c85c8' },

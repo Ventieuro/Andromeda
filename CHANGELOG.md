@@ -6,6 +6,13 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-134 (theme): Campfire — icona dedicata
+**File modificati:** `src/shared/icons/CampfireIcon.tsx`, `src/shared/icons/index.ts`, `src/components/ThemeSwitcher.tsx`, `src/pages/SettingsPage.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Creata nuova icona tema `CampfireIcon` (stile falò minimale)
+- ✅ Tema `mission`/Campfire ora usa icona dedicata in switcher e impostazioni
+- ✅ Versione bump → `0.11.5`
+
 ### TASK-133 (theme): Rename tema Mission in Campfire
 **File modificati:** `src/shared/labels.ts`, `src/components/ThemeSwitcher.tsx`, `src/pages/SettingsPage.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
 

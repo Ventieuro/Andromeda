@@ -38,6 +38,11 @@
 
 ## Completati
 
+### ✅ TASK-134 — Tema Campfire: icona dedicata (09/05/2026)
+- [x] Creata nuova icona `CampfireIcon` (falò minimal)
+- [x] Collegata ai selettori tema in switcher e settings
+- [x] Versione bump → `0.11.5`, deploy ✅
+
 ### ✅ TASK-133 — Rename tema Mission → Campfire (09/05/2026)
 - [x] Mantenuta chiave tema interna `mission` per compatibilità storage
 - [x] Aggiornato nome visibile tema a `Campfire` in labels e UI
