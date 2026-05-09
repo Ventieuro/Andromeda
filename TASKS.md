@@ -38,6 +38,11 @@
 
 ## Completati
 
+### ✅ TASK-136 — Campfire icon: miglioramento legnetti (09/05/2026)
+- [x] Legnetti ridisegnati con tronchi incrociati più leggibili
+- [x] Aggiunte estremità visive per maggiore riconoscibilità a piccola scala
+- [x] Versione bump → `0.11.7`, deploy ✅
+
 ### ✅ TASK-135 — Impostazioni Sicurezza: cambio PIN (09/05/2026)
 - [x] Aggiunta sezione cambio PIN in Sicurezza con verifica PIN attuale
 - [x] Validazioni: 4 cifre, conferma nuovo PIN, feedback errore/successo
