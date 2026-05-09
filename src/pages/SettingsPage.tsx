@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Download, FolderOpen } from 'lucide-react'
 import { PageHeader } from '../components/ui'
 import { useTheme } from '../shared/ThemeContext'
-import { NebulaIcon, MissionIcon, NasaIcon, AuroraIcon, LunaIcon } from '../shared/icons'
+import { NebulaIcon, MissionIcon, NasaIcon, AuroraIcon, LunaIcon, SupernovaIcon } from '../shared/icons'
 import MoneyPlusImporter from '../components/MoneyPlusImporter'
 import {
   loadNotificationSettings,
@@ -77,6 +77,7 @@ export function AspettoSection() {
               { t: 'nasa',    Icon: NasaIcon,    label: 'NASA',    bg: '#f4f6fc', text: '#FC3D21', accent: '#FC3D21' },
               { t: 'aurora',  Icon: AuroraIcon,  label: 'Aurora',  bg: '#080c1a', text: '#00e5b0', accent: '#00e5b0' },
               { t: 'luna',    Icon: LunaIcon,    label: 'Luna',    bg: '#eef0f8', text: '#4a55a8', accent: '#7c85c8' },
+              { t: 'supernova', Icon: SupernovaIcon, label: 'Supernova', bg: '#070707', text: '#ff4d4d', accent: '#ff2b2b' },
             ] as { t: Parameters<typeof setTheme>[0]; Icon: ComponentType<{ size?: number }>; label: string; bg: string; text: string; accent: string }[]).map(({ t, Icon, label, bg, text, accent }) => (
               <button
                 key={t}

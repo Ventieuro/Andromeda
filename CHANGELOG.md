@@ -6,6 +6,15 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-129 (feature): Nuovo tema Supernova (nero/rosso) + icona SVG
+**File modificati:** `src/index.css`, `src/shared/ThemeContext.tsx`, `src/shared/themeTokens.ts`, `src/shared/labels.ts`, `src/components/ThemeSwitcher.tsx`, `src/pages/SettingsPage.tsx`, `src/shared/icons/SupernovaIcon.tsx` (new), `src/shared/icons/index.ts`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Nuovo tema `supernova` aggiunto con token completi (bg, testi, accent, nav, input, tx colors)
+- ✅ Tema selezionabile da impostazioni e mostrato nel badge `ThemeSwitcher`
+- ✅ Nuova icona SVG `SupernovaIcon` creata e cablata negli export condivisi
+- ✅ i18n tema aggiornato (`TEMI.supernova`)
+- ✅ Versione bump → `0.11.0`
+
 ### TASK-128 (fix): MissionCard — tematizzazione card missioni
 **File modificati:** `src/components/MissionCard.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
 

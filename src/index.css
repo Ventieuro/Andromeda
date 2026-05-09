@@ -262,6 +262,48 @@
   --tx-balance-neg-label: #a87030;
 }
 
+/* ========== TEMA: Supernova ========== */
+[data-theme="supernova"] {
+  --bg-primary: #070707;
+  --bg-secondary: #111111;
+  --bg-card: #161616;
+  --text-primary: #f5f5f5;
+  --text-secondary: #d1d1d1;
+  --text-muted: #8a8a8a;
+  --border: #2b2b2b;
+  --accent: #ff2b2b;
+  --accent-hover: #d91f1f;
+  --accent-light: rgba(255, 43, 43, 0.14);
+  --nav-bg: #050505;
+  --nav-text: #f5f5f5;
+  --btn-bg: #161616;
+  --btn-text: #f5f5f5;
+  --input-bg: #111111;
+  --input-border: #353535;
+  --highlight: #ff6b6b;
+  --gold: #ffb347;
+  --water: #ff4d4d;
+  --tropical: #ff2b2b;
+  --fab-bg: #ff2b2b;
+  --fab-text: #0a0a0a;
+  --tx-income-bg: rgba(54, 150, 86, 0.14);
+  --tx-income-border: rgba(54, 150, 86, 0.38);
+  --tx-income-text: #71d18b;
+  --tx-income-label: #53b773;
+  --tx-expense-bg: rgba(255, 43, 43, 0.14);
+  --tx-expense-border: rgba(255, 43, 43, 0.38);
+  --tx-expense-text: #ff5a5a;
+  --tx-expense-label: #ff3b3b;
+  --tx-balance-pos-bg: rgba(255, 179, 71, 0.12);
+  --tx-balance-pos-border: rgba(255, 179, 71, 0.32);
+  --tx-balance-pos-text: #ffc66b;
+  --tx-balance-pos-label: #ffb347;
+  --tx-balance-neg-bg: rgba(255, 43, 43, 0.14);
+  --tx-balance-neg-border: rgba(255, 43, 43, 0.38);
+  --tx-balance-neg-text: #ff5a5a;
+  --tx-balance-neg-label: #ff3b3b;
+}
+
 /* ========== Stili globali basati su variabili ========== */
 body {
   background-color: var(--bg-primary);

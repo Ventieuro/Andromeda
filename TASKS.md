@@ -38,6 +38,13 @@
 
 ## Completati
 
+### ✅ TASK-129 — Nuovo tema Supernova + icona SVG (09/05/2026)
+- [x] Aggiunto tema `supernova` (nero/rosso) con palette completa CSS variables
+- [x] Integrato in `ThemeContext`, `themeTokens`, `ThemeSwitcher` e `SettingsPage`
+- [x] Creata icona dedicata `SupernovaIcon.tsx` e aggiunta al barrel export
+- [x] Aggiunta label i18n tema `supernova`
+- [x] Versione bump → `0.11.0`, deploy ✅
+
 ### ✅ TASK-128 — MissionCard: tematizzazione card missioni (09/05/2026)
 - [x] Sostituiti colori hardcoded principali con variabili tema (`--bg-card`, `--border`, `--text-*`, `--accent`)
 - [x] Tematizzati contenitore, header, progress bar, box picker, badge mensile, history footer

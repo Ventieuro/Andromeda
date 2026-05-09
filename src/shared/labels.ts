@@ -61,6 +61,7 @@ const STRINGS = {
     mission: t('Mission',  'Mission',  'Misión'),
     aurora:  t('Aurora',   'Aurora',   'Aurora'),
     luna:    t('Luna',     'Moon',     'Luna'),
+    supernova: t('Supernova', 'Supernova', 'Supernova'),
   },
 
   // ── Dashboard ──────────────────────────────────────────
