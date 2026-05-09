@@ -6,6 +6,15 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-131 (refactor+theme): Rename IT→EN (scanner) + Luna Perla lunare
+**File modificati:** `src/components/ReceiptScanner.tsx`, `src/components/ReceiptTable.tsx`, `src/components/ReceiptProgress.tsx`, `src/index.css`, `src/shared/themeTokens.ts`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Primo pass di rinomina identificatori italiani nel flow scanner verso inglese (metodi e payload action)
+- ✅ Props italiane in `ReceiptTable` e `ReceiptProgress` rinominate in inglese
+- ✅ Tema Luna aggiornato: sfondo pagina Perla lunare `#F5F4F0`
+- ✅ Allineati token JS tema Luna (`bgPrimary`)
+- ✅ Versione bump → `0.11.2`
+
 ### TASK-130 (fix): Supernova — miglioramento accessibilità contrasti
 **File modificati:** `src/index.css`, `src/shared/themeTokens.ts`, `package.json`, `TASKS.md`, `CHANGELOG.md`
 

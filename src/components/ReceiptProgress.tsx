@@ -1,10 +1,10 @@
 import { OCR } from '../shared/labels'
 
 interface ReceiptProgressProps {
-  sommaArticoli: number
-  totale: number | null
-  approvato: boolean
-  percentuale: number
+  itemsSum: number
+  total: number | null
+  isApproved: boolean
+  percentage: number
   uncertainCount: number
 }
 
@@ -13,16 +13,16 @@ function formatEuro(n: number) {
 }
 
 function ReceiptProgress({
-  sommaArticoli,
-  totale,
-  approvato,
-  percentuale,
+  itemsSum,
+  total,
+  isApproved,
+  percentage,
   uncertainCount,
 }: ReceiptProgressProps) {
   return (
     <>
       {/* Barra progresso somma → totale */}
-      {totale !== null ? (
+      {total !== null ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
           <div
             style={{
@@ -34,10 +34,10 @@ function ReceiptProgress({
               color: 'var(--text-muted)',
             }}
           >
-            <span>{formatEuro(sommaArticoli)}</span>
+            <span>{formatEuro(itemsSum)}</span>
             <span>
               {OCR.totaleRilevato}:{' '}
-              <strong style={{ color: 'var(--text-primary)' }}>{formatEuro(totale)}</strong>
+              <strong style={{ color: 'var(--text-primary)' }}>{formatEuro(total)}</strong>
             </span>
           </div>
           <div style={{ height: '10px', borderRadius: '5px', background: 'var(--bg-secondary)', overflow: 'hidden' }}>
@@ -45,8 +45,8 @@ function ReceiptProgress({
               style={{
                 height: '100%',
                 borderRadius: '5px',
-                background: approvato ? '#22c55e' : 'var(--accent)',
-                width: `${percentuale}%`,
+                background: isApproved ? '#22c55e' : 'var(--accent)',
+                width: `${percentage}%`,
                 transition: 'width 0.5s ease',
               }}
             />
@@ -57,10 +57,10 @@ function ReceiptProgress({
               fontSize: '12px',
               fontWeight: 700,
               textAlign: 'center',
-              color: approvato ? '#16a34a' : 'var(--text-muted)',
+              color: isApproved ? '#16a34a' : 'var(--text-muted)',
             }}
           >
-            {approvato ? OCR.approvatoScontrino : OCR.sommaNonValida}
+            {isApproved ? OCR.approvatoScontrino : OCR.sommaNonValida}
           </p>
         </div>
       ) : (

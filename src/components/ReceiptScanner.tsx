@@ -45,20 +45,20 @@ type ScanAction =
   | { type: 'APRI_CAMERA' }
   | { type: 'CHIUDI_CAMERA' }
   | { type: 'AVVIA_ELABORAZIONE' }
-  | { type: 'AGGIORNA_PROGRESS'; progress: number; fotoCorrente: number }
-  | { type: 'AGGIORNA_PARZIALE'; articoli: ReceiptItem[]; totale: number | null; totaleValido: boolean }
-  | { type: 'SET_RISULTATI'; articoli: ReceiptItem[]; totale: number | null; totaleValido: boolean }
-  | { type: 'SET_ERRORE'; errore: string }
-  | { type: 'MODIFICA_NOME'; id: string; valore: string }
-  | { type: 'MODIFICA_PREZZO'; id: string; valore: string }
-  | { type: 'MODIFICA_SCONTO_IMPORTO'; id: string; valore: string }
-  | { type: 'MODIFICA_SCONTO_TIPO'; id: string; valore: string }
+  | { type: 'AGGIORNA_PROGRESS'; progress: number; currentPhoto: number }
+  | { type: 'AGGIORNA_PARZIALE'; items: ReceiptItem[]; total: number | null; isTotalValid: boolean }
+  | { type: 'SET_RISULTATI'; items: ReceiptItem[]; total: number | null; isTotalValid: boolean }
+  | { type: 'SET_ERRORE'; error: string }
+  | { type: 'MODIFICA_NOME'; id: string; value: string }
+  | { type: 'MODIFICA_PREZZO'; id: string; value: string }
+  | { type: 'MODIFICA_SCONTO_IMPORTO'; id: string; value: string }
+  | { type: 'MODIFICA_SCONTO_TIPO'; id: string; value: string }
   | { type: 'RIMUOVI_ARTICOLO'; id: string }
   | { type: 'SPOSTA_ARTICOLO'; fromIndex: number; toIndex: number }
   | { type: 'AGGIUNGI_ARTICOLO_MANUALE' }
-  | { type: 'SET_CATEGORIA'; categoria: string }
-  | { type: 'MODIFICA_TOTALE'; valore: string }
-  | { type: 'SET_DESCRIZIONE'; descrizione: string }
+  | { type: 'SET_CATEGORIA'; category: string }
+  | { type: 'MODIFICA_TOTALE'; value: string }
+  | { type: 'SET_DESCRIZIONE'; description: string }
   | { type: 'RESET' }
 
 const STATO_INIZIALE: ScanState = {
@@ -92,33 +92,33 @@ function scanReducer(state: ScanState, action: ScanAction): ScanState {
       return { ...state, fase: 'elaborazione', progress: 0, fotoCorrente: 0, articoli: [], totale: null, totaleValido: false, errore: null }
 
     case 'AGGIORNA_PROGRESS':
-      return { ...state, progress: action.progress, fotoCorrente: action.fotoCorrente }
+      return { ...state, progress: action.progress, fotoCorrente: action.currentPhoto }
 
     case 'AGGIORNA_PARZIALE':
-      return { ...state, articoli: action.articoli, totale: action.totale, totaleValido: action.totaleValido }
+      return { ...state, articoli: action.items, totale: action.total, totaleValido: action.isTotalValid }
 
     case 'SET_RISULTATI':
       return {
         ...state,
         fase: 'risultati',
-        articoli: action.articoli,
-        totale: action.totale,
-        totaleValido: action.totaleValido,
+        articoli: action.items,
+        totale: action.total,
+        totaleValido: action.isTotalValid,
       }
 
     case 'SET_ERRORE':
-      return { ...state, fase: 'input', errore: action.errore }
+      return { ...state, fase: 'input', errore: action.error }
 
     case 'MODIFICA_NOME':
       return {
         ...state,
         articoli: state.articoli.map((a) =>
-          a.id === action.id ? { ...a, name: action.valore } : a,
+          a.id === action.id ? { ...a, name: action.value } : a,
         ),
       }
 
     case 'MODIFICA_PREZZO': {
-      const price = parseFloat(action.valore.replace(',', '.'))
+      const price = parseFloat(action.value.replace(',', '.'))
       return {
         ...state,
         articoli: state.articoli.map((a) =>
@@ -144,16 +144,16 @@ function scanReducer(state: ScanState, action: ScanAction): ScanState {
       return { ...state, articoli: [...state.articoli, { id: crypto.randomUUID(), name: '', price: 0 }] }
 
     case 'MODIFICA_TOTALE': {
-      const newTotale = parseFloat(action.valore.replace(',', '.'))
+      const newTotale = parseFloat(action.value.replace(',', '.'))
       if (isNaN(newTotale) || newTotale <= 0) return state
       return { ...state, totale: newTotale }
     }
 
     case 'SET_CATEGORIA':
-      return { ...state, categoriaSelezionata: action.categoria }
+      return { ...state, categoriaSelezionata: action.category }
 
     case 'MODIFICA_SCONTO_IMPORTO': {
-      const amount = parseFloat(action.valore.replace(',', '.'))
+      const amount = parseFloat(action.value.replace(',', '.'))
       return {
         ...state,
         articoli: state.articoli.map((a) => {
@@ -172,12 +172,12 @@ function scanReducer(state: ScanState, action: ScanAction): ScanState {
       return {
         ...state,
         articoli: state.articoli.map((a) =>
-          a.id === action.id ? { ...a, discountType: action.valore || undefined } : a,
+          a.id === action.id ? { ...a, discountType: action.value || undefined } : a,
         ),
       }
 
     case 'SET_DESCRIZIONE':
-      return { ...state, descrizione: action.descrizione }
+      return { ...state, descrizione: action.description }
 
     case 'RESET':
       return STATO_INIZIALE
@@ -277,7 +277,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   }, [state.foto])
 
   /** Restituisce URL stabile per una foto (la crea solo la prima volta) */
-  function getFotoUrl(file: File): string {
+  function getPhotoUrl(file: File): string {
     if (!urlCacheRef.current.has(file)) {
       urlCacheRef.current.set(file, URL.createObjectURL(file))
     }
@@ -285,7 +285,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   }
 
   // ── Apri fotocamera (o fallback al file picker) ──────
-  function aprireCamera() {
+  function openCamera() {
     if (!navigator.mediaDevices?.getUserMedia) {
       fileInputRef.current?.click()
       return
@@ -293,7 +293,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
     dispatch({ type: 'APRI_CAMERA' })
   }
 
-  function chiudiCamera() {
+  function closeCamera() {
     streamRef.current?.getTracks().forEach(t => t.stop())
     streamRef.current = null
     captureLockRef.current = false
@@ -301,7 +301,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
     dispatch({ type: 'CHIUDI_CAMERA' })
   }
 
-  function scattaFoto() {
+  function capturePhoto() {
     if (captureLockRef.current) return
     captureLockRef.current = true
     setIsCapturingPhoto(true)
@@ -352,7 +352,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   const ocrPhotoRef = useRef({ index: 0, total: 1 })
 
   // ── Avvia OCR su tutte le foto ───────────────────────
-  async function handleAnalizza() {
+  async function handleAnalyze() {
     if (state.foto.length === 0) return
     dispatch({ type: 'AVVIA_ELABORAZIONE' })
 
@@ -367,7 +367,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
           if (m.status === 'recognizing text' && !isFallback) {
             const { index, total } = ocrPhotoRef.current
             const overall = Math.round(((index + m.progress) / total) * 100)
-            dispatch({ type: 'AGGIORNA_PROGRESS', progress: overall, fotoCorrente: index })
+            dispatch({ type: 'AGGIORNA_PROGRESS', progress: overall, currentPhoto: index })
           }
         },
       })
@@ -401,20 +401,20 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
         testoCompleto += '\n' + textBest
 
         const p = Math.round(((i + 1) / n) * 100)
-        dispatch({ type: 'AGGIORNA_PROGRESS', progress: p, fotoCorrente: i })
+        dispatch({ type: 'AGGIORNA_PROGRESS', progress: p, currentPhoto: i })
       }
 
       await worker.terminate()
 
       const { items, total, isValid } = parseReceiptText(testoCompleto)
-      dispatch({ type: 'SET_RISULTATI', articoli: items, totale: total, totaleValido: isValid })
+      dispatch({ type: 'SET_RISULTATI', items, total, isTotalValid: isValid })
     } catch {
-      dispatch({ type: 'SET_ERRORE', errore: OCR.errore })
+      dispatch({ type: 'SET_ERRORE', error: OCR.errore })
     }
   }
 
   // ── Crea un'unica transazione con il totale ──────────
-  function handleCreaTotale() {
+  function handleCreateTotal() {
     const detailItems = state.articoli
       .map((item) => ({
         name: item.name.trim(),
@@ -470,7 +470,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
       return (prev + 1) % fotoCount
     })
     const file = state.foto[fotoLightbox]
-    const objectUrl = getFotoUrl(file)
+    const objectUrl = getPhotoUrl(file)
     return (
       <div
         onClick={() => setFotoLightbox(null)}
@@ -605,13 +605,13 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
           paddingBottom: 'max(20px, env(safe-area-inset-bottom, 20px))',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <button onClick={chiudiCamera}
+          <button onClick={closeCamera}
             style={{ background: 'rgba(255,255,255,0.12)', border: 'none', cursor: 'pointer', color: '#fff', fontSize: '14px', fontWeight: 600, padding: '10px 20px', borderRadius: '12px' }}>
             {OCR.chiudiCamera}
           </button>
           {/* Pulsante scatto */}
           <button
-            onClick={scattaFoto}
+            onClick={capturePhoto}
             disabled={isCapturingPhoto}
             style={{
               width: '72px',
@@ -697,7 +697,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
               {state.foto.length > 0 && (
                 <div className="grid grid-cols-3 gap-2">
                   {state.foto.map((file, idx) => {
-                    const objectUrl = getFotoUrl(file)
+                    const objectUrl = getPhotoUrl(file)
                     return (
                     <div key={idx} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--border)' }}>
                       <img
@@ -751,7 +751,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
               {/* Pulsanti camera + carica file */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <button
-                  onClick={aprireCamera}
+                  onClick={openCamera}
                   className="py-3 rounded-xl font-bold text-sm transition active:scale-95"
                   style={{ background: 'var(--accent)', color: 'var(--fab-text)', border: 'none', cursor: 'pointer' }}
                 >
@@ -773,7 +773,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
 
               {/* Pulsante analizza */}
               <button
-                onClick={handleAnalizza}
+                onClick={handleAnalyze}
                 disabled={state.foto.length === 0}
                 className="w-full py-3 rounded-xl font-bold text-sm transition active:scale-95"
                 style={{
@@ -841,7 +841,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
               {state.foto.length > 0 && (
                 <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
                   {state.foto.map((file, idx) => {
-                    const objectUrl = getFotoUrl(file)
+                    const objectUrl = getPhotoUrl(file)
                     return (
                       <div key={idx} style={{ position: 'relative', flexShrink: 0, borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)', width: '72px', height: '72px' }}>
                         <img
@@ -869,24 +869,24 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
               )}
 
                 <ReceiptProgress
-                  sommaArticoli={sommaArticoli}
-                  totale={state.totale}
-                  approvato={approvatoScontrino}
-                  percentuale={progressoPerc}
+                  itemsSum={sommaArticoli}
+                  total={state.totale}
+                  isApproved={approvatoScontrino}
+                  percentage={progressoPerc}
                   uncertainCount={uncertainCount}
                 />
 
               {/* Tabella articoli editabile */}
               {state.articoli.length > 0 && (
                 <ReceiptTable
-                  articoli={state.articoli}
+                  items={state.articoli}
                   draggedIndex={draggedIndex}
                   editingDiscountId={editingDiscountId}
                   catalogMatches={catalogMatches}
                   containerRef={tableContainerRef}
-                  sommaArticoli={sommaArticoli}
-                  totale={state.totale}
-                  approvatoScontrino={approvatoScontrino}
+                  itemsSum={sommaArticoli}
+                  total={state.totale}
+                  isReceiptApproved={approvatoScontrino}
                   onDragStart={setDraggedIndex}
                   onDragOver={(_, e) => {
                     e.preventDefault()
@@ -907,14 +907,14 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                     setDraggedIndex(null)
                   }}
                   onDragEnd={() => setDraggedIndex(null)}
-                  onModifyName={(id, value) => dispatch({ type: 'MODIFICA_NOME', id, valore: value })}
-                  onModifyPrice={(id, value) => dispatch({ type: 'MODIFICA_PREZZO', id, valore: value })}
-                  onModifyDiscountAmount={(id, value) => dispatch({ type: 'MODIFICA_SCONTO_IMPORTO', id, valore: value })}
-                  onModifyDiscountType={(id, value) => dispatch({ type: 'MODIFICA_SCONTO_TIPO', id, valore: value })}
+                  onModifyName={(id, value) => dispatch({ type: 'MODIFICA_NOME', id, value })}
+                  onModifyPrice={(id, value) => dispatch({ type: 'MODIFICA_PREZZO', id, value })}
+                  onModifyDiscountAmount={(id, value) => dispatch({ type: 'MODIFICA_SCONTO_IMPORTO', id, value })}
+                  onModifyDiscountType={(id, value) => dispatch({ type: 'MODIFICA_SCONTO_TIPO', id, value })}
                   onEditDiscount={setEditingDiscountId}
                   onCloseEditDiscount={() => setEditingDiscountId(null)}
                   onRemove={(id) => dispatch({ type: 'RIMUOVI_ARTICOLO', id })}
-                  onModifyTotale={(value) => dispatch({ type: 'MODIFICA_TOTALE', valore: value })}
+                  onModifyTotal={(value) => dispatch({ type: 'MODIFICA_TOTALE', value })}
                 />
               )}
 
@@ -936,7 +936,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                     {categorieUscita.map((cat) => (
                       <button
                         key={cat}
-                        onClick={() => dispatch({ type: 'SET_CATEGORIA', categoria: cat })}
+                        onClick={() => dispatch({ type: 'SET_CATEGORIA', category: cat })}
                         className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition"
                         style={{
                           background: state.categoriaSelezionata === cat
@@ -965,7 +965,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                   <input
                     type="text"
                     value={state.descrizione}
-                    onChange={(e) => dispatch({ type: 'SET_DESCRIZIONE', descrizione: e.target.value })}
+                    onChange={(e) => dispatch({ type: 'SET_DESCRIZIONE', description: e.target.value })}
                     placeholder="es: Scontrino gigante 2, Spesa Carrefour..."
                     style={{
                       width: '100%',
@@ -985,7 +985,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
               {state.articoli.length > 0 && (
                 <div className="grid grid-cols-1 gap-3">
                   <button
-                    onClick={handleCreaTotale}
+                    onClick={handleCreateTotal}
                     className="py-3 rounded-xl text-sm font-bold transition active:scale-95"
                     style={{
                       background: 'var(--accent)',

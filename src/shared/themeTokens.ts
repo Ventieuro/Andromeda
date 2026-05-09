@@ -234,7 +234,7 @@ const AURORA: ThemeTokens = {
 }
 
 const LUNA: ThemeTokens = {
-  bgPrimary: '#eef0f8',
+  bgPrimary: '#F5F4F0',
   bgSecondary: '#e4e7f4',
   bgCard: '#f8f9fe',
   textPrimary: '#0e1233',

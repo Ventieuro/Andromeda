@@ -38,6 +38,13 @@
 
 ## Completati
 
+### ✅ TASK-131 — Rename IT→EN (scanner flow) + Luna Perla lunare (09/05/2026)
+- [x] Rinominati metodi scanner in inglese (`openCamera`, `closeCamera`, `capturePhoto`, `handleAnalyze`, `handleCreateTotal`, `getPhotoUrl`)
+- [x] Rinominati payload action principali IT→EN (`value`, `category`, `description`, `error`, `currentPhoto`, `items`, `total`, `isTotalValid`)
+- [x] Rinominati props componenti estratti (`ReceiptTable`, `ReceiptProgress`) da IT a EN
+- [x] Tema Luna aggiornato: `--bg-primary` = `#F5F4F0` (Perla lunare) + sync `themeTokens`
+- [x] Versione bump → `0.11.2`, deploy ✅
+
 ### ✅ TASK-130 — Supernova: tuning accessibilità contrasti (09/05/2026)
 - [x] Aumentato contrasto accento rosso (`--accent`, `--accent-hover`, `--accent-light`)
 - [x] Ritoccati colori semantici rosso su spese/saldi negativi per leggibilità migliore

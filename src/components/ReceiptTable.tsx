@@ -5,14 +5,14 @@ import { OCR } from '../shared/labels'
 import ReceiptItemRow from './ReceiptItemRow'
 
 interface ReceiptTableProps {
-  articoli: ReceiptItem[]
+  items: ReceiptItem[]
   draggedIndex: number | null
   editingDiscountId: string | null
   catalogMatches: Map<string, ProductEntry>
   containerRef: RefObject<HTMLDivElement | null>
-  sommaArticoli: number
-  totale: number | null
-  approvatoScontrino: boolean
+  itemsSum: number
+  total: number | null
+  isReceiptApproved: boolean
   onDragStart: (index: number) => void
   onDragOver: (index: number, e: DragEvent) => void
   onDrop: (index: number) => void
@@ -24,7 +24,7 @@ interface ReceiptTableProps {
   onEditDiscount: (id: string) => void
   onCloseEditDiscount: () => void
   onRemove: (id: string) => void
-  onModifyTotale: (value: string) => void
+  onModifyTotal: (value: string) => void
 }
 
 function formatEuro(n: number) {
@@ -32,14 +32,14 @@ function formatEuro(n: number) {
 }
 
 function ReceiptTable({
-  articoli,
+  items,
   draggedIndex,
   editingDiscountId,
   catalogMatches,
   containerRef,
-  sommaArticoli,
-  totale,
-  approvatoScontrino,
+  itemsSum,
+  total,
+  isReceiptApproved,
   onDragStart,
   onDragOver,
   onDrop,
@@ -51,9 +51,9 @@ function ReceiptTable({
   onEditDiscount,
   onCloseEditDiscount,
   onRemove,
-  onModifyTotale,
+  onModifyTotal,
 }: ReceiptTableProps) {
-  if (articoli.length === 0) return null
+  if (items.length === 0) return null
 
   return (
     <div
@@ -84,7 +84,7 @@ function ReceiptTable({
       </div>
 
       {/* Righe articoli */}
-      {articoli.map((item, idx) => {
+      {items.map((item, idx) => {
         const catalogMatch = catalogMatches.get(item.id)
         return (
           <div
@@ -123,12 +123,12 @@ function ReceiptTable({
           color: 'var(--text-primary)',
         }}
       >
-        <span>{totale !== null && !approvatoScontrino ? OCR.totaleCalcolato : 'Totale'}</span>
-        <span style={{ textAlign: 'right' }}>{formatEuro(sommaArticoli)}</span>
+        <span>{total !== null && !isReceiptApproved ? OCR.totaleCalcolato : 'Totale'}</span>
+        <span style={{ textAlign: 'right' }}>{formatEuro(itemsSum)}</span>
         <span />
       </div>
 
-      {totale !== null && !approvatoScontrino && (
+      {total !== null && !isReceiptApproved && (
         <div
           className="grid items-center font-bold"
           style={{
@@ -144,9 +144,9 @@ function ReceiptTable({
           <input
             type="text"
             inputMode="decimal"
-            key={totale}
-            defaultValue={totale.toFixed(2).replace('.', ',')}
-            onBlur={(e) => onModifyTotale(e.target.value)}
+            key={total}
+            defaultValue={total.toFixed(2).replace('.', ',')}
+            onBlur={(e) => onModifyTotal(e.target.value)}
             style={{
               fontSize: '13px',
               fontWeight: 700,
