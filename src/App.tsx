@@ -17,6 +17,7 @@ import SettingsPage, {
 } from './pages/SettingsPage'
 import Movimenti from './pages/Movimenti'
 import Missions from './pages/Missions'
+import PlanetsCatalog from './pages/PlanetsCatalog'
 import NotFound from './pages/NotFound'
 import { isUnlocked } from './shared/storage'
 import { useNotificationScheduler } from './shared/useNotifications'
@@ -44,6 +45,7 @@ function App() {
           <Route path="/settings/lingua" element={<LinguaSection />} />
           <Route path="/settings/notifiche" element={<NotificheSection />} />
           <Route path="/settings/sicurezza" element={<SicurezzaSection />} />
+          <Route path="/settings/pianeti" element={<PlanetsCatalog />} />
           <Route path="/settings/spazio" element={<SpazioLocaleSection />} />
           <Route path="/settings/esporta" element={<EsportaSection />} />
           <Route path="/settings/backup" element={<BackupSection />} />

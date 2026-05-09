@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback, useMemo } from 'react'
 import type { Transaction } from '../shared/types'
-import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/labels'
+import { DASHBOARD, getPlanetAlias, getPlanetLore, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import MiniPlanet from './MiniPlanet'
 
@@ -439,6 +439,12 @@ function SolarSystemChart({ transactions, onCategoryClick, sortMode = 'amount' }
                   </span>
                 )}
               </div>
+              <p className="text-[11px] font-semibold truncate mt-0.5" style={{ color: 'var(--accent)', opacity: 0.95 }}>
+                {getPlanetAlias(p.canonicalKey)}
+              </p>
+              <p className="text-[11px] truncate mt-0.5" style={{ color: 'var(--text-muted)', opacity: 0.9 }}>
+                {getPlanetLore(p.canonicalKey)}
+              </p>
             </div>
             <span className="text-sm font-bold tabular-nums" style={{ color: p.color }}>
               {p.percent}%

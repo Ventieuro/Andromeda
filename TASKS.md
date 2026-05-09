@@ -25,6 +25,13 @@
 
 <!-- TASK-083 completato: vedi sezione Completati -->
 
+### 🔜 TASK-137 — Registro pianeti sbloccati per mese (09/05/2026)
+- [ ] Definire modello dati per tracciare pianeti sbloccati per periodo mensile
+- [ ] Progettare UI dedicata per visualizzare storico sblocchi (lista/collezione)
+- [ ] Integrare entry point non invasivo da dashboard/legenda (tap o drawer)
+- [ ] Aggiungere filtri periodo e stato (sbloccato, in corso, bloccato)
+- [ ] Validare persistenza su localStorage/backup mantenendo retrocompatibilità
+
 ### 🔜 TASK-054 — Promemoria gestione spazio dati (non implementare ora)
 - [ ] Valutare strategia archiviazione storica (es. export annuale + pulizia dati vecchi)
 - [ ] Definire soglia operativa (es. warning 70-80%) e flusso guidato utente
@@ -37,6 +44,20 @@
 - [ ] Progettare impatto su backup/sync/export prima di attivare in produzione
 
 ## Completati
+
+### ✅ TASK-139 — Archivio Pianeti: filtro sbloccati + mock locale (09/05/2026)
+- [x] Aggiunto filtro "solo sbloccati nel mese"
+- [x] Aggiunto toggle dati demo locali per test UI rapido
+- [x] Stato pianeta mostrato (sbloccato/bloccato)
+- [x] Conteggio progresso sblocchi nel periodo
+- [x] Verifica con build locale senza pubblicazione
+
+### ✅ TASK-138 — Planet Lore Map (film/serie/giochi) per categorie (09/05/2026)
+- [x] Definita mappa categoria -> pianeta alias con fonte narrativa (film/serie/giochi/libri)
+- [x] Aggiunta microcopy lore 1 riga per ogni pianeta/categoria
+- [x] Legenda pianeti aggiornata con alias + descrizione minima non invasiva
+- [x] Creata nuova sezione `Archivio Pianeti` con elenco completo e descrizioni
+- [x] Implementato in branch senza pubblicazione/deploy
 
 ### ✅ TASK-136 — Campfire icon: miglioramento legnetti (09/05/2026)
 - [x] Legnetti ridisegnati con tronchi incrociati più leggibili

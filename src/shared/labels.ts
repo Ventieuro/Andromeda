@@ -528,6 +528,18 @@ const STRINGS = {
     codicePrompt:      t('Inserisci la password del codice:', 'Enter code password:',      'Ingresa la contraseña del codigo:'),
     spazioLocaleTitolo: t('Spazio locale',                 'Local storage',                 'Espacio local'),
     sicurezza:          t('Sicurezza',                    'Security',                      'Seguridad'),
+    pianetiVoce:        t('Archivio Pianeti',             'Planet Archive',                'Archivo de Planetas'),
+    pianetiSoloSbloccati: t('Mostra solo sbloccati nel mese', 'Show only unlocked this month', 'Mostrar solo desbloqueados del mes'),
+    pianetiUsaMock:       t('Usa dati demo locali',          'Use local demo data',            'Usar datos demo locales'),
+    pianetiMockNota:      t('Modalità demo: sblocchi simulati per test rapido UI.', 'Demo mode: simulated unlocks for quick UI testing.', 'Modo demo: desbloqueos simulados para prueba rápida de UI.'),
+    pianetiStatoSbloccato: t('Sbloccato',                    'Unlocked',                       'Desbloqueado'),
+    pianetiStatoBloccato:  t('Bloccato',                     'Locked',                         'Bloqueado'),
+    pianetiNessuno:        t('Nessun pianeta sbloccato in questo periodo.', 'No planets unlocked in this period.', 'No hay planetas desbloqueados en este período.'),
+    pianetiSbloccatiCount: tf(
+      (n: number, total: number) => `Sbloccati ${n}/${total}`,
+      (n: number, total: number) => `Unlocked ${n}/${total}`,
+      (n: number, total: number) => `Desbloqueados ${n}/${total}`,
+    ),
     esportaVoce:        t('Esporta / Importa',            'Export / Import',               'Exportar / Importar'),
     backupVoce:         t('Backup Automatico',            'Auto Backup',                   'Copia automática'),
     spazioLocaleDettaglio: tf(
@@ -635,6 +647,127 @@ const STRINGS = {
     passwordPlaceholder: t('Lascia vuoto = nessuna cifratura', 'Leave empty = no encryption',  'Dejar vacío = sin cifrar'),
     nota:            t('Con password: file cifrato AES-256. Senza: JSON non cifrato.', 'With password: AES-256 encrypted file. Without: plain JSON.', 'Con contraseña: cifrado AES-256. Sin ella: JSON sin cifrar.'),
   },
+}
+
+interface PlanetCatalogRawEntry {
+  alias: string
+  source: string
+  lore: I18n<string>
+}
+
+const PLANET_CATALOG: Record<string, PlanetCatalogRawEntry> = {
+  Cibo: {
+    alias: 'Arrakis',
+    source: 'Dune (film/libri)',
+    lore: t('Pianeta delle necessità quotidiane e risorse vitali.', 'Planet of daily essentials and vital resources.', 'Planeta de necesidades diarias y recursos vitales.'),
+  },
+  Spesa: {
+    alias: 'Coruscant',
+    source: 'Star Wars (film/serie)',
+    lore: t('Hub logistico del budget familiare e dei rifornimenti.', 'Logistics hub for household budget and supplies.', 'Centro logístico del presupuesto familiar y suministros.'),
+  },
+  Trasporti: {
+    alias: 'Reach',
+    source: 'Halo (giochi)',
+    lore: t('Rotta mobilità: spostamenti, viaggi e carburante.', 'Mobility route: commuting, trips, and fuel.', 'Ruta de movilidad: traslados, viajes y combustible.'),
+  },
+  Sociale: {
+    alias: 'Bajor',
+    source: 'Star Trek DS9 (serie)',
+    lore: t('Orbita relazioni: uscite e momenti condivisi.', 'Relationship orbit: outings and shared moments.', 'Órbita de relaciones: salidas y momentos compartidos.'),
+  },
+  Residenza: {
+    alias: 'Caladan',
+    source: 'Dune (film/libri)',
+    lore: t('Settore casa: stabilità abitativa e manutenzione.', 'Home sector: housing stability and upkeep.', 'Sector hogar: estabilidad habitacional y mantenimiento.'),
+  },
+  Regalo: {
+    alias: 'Naboo',
+    source: 'Star Wars (film)',
+    lore: t('Stazione doni: ricorrenze, gesti speciali e sorpresa.', 'Gift station: occasions, special gestures, and surprises.', 'Estación de regalos: ocasiones, gestos especiales y sorpresas.'),
+  },
+  Comunicazioni: {
+    alias: 'Gallifrey',
+    source: 'Doctor Who (serie)',
+    lore: t('Nodo segnali: rete, telefonia e connessioni digitali.', 'Signal node: internet, phone, and digital connectivity.', 'Nodo de señales: internet, telefonía y conectividad digital.'),
+  },
+  Svago: {
+    alias: 'Hyrule',
+    source: 'The Legend of Zelda (giochi)',
+    lore: t('Zona ricreativa: relax, hobby e divertimento.', 'Recreation zone: leisure, hobbies, and fun.', 'Zona recreativa: ocio, hobbies y diversión.'),
+  },
+  Bellezza: {
+    alias: 'Pandora',
+    source: 'Avatar (film)',
+    lore: t('Area cura personale e benessere estetico.', 'Personal care and beauty wellness area.', 'Área de cuidado personal y bienestar estético.'),
+  },
+  Medico: {
+    alias: 'Trantor',
+    source: 'Fondazione (libri/serie)',
+    lore: t('Quadrante salute: visite, farmaci e prevenzione.', 'Health quadrant: visits, medicines, and prevention.', 'Cuadrante de salud: consultas, medicamentos y prevención.'),
+  },
+  Hobby: {
+    alias: 'Tallon IV',
+    source: 'Metroid Prime (giochi)',
+    lore: t('Laboratorio passioni: creatività e tempo personale.', 'Passion lab: creativity and personal time.', 'Laboratorio de pasiones: creatividad y tiempo personal.'),
+  },
+  Bollette: {
+    alias: 'Caprica',
+    source: 'Battlestar Galactica (serie)',
+    lore: t('Settore energia e servizi essenziali ricorrenti.', 'Utilities and recurring essential services sector.', 'Sector de energía y servicios esenciales recurrentes.'),
+  },
+  Finanziamento: {
+    alias: 'Aiur',
+    source: 'StarCraft (giochi)',
+    lore: t('Orbita impegni finanziari e rate periodiche.', 'Financial commitments orbit and recurring installments.', 'Órbita de compromisos financieros y cuotas periódicas.'),
+  },
+  Multe: {
+    alias: 'Mustafar',
+    source: 'Star Wars (film)',
+    lore: t('Area imprevisti normativi e sanzioni non pianificate.', 'Regulatory incidents and unplanned penalties area.', 'Área de imprevistos normativos y sanciones no planificadas.'),
+  },
+  Altro: {
+    alias: 'Magrathea',
+    source: 'Guida galattica (libri)',
+    lore: t('Mondo esplorazione: spese fuori categoria standard.', 'Exploration world: expenses outside standard categories.', 'Mundo exploración: gastos fuera de categoría estándar.'),
+  },
+}
+
+const PLANET_LORE_FALLBACK = t(
+  'Pianeta in esplorazione.',
+  'Planet under exploration.',
+  'Planeta en exploración.',
+)
+
+export function getPlanetLore(categoryKey: string): string {
+  return (PLANET_CATALOG[categoryKey]?.lore ?? PLANET_LORE_FALLBACK)[currentLocale]
+}
+
+export function getPlanetAlias(categoryKey: string): string {
+  return PLANET_CATALOG[categoryKey]?.alias ?? categoryKey
+}
+
+export function getPlanetSource(categoryKey: string): string {
+  return PLANET_CATALOG[categoryKey]?.source ?? 'Universo originale'
+}
+
+export interface PlanetCatalogEntry {
+  categoryKey: string
+  categoryLabel: string
+  alias: string
+  source: string
+  lore: string
+}
+
+export function getPlanetCatalog(type: 'entrata' | 'uscita' = 'uscita'): PlanetCatalogEntry[] {
+  const canonical = getCanonicalCategories(type)
+  return canonical.map((categoryKey) => ({
+    categoryKey,
+    categoryLabel: translateCategory(categoryKey, type),
+    alias: getPlanetAlias(categoryKey),
+    source: getPlanetSource(categoryKey),
+    lore: getPlanetLore(categoryKey),
+  }))
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

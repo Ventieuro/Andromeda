@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { ComponentType } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Download, FolderOpen } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Download, FolderOpen, Orbit } from 'lucide-react'
 import { PageHeader } from '../components/ui'
 import { useTheme } from '../shared/ThemeContext'
 import { NebulaIcon, CampfireIcon, NasaIcon, AuroraIcon, LunaIcon, SupernovaIcon } from '../shared/icons'
@@ -583,6 +583,7 @@ function SettingsPage() {
       <div className="px-4 flex flex-col gap-2">
         <SettingsRow icon={<Tag size={18} />}          label={LAYOUT.navCategories}         onClick={() => navigate('/categories')} />
         <SettingsRow icon={<Palette size={18} />}      label={SETTINGS.aspetto}             onClick={() => navigate('/settings/aspetto')} />
+        <SettingsRow icon={<Orbit size={18} />}        label={SETTINGS.pianetiVoce}         onClick={() => navigate('/settings/pianeti')} />
         <SettingsRow icon={<Globe size={18} />}        label={SETTINGS.lingua}              onClick={() => navigate('/settings/lingua')} />
         <SettingsRow icon={<Bell size={18} />}         label={SETTINGS.notifiche}           onClick={() => navigate('/settings/notifiche')} />
         <SettingsRow icon={<Lock size={18} />}         label={SETTINGS.sicurezza}           onClick={() => navigate('/settings/sicurezza')} />

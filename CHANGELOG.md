@@ -6,6 +6,26 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-139 (feature): Archivio Pianeti — filtro sbloccati + dati mock locali
+**File modificati:** `src/pages/PlanetsCatalog.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- ✅ Aggiunto filtro "mostra solo sbloccati nel mese"
+- ✅ Aggiunto toggle "usa dati demo locali" (attivo per test rapido in branch)
+- ✅ Stato pianeta con badge `Sbloccato/Bloccato` + contatore progresso periodo
+- ✅ Nuove label i18n dedicate alla sezione pianeti
+- ✅ Build locale eseguita (nessuna pubblicazione)
+- ✅ Versione bump → `0.11.9`
+
+### TASK-138 (feature): Planet Lore Map + sezione Archivio Pianeti
+**File modificati:** `src/shared/labels.ts`, `src/components/SolarSystemChart.tsx`, `src/pages/PlanetsCatalog.tsx`, `src/pages/SettingsPage.tsx`, `src/App.tsx`, `TASKS.md`, `CHANGELOG.md`, `package.json`
+
+- ✅ Estesa mappa pianeti con alias iconici e fonte narrativa per ogni categoria uscita
+- ✅ Legenda sistema solare aggiornata con alias pianeta + descrizione minima
+- ✅ Nuova sezione `Archivio Pianeti` con lista completa e descrizione di ogni pianeta
+- ✅ Entry point aggiunto nel menu impostazioni
+- ✅ Implementazione mantenuta in branch senza pubblicazione
+- ✅ Versione bump → `0.11.8`
+
 ### TASK-136 (ui): Campfire icon — legnetti migliorati
 **File modificati:** `src/shared/icons/CampfireIcon.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
 
