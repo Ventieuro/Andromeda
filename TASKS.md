@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-125 — Scanner scontrino: UX improvements (09/05/2026)
+- [x] Notifica "✓ Movimento inserito" al completamento transazione (toast 2.5s)
+- [x] Auto-scroll durante drag articoli: lo schermo scorre quando drag avvicina ai bordi
+- [x] Drag handle visivo (⋮⋮) a sinistra di ogni articolo per indicare draggabilità
+- [x] Versione bump → `0.9.4`, deploy ✅
+
 ### ✅ TASK-124 — Scanner scontrino: fix calcolo sconto (09/05/2026)
 - [x] Bug: modificare lo sconto non ricalcolava il prezzo netto
 - [x] Fix: al cambio sconto → prezzo netto = lordo - nuovo sconto

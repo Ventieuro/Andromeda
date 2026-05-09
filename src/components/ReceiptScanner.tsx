@@ -11,13 +11,14 @@
  */
 
 import { useReducer, useRef, useEffect, useState } from 'react'
-import { Trash2 } from 'lucide-react'
+import { Trash2, GripVertical } from 'lucide-react'
 import { createWorker } from 'tesseract.js'
 import { processImage, parseReceiptText, type ReceiptItem } from '../shared/receiptUtils'
 import { addTransaction, generateId, findMatchingProduct, upsertProductFromReceipt } from '../shared/storage'
 import type { ProductEntry } from '../shared/types'
 import { OCR, PRODOTTI, getCanonicalCategories } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
+import { useToast } from '../shared/ToastContext'
 
 // ─── Stato con useReducer ─────────────────────────────────
 
@@ -199,6 +200,7 @@ interface ReceiptScannerProps {
 }
 
 function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
+  const { showToast } = useToast()
   const [state, dispatch] = useReducer(scanReducer, STATO_INIZIALE)
   const [fotoLightbox, setFotoLightbox] = useState<number | null>(null)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
@@ -212,6 +214,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
+  const tableContainerRef = useRef<HTMLDivElement>(null)
   const today = new Date().toISOString().slice(0, 10)
 
   const categorieUscita = getCanonicalCategories('uscita')
@@ -453,6 +456,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
       })
     }
 
+    showToast('✓ Movimento inserito', 'success', 2500)
     onDone()
     onClose()
   }
@@ -860,18 +864,22 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
 
               {/* Tabella articoli editabile */}
               {state.articoli.length > 0 && (
-                <div style={{ border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+                <div
+                  ref={tableContainerRef}
+                  style={{ border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', maxHeight: '300px', overflowY: 'auto' }}
+                >
                   {/* Intestazione */}
                   <div
                     className="grid text-xs font-semibold uppercase"
                     style={{
-                      gridTemplateColumns: '1fr 80px 32px',
+                      gridTemplateColumns: '24px 1fr 80px 32px',
                       padding: '8px 12px',
                       background: 'var(--bg-secondary)',
                       color: 'var(--text-muted)',
                       borderBottom: '1px solid var(--border)',
                     }}
                   >
+                    <span />
                     <span>{OCR.colonnaArticolo}</span>
                     <span style={{ textAlign: 'right' }}>{OCR.colonnaPrezzo}</span>
                     <span />
@@ -894,7 +902,20 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                         className="grid items-start"
                         draggable
                         onDragStart={() => setDraggedIndex(idx)}
-                        onDragOver={(e) => e.preventDefault()}
+                        onDragOver={(e) => {
+                          e.preventDefault()
+                          // Auto-scroll quando si trascina vicino ai bordi
+                          if (tableContainerRef.current) {
+                            const rect = tableContainerRef.current.getBoundingClientRect()
+                            const scrollThreshold = 60
+                            const scrollSpeed = 5
+                            if (e.clientY - rect.top < scrollThreshold) {
+                              tableContainerRef.current.scrollTop -= scrollSpeed
+                            } else if (rect.bottom - e.clientY < scrollThreshold) {
+                              tableContainerRef.current.scrollTop += scrollSpeed
+                            }
+                          }
+                        }}
                         onDrop={() => {
                           if (draggedIndex === null) return
                           dispatch({ type: 'SPOSTA_ARTICOLO', fromIndex: draggedIndex, toIndex: idx })
@@ -902,14 +923,30 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                         }}
                         onDragEnd={() => setDraggedIndex(null)}
                         style={{
-                          gridTemplateColumns: '1fr 80px 32px',
-                          padding: '5px 8px',
+                          gridTemplateColumns: '24px 1fr 80px 32px',
+                          padding: '5px 8px 5px 2px',
                           borderBottom: idx < state.articoli.length - 1 ? '1px solid var(--border)' : 'none',
-                          gap: '6px',
+                          gap: '3px',
                           opacity: draggedIndex === idx ? 0.5 : 1,
                           cursor: 'grab',
                         }}
                       >
+                        {/* Drag handle */}
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            alignSelf: 'center',
+                            color: draggedIndex === idx ? 'var(--accent)' : 'var(--text-muted)',
+                            cursor: 'grab',
+                            transition: 'color 0.2s',
+                            userSelect: 'none',
+                          }}
+                        >
+                          <GripVertical size={16} strokeWidth={1.5} />
+                        </div>
+
                         {/* Nome articolo + badge prezzo noto */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                           <input

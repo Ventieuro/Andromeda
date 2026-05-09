@@ -4,6 +4,7 @@ import { HashRouter } from 'react-router-dom'
 import { ThemeProvider } from './shared/ThemeContext'
 import { DialogProvider } from './shared/DialogContext'
 import { AmountsProvider } from './shared/AmountsContext'
+import { ToastProvider } from './shared/ToastContext'
 import { initPersistentStorage, migrateCategoryKeys } from './shared/storage'
 import { reloadApp } from './shared/platform'
 import { performAutoBackup } from './shared/autoBackup'
@@ -137,7 +138,9 @@ async function bootstrap() {
         <ThemeProvider>
           <AmountsProvider>
             <DialogProvider>
-              <App />
+              <ToastProvider>
+                <App />
+              </ToastProvider>
             </DialogProvider>
           </AmountsProvider>
         </ThemeProvider>

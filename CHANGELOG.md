@@ -4,6 +4,19 @@
 
 ---
 
+## [09/05/2026] — Sessione 24
+
+### TASK-125 (feature): Scanner scontrino — UX improvements (toast, auto-scroll drag, drag handle visivo)
+**File modificati:** `src/main.tsx`, `src/components/ReceiptScanner.tsx`, `src/shared/ToastContext.tsx` (new), `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Toast notification: "✓ Movimento inserito" appare 2.5s al completamento transazione
+- ✅ Auto-scroll drag: il container si scorre automaticamente quando drag si avvicina ai bordi (scroll threshold 60px)
+- ✅ Drag handle visivo: ⋮⋮ a sinistra di ogni articolo per comunicare draggabilità (cambia colore ad accent durante drag)
+- ✅ `ToastProvider` integrato nello stack di provider in `main.tsx`
+- ✅ Versione bump → `0.9.4`
+
+---
+
 ## [09/05/2026] — Sessione 23
 
 ### TASK-124 (fix): Scanner scontrino — ricalcolo prezzo netto al cambio sconto
