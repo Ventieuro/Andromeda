@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-128 — MissionCard: tematizzazione card missioni (09/05/2026)
+- [x] Sostituiti colori hardcoded principali con variabili tema (`--bg-card`, `--border`, `--text-*`, `--accent`)
+- [x] Tematizzati contenitore, header, progress bar, box picker, badge mensile, history footer
+- [x] Mantenuta palette artistica SVG/navicella per non alterare identità visuale missione
+- [x] Versione bump → `0.10.1`, deploy ✅
+
 ### ✅ TASK-127 — Lightbox scanner: swipe tra foto caricate (09/05/2026)
 - [x] In lightbox aggiunto swipe touch orizzontale per navigare foto precedenti/successive
 - [x] Navigazione ciclica tra immagini (prima/ultima)

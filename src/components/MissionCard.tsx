@@ -571,26 +571,36 @@ export default function MissionCard({
   const nextUnlock = getNextUnlock(pct)
   const inLaunchSequence = launchPhase === 'ignition'
   const inTravel = launchPhase === 'travel'
+  const cardBg = 'var(--bg-card)'
+  const cardBorder = 'var(--border)'
+  const textPrimary = 'var(--text-primary)'
+  const textSecondary = 'var(--text-secondary)'
+  const textMuted = 'var(--text-muted)'
+  const accent = 'var(--accent)'
+  const accentLight = 'var(--accent-light)'
+  const panelBg = 'var(--bg-secondary)'
+  const panelBorder = 'var(--input-border)'
+  const success = 'var(--tropical)'
 
   // ── Render ──
 
   return (
     <div style={{
-      background: '#131728',
+      background: cardBg,
       borderRadius: '16px',
-      border: '0.5px solid #1e2540',
+      border: `1px solid ${cardBorder}`,
       padding: '16px',
       marginBottom: '14px',
       fontFamily: 'sans-serif',
-      color: '#e0e6ff',
+      color: textPrimary,
     }}>
 
       {/* ─── Header ─── */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
         <span style={{ fontSize: '24px', marginRight: '8px' }}>{icon}</span>
-        <span style={{ fontWeight: 700, fontSize: '16px', flex: 1, color: '#e0e6ff' }}>{name}</span>
-        <button onClick={onEdit} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#6070a0', display: 'flex', alignItems: 'center' }} aria-label={MISSIONI.modifica}><Pencil size={16} /></button>
-        <button onClick={onDelete} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#6070a0', display: 'flex', alignItems: 'center' }} aria-label={MISSIONI.elimina}><Trash2 size={16} /></button>
+        <span style={{ fontWeight: 700, fontSize: '16px', flex: 1, color: textPrimary }}>{name}</span>
+        <button onClick={onEdit} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: textMuted, display: 'flex', alignItems: 'center' }} aria-label={MISSIONI.modifica}><Pencil size={16} /></button>
+        <button onClick={onDelete} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: textMuted, display: 'flex', alignItems: 'center' }} aria-label={MISSIONI.elimina}><Trash2 size={16} /></button>
       </div>
 
       {/* ─── Main visual area — unified SVG (no flash, stars always visible) ─── */}
@@ -701,16 +711,16 @@ export default function MissionCard({
             <span style={{ fontSize: '13px', color: '#8899cc' }}>
               {MISSIONI.progressoLabel(formatEuro(current), formatEuro(target))}
             </span>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: pct >= 100 ? '#22c55e' : '#7c9eff' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: pct >= 100 ? success : accent }}>
               {pct}%
             </span>
           </div>
-          <div style={{ height: '8px', borderRadius: '4px', background: '#1e2540', overflow: 'hidden' }}>
+          <div style={{ height: '8px', borderRadius: '4px', background: panelBg, overflow: 'hidden' }}>
             <div style={{
               height: '100%', borderRadius: '4px', width: `${pct}%`,
               background: pct >= 100
                 ? 'linear-gradient(90deg, #22c55e, #4ade80)'
-                : 'linear-gradient(90deg, #3b6fff, #7c9eff)',
+                : `linear-gradient(90deg, ${accent}, ${accentLight})`,
               transition: 'width 0.5s ease',
             }}/>
           </div>
@@ -719,7 +729,7 @@ export default function MissionCard({
 
       {inTravel && (
         <div style={{ textAlign: 'center', marginBottom: '12px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#22c55e' }}>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: success }}>
             {MISSIONI.missioneCompletata(formatEuro(current))}
           </span>
         </div>
@@ -750,10 +760,10 @@ export default function MissionCard({
       {/* ─── COUNTDOWN ─── */}
       {launchPhase === 'countdown' && (
         <div style={{ textAlign: 'center', marginBottom: '14px' }}>
-          <div style={{ fontSize: '12px', color: '#8899cc', marginBottom: '4px' }}>{MISSIONI.lancioTra}</div>
+          <div style={{ fontSize: '12px', color: textSecondary, marginBottom: '4px' }}>{MISSIONI.lancioTra}</div>
           <div
             className="mc-countdown"
-            style={{ fontSize: '52px', fontWeight: 900, color: countdown <= 3 ? '#ff4400' : '#7c9eff', lineHeight: 1, fontFamily: 'monospace' }}
+            style={{ fontSize: '52px', fontWeight: 900, color: countdown <= 3 ? '#ff4400' : accent, lineHeight: 1, fontFamily: 'monospace' }}
           >
             {countdown}
           </div>
@@ -779,14 +789,14 @@ export default function MissionCard({
       {/* ─── Color Picker (unlock box) ─── */}
       {pendingPiece && (launchPhase === 'idle' || launchPhase === 'ready') && (
         <div style={{
-          background: '#1a1f38', border: '1px solid #2a3060',
+          background: panelBg, border: `1px solid ${panelBorder}`,
           borderRadius: '12px', padding: '14px', marginBottom: '12px',
         }}>
           {!confirmedPieces.has(pendingPiece)
             ? <div style={{ fontSize: '13px', fontWeight: 700, color: '#f5d060', marginBottom: '4px' }}>{MISSIONI.nuovoPezzo}</div>
-            : <div style={{ fontSize: '13px', fontWeight: 700, color: '#8899cc', marginBottom: '4px' }}>{MISSIONI.modificaColoreBtn}</div>
+            : <div style={{ fontSize: '13px', fontWeight: 700, color: textSecondary, marginBottom: '4px' }}>{MISSIONI.modificaColoreBtn}</div>
           }
-          <div style={{ fontSize: '12px', color: '#8899cc', marginBottom: '10px' }}>
+          <div style={{ fontSize: '12px', color: textSecondary, marginBottom: '10px' }}>
             {MISSIONI.scegliColore(MISSIONI.pezziNomi[pendingPiece], pendingPiece === 'wings' || pendingPiece === 'nose')}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 28px)', gap: '8px', marginBottom: '12px', width: 'fit-content', margin: '0 auto 12px' }}>
@@ -796,7 +806,7 @@ export default function MissionCard({
                 <div key={c} onClick={() => setSelectedColor(c)} style={{
                   width: '28px', height: '28px', borderRadius: '50%',
                   background: c, cursor: 'pointer',
-                  border: isSelected ? '3px solid #ffffff' : '2px solid #2a3060',
+                  border: isSelected ? `3px solid ${textPrimary}` : `2px solid ${panelBorder}`,
                   boxShadow: 'none',
                   transition: 'all 0.15s',
                 }}/>
@@ -804,7 +814,7 @@ export default function MissionCard({
             })}
           </div>
           <button onClick={confirmColor} style={{
-            background: 'linear-gradient(135deg, #3b6fff, #7c9eff)',
+            background: `linear-gradient(135deg, ${accent}, ${accentLight})`,
             border: 'none', borderRadius: '8px',
             color: '#fff', fontWeight: 600, fontSize: '13px',
             padding: '8px 18px', cursor: 'pointer', width: '100%',
@@ -816,7 +826,7 @@ export default function MissionCard({
 
       {/* ─── Next unlock hint ─── */}
       {nextUnlock && launchPhase === 'idle' && (
-        <div style={{ fontSize: '12px', color: '#6070a0', marginBottom: '12px' }}>
+        <div style={{ fontSize: '12px', color: textMuted, marginBottom: '12px' }}>
           {nextUnlock}
         </div>
       )}
@@ -826,8 +836,8 @@ export default function MissionCard({
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {monthlyRate !== undefined && monthlyRate > 0 && (
             <span style={{
-              fontSize: '12px', color: '#7c9eff',
-              background: '#1a2040', border: '1px solid #2a3060',
+              fontSize: '12px', color: accent,
+              background: panelBg, border: `1px solid ${panelBorder}`,
               borderRadius: '20px', padding: '4px 10px',
             }}>
               {MISSIONI.mensileCalc(formatEuro(monthlyRate))}
@@ -841,7 +851,7 @@ export default function MissionCard({
       {!inTravel && (
         <div style={{
           marginTop: '14px', paddingTop: '12px',
-          borderTop: '1px solid #1e2540',
+          borderTop: `1px solid ${cardBorder}`,
           display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center',
         }}>
           {PIECE_ORDER.map((piece) => {
@@ -860,9 +870,9 @@ export default function MissionCard({
                     flexShrink: 0,
                   }}/>
                 ) : (
-                  <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '1.5px dashed #3a4460', flexShrink: 0 }}/>
+                  <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: `1.5px dashed ${textMuted}`, flexShrink: 0 }}/>
                 )}
-                <span style={{ fontSize: '11px', color: unlocked ? (isActive ? '#e0e6ff' : '#8899cc') : '#3a4460' }}>
+                <span style={{ fontSize: '11px', color: unlocked ? (isActive ? textPrimary : textSecondary) : textMuted }}>
                   {unlocked ? MISSIONI.pezziNomi[piece] : '?'}
                 </span>
               </div>

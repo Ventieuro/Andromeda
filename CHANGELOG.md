@@ -6,6 +6,14 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-128 (fix): MissionCard — tematizzazione card missioni
+**File modificati:** `src/components/MissionCard.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Rimossi principali hardcoded colore nella card missione, sostituiti con CSS variables tema
+- ✅ UI card ora coerente col tema attivo (contenitore, testi, progress, pannelli, badge)
+- ✅ Parte illustrativa SVG mantenuta per preservare stile missioni
+- ✅ Versione bump → `0.10.1`
+
 ### TASK-127 (feature): Scanner lightbox — swipe orizzontale tra foto
 **File modificati:** `src/components/ReceiptScanner.tsx`, `package.json`, `TASKS.md`, `CHANGELOG.md`
 
