@@ -6,6 +6,14 @@
 
 ## [09/05/2026] — Sessione 24
 
+### TASK-130 (fix): Supernova — miglioramento accessibilità contrasti
+**File modificati:** `src/index.css`, `src/shared/themeTokens.ts`, `package.json`, `TASKS.md`, `CHANGELOG.md`
+
+- ✅ Aumentato contrasto rosso principale del tema (`accent`/`hover`/`light`) per testo e stati interattivi
+- ✅ Ritocco palette rossa per elementi `expense` e `balance negative` più leggibili
+- ✅ Coerenza mantenuta tra CSS variables e token JS
+- ✅ Versione bump → `0.11.1`
+
 ### TASK-129 (feature): Nuovo tema Supernova (nero/rosso) + icona SVG
 **File modificati:** `src/index.css`, `src/shared/ThemeContext.tsx`, `src/shared/themeTokens.ts`, `src/shared/labels.ts`, `src/components/ThemeSwitcher.tsx`, `src/pages/SettingsPage.tsx`, `src/shared/icons/SupernovaIcon.tsx` (new), `src/shared/icons/index.ts`, `package.json`, `TASKS.md`, `CHANGELOG.md`
 

@@ -38,6 +38,12 @@
 
 ## Completati
 
+### ✅ TASK-130 — Supernova: tuning accessibilità contrasti (09/05/2026)
+- [x] Aumentato contrasto accento rosso (`--accent`, `--accent-hover`, `--accent-light`)
+- [x] Ritoccati colori semantici rosso su spese/saldi negativi per leggibilità migliore
+- [x] Allineati CSS variables e `themeTokens` per coerenza runtime
+- [x] Versione bump → `0.11.1`, deploy ✅
+
 ### ✅ TASK-129 — Nuovo tema Supernova + icona SVG (09/05/2026)
 - [x] Aggiunto tema `supernova` (nero/rosso) con palette completa CSS variables
 - [x] Integrato in `ThemeContext`, `themeTokens`, `ThemeSwitcher` e `SettingsPage`
