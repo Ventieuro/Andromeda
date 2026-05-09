@@ -6,6 +6,18 @@
 
 ## [09/05/2026] — Sessione 26
 
+### TASK-141 (bugfix): CometChart crash su Safari/iOS — loop RAF infinito
+**File modificati:** `src/components/CometChart.tsx`, `package.json`
+
+- ✅ Loop `requestAnimationFrame` ora si ferma quando l'animazione finisce (era infinito)
+- ✅ Aggiunto flag `cancelled` per cleanup sicuro del loop residuo
+- ✅ `devicePixelRatio` limitato a max 2 (su iPhone 12+ con dpr=3 il canvas era troppo pesante)
+- ✅ Versione bump → `0.11.12`
+
+---
+
+## [09/05/2026] — Sessione 26
+
 ### TASK-140 (feature): Planet Catalog overhaul — rarità Mythic + lore primo piano orbitale
 **File modificati:** `src/shared/labels.ts`, `src/shared/storage.ts`, `src/components/PlanetCard.tsx`, `src/pages/PlanetsCatalog.tsx`, `package.json`
 

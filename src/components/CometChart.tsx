@@ -220,8 +220,9 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
     const container = containerRef.current
     if (!canvas || !container) return
 
-    const dpr = window.devicePixelRatio || 1
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
     let w = 0, h = 0
+    let cancelled = false
 
     function resize() {
       if (!canvas || !container) return
@@ -278,7 +279,7 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
     }
 
     function draw(time: number) {
-      if (!ctx) return
+      if (cancelled || !ctx) return
       ctx.save()
       ctx.scale(dpr, dpr)
 
@@ -417,7 +418,11 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
       }
 
       ctx.restore()
-      rafRef.current = requestAnimationFrame(draw)
+      // Stop loop when animation is done — prevents infinite GPU usage on iOS Safari
+      // (hover/selectedMonthIndex changes trigger a new draw via effect re-run)
+      if (!animDoneRef.current) {
+        rafRef.current = requestAnimationFrame(draw)
+      }
     }
 
     rafRef.current = requestAnimationFrame(draw)
@@ -425,10 +430,11 @@ export default function CometChart({ allTransactions, payDay, onMonthSelect, sel
     ro.observe(container)
 
     return () => {
+      cancelled = true
       cancelAnimationFrame(rafRef.current)
       ro.disconnect()
     }
-  }, [hover, selectedMonthIndex, values, labels, amountsVisible])
+  }, [hover, selectedMonthIndex, values, labels, mode, amountsVisible])
 
   // ─── Hover / Touch ────────────────────────────────────
   function findClosestIdx(clientX: number, rect: DOMRect): number | null {
