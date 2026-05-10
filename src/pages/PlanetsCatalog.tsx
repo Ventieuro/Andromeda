@@ -13,7 +13,7 @@ function buildPlanetSets() {
   const log = loadPlanetLog()
   const discoveredSet = new Set(log.map((e) => e.alias))
   // revealed: true or undefined (legacy) → treat as revealed
-  const revealedSet = new Set(log.filter((e) => e.revealed !== false).map((e) => e.alias))
+  const revealedSet = new Set(log.filter((e) => e.revealed === true).map((e) => e.alias))
   const allPlanets = getAllPlanets().sort((a, b) => RARITY_ORDER[a.rarity] - RARITY_ORDER[b.rarity])
   const discoveredCount = allPlanets.filter((p) => discoveredSet.has(p.alias)).length
   return { allPlanets, discoveredSet, revealedSet, discoveredCount }
