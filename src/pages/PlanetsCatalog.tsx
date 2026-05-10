@@ -44,6 +44,7 @@ function PlanetsCatalog() {
               categoryLabel={planet.alias}
               alias={isDiscovered ? planet.alias : undefined}
               source={isDiscovered ? planet.source : undefined}
+              medium={isDiscovered ? planet.medium : undefined}
               lore={isDiscovered ? planet.lore : undefined}
               rarity={planet.rarity}
             />

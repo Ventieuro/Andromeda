@@ -2,7 +2,17 @@ import { useState } from 'react'
 import MiniPlanet from './MiniPlanet'
 import { Button } from './ui'
 import { SETTINGS } from '../shared/labels'
-import type { PlanetRarity } from '../shared/labels'
+import type { PlanetRarity, PlanetMedium } from '../shared/labels'
+
+// ─── Medium config ────────────────────────────────────────
+const MEDIUM_CONFIG: Record<PlanetMedium, { icon: string; label: string }> = {
+  videogame: { icon: '🎮', label: 'Videogioco' },
+  book:      { icon: '📖', label: 'Libro' },
+  film:      { icon: '🎬', label: 'Film' },
+  series:    { icon: '📺', label: 'Serie TV' },
+  tabletop:  { icon: '🎲', label: 'Gioco da tavolo' },
+  realworld: { icon: '🌍', label: 'Reale' },
+}
 
 // ─── Rarity config ───────────────────────────────────────
 const RARITY_CONFIG: Record<PlanetRarity, { color: string; bg: string; border: string; label: () => string }> = {
@@ -27,6 +37,7 @@ interface PlanetCardProps {
   categoryLabel: string
   alias?: string       // undefined = locked
   source?: string
+  medium?: PlanetMedium
   lore?: string
   rarity?: PlanetRarity
 }
@@ -43,7 +54,7 @@ function RarityBadge({ rarity }: { rarity: PlanetRarity }) {
   )
 }
 
-function PlanetCard({ categoryKey, alias, source, lore, rarity }: PlanetCardProps) {
+function PlanetCard({ categoryKey, alias, source, medium, lore, rarity }: PlanetCardProps) {
   const [open, setOpen] = useState(false)
   const isUnlocked = !!alias
   const color = categoryColor(categoryKey)
@@ -118,7 +129,7 @@ function PlanetCard({ categoryKey, alias, source, lore, rarity }: PlanetCardProp
                 {rarity && <RarityBadge rarity={rarity} />}
                 {source && (
                   <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    🎬 {source}
+                    {medium ? MEDIUM_CONFIG[medium].icon : '🎬'} {source}{medium ? ` · ${MEDIUM_CONFIG[medium].label}` : ''}
                   </p>
                 )}
                 {lore && (
