@@ -25,6 +25,32 @@ const RARITY_CONFIG: Record<PlanetRarity, { color: string; bg: string; border: s
   mythic:    { color: '#f0abfc', bg: 'rgba(240,171,252,0.15)', border: 'rgba(240,171,252,0.6)',  label: () => SETTINGS.pianetiRaritaMythic },
 }
 
+// ─── Animation classes per rarity ─────────────────────────
+const RARITY_UNREVEALED_CLASS: Record<PlanetRarity, string> = {
+  common:    'planet-card-unrevealed-common',
+  uncommon:  'planet-card-unrevealed-uncommon',
+  rare:      'planet-card-unrevealed-rare',
+  epic:      'planet-card-unrevealed-epic',
+  legendary: 'planet-card-unrevealed-legendary',
+  mythic:    'planet-card-unrevealed-mythic',
+}
+const RARITY_BURST_CLASS: Record<PlanetRarity, string> = {
+  common:    '',
+  uncommon:  '',
+  rare:      'planet-card-reveal-rare',
+  epic:      'planet-card-reveal-epic',
+  legendary: 'planet-card-reveal-legendary',
+  mythic:    'planet-card-reveal-mythic',
+}
+const RARITY_FLIP_CLASS: Record<PlanetRarity, string> = {
+  common:    '',
+  uncommon:  '',
+  rare:      '',
+  epic:      'planet-flip-epic',
+  legendary: 'planet-flip-legendary',
+  mythic:    'planet-flip-mythic',
+}
+
 function categoryColor(key: string): string {
   const PALETTE = ['#ef4444','#f97316','#eab308','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#22c55e','#14b8a6','#f43f5e','#a855f7','#fb923c','#84cc16','#38bdf8','#e879f9']
   let h = 0
@@ -105,11 +131,11 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
     return (
       <>
         <div className="planet-card-scene" style={{ minHeight: '110px', cursor: 'pointer' }} onClick={handleClick}>
-          <div className={`planet-card-inner ${isFlipping || flipDone ? 'flipped' : ''}`} style={{ minHeight: '110px' }}>
+          <div className={`planet-card-inner ${isFlipping || flipDone ? 'flipped' : ''} ${rarity ? RARITY_FLIP_CLASS[rarity] : ''}`} style={{ minHeight: '110px' }}>
             {/* Front: mystery */}
             <div
-              className={`planet-card-face ${!isFlipping && !flipDone ? 'planet-card-unrevealed' : ''}`}
-              style={{ backgroundColor: 'var(--bg-secondary)', border: `2px solid ${rarityColor}`, ['--rarity-color' as string]: rarityColor, boxShadow: !isFlipping && !flipDone ? `0 0 10px ${rarityColor}66` : 'none' }}
+              className={`planet-card-face ${!isFlipping && !flipDone && rarity ? RARITY_UNREVEALED_CLASS[rarity] : ''}`}
+              style={{ backgroundColor: 'var(--bg-secondary)', border: `2px solid ${rarityColor}`, ['--rarity-color' as string]: rarityColor }}
             >
               <div className="flex items-center justify-center rounded-full" style={{ width: 40, height: 40, backgroundColor: `${rarityColor}22`, border: `1px solid ${rarityColor}66` }}>
                 <span style={{ color: rarityColor, fontSize: 20, fontWeight: 700 }}>?</span>
@@ -121,7 +147,7 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
               )}
             </div>
             {/* Back: revealed planet */}
-            <div className="planet-card-face planet-card-back" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow }}>
+            <div className={`planet-card-face planet-card-back ${flipDone && rarity ? RARITY_BURST_CLASS[rarity] : ''}`} style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow, ['--rarity-color' as string]: rarityColor }}>
               <MiniPlanet color={color} size={40} />
               <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>{alias}</p>
               {source && <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)' }}>{source}</p>}
