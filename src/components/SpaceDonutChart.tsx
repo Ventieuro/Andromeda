@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
 import { DASHBOARD } from '../shared/labels'
-import { resolveMonthPlanet } from '../shared/storage'
+import { resolveMonthPlanet, isPlanetRevealed } from '../shared/storage'
 import { haptic } from '../shared/platform'
 import MiniPlanet from './MiniPlanet'
 
@@ -698,6 +698,25 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
                     {s.type === 'uscita' && s.canonicalKey && (() => {
                       const planet = resolveMonthPlanet(s.canonicalKey, _year, _month)
                       if (!planet) return null
+                      const revealed = isPlanetRevealed(planet.alias)
+                      if (!revealed) {
+                        return (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); window.location.hash = '#/settings/pianeti' }}
+                            className="text-[10px] text-right font-medium"
+                            style={{
+                              color: 'var(--accent)',
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              padding: 0,
+                              lineHeight: 1.3,
+                            }}
+                          >
+                            🪐 ??? ›
+                          </button>
+                        )
+                      }
                       return (
                         <span className="text-[10px] text-right" style={{ color: 'var(--text-muted)', opacity: 0.8, lineHeight: 1.3 }}>
                           🪐 {planet.alias} · {planet.source}

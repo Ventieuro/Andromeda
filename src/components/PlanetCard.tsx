@@ -3,6 +3,7 @@ import MiniPlanet from './MiniPlanet'
 import { Button } from './ui'
 import { SETTINGS } from '../shared/labels'
 import type { PlanetRarity, PlanetMedium } from '../shared/labels'
+import { revealPlanet } from '../shared/storage'
 
 // ─── Medium config ────────────────────────────────────────
 const MEDIUM_CONFIG: Record<PlanetMedium, { icon: string; label: string }> = {
@@ -21,10 +22,9 @@ const RARITY_CONFIG: Record<PlanetRarity, { color: string; bg: string; border: s
   rare:      { color: '#3b82f6', bg: 'rgba(59,130,246,0.12)',  border: 'rgba(59,130,246,0.35)',  label: () => SETTINGS.pianetiRaritaRare },
   epic:      { color: '#a855f7', bg: 'rgba(168,85,247,0.12)',  border: 'rgba(168,85,247,0.35)',  label: () => SETTINGS.pianetiRaritaEpic },
   legendary: { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.5)',   label: () => SETTINGS.pianetiRaritaLegendary },
-  mythic:    { color: '#f0abfc', bg: 'rgba(240,171,252,0.15)', border: 'rgba(240,171,252,0.6)',   label: () => SETTINGS.pianetiRaritaMythic },
+  mythic:    { color: '#f0abfc', bg: 'rgba(240,171,252,0.15)', border: 'rgba(240,171,252,0.6)',  label: () => SETTINGS.pianetiRaritaMythic },
 }
 
-// Stable color per category (deterministic hash)
 function categoryColor(key: string): string {
   const PALETTE = ['#ef4444','#f97316','#eab308','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#22c55e','#14b8a6','#f43f5e','#a855f7','#fb923c','#84cc16','#38bdf8','#e879f9']
   let h = 0
@@ -35,11 +35,13 @@ function categoryColor(key: string): string {
 interface PlanetCardProps {
   categoryKey: string
   categoryLabel: string
-  alias?: string       // undefined = locked
+  alias?: string         // undefined = locked (not yet discovered)
   source?: string
   medium?: PlanetMedium
   lore?: string
   rarity?: PlanetRarity
+  revealed?: boolean     // false = discovered but not yet flipped
+  onReveal?: () => void  // called after flip completes
 }
 
 function RarityBadge({ rarity }: { rarity: PlanetRarity }) {
@@ -54,105 +56,135 @@ function RarityBadge({ rarity }: { rarity: PlanetRarity }) {
   )
 }
 
-function PlanetCard({ categoryKey, alias, source, medium, lore, rarity }: PlanetCardProps) {
+function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed = true, onReveal }: PlanetCardProps) {
   const [open, setOpen] = useState(false)
+  const [isFlipping, setIsFlipping] = useState(false)
+  const [flipDone, setFlipDone] = useState(false)
   const isUnlocked = !!alias
   const color = categoryColor(categoryKey)
   const rarityBorder = rarity ? RARITY_CONFIG[rarity].border : 'var(--border)'
-  const rarityGlow = rarity && isUnlocked ? `0 0 12px ${RARITY_CONFIG[rarity].color}44` : 'none'
+  const rarityColor = rarity ? RARITY_CONFIG[rarity].color : 'var(--accent)'
+  const rarityGlow = rarity ? `0 0 12px ${RARITY_CONFIG[rarity].color}44` : 'none'
 
+  // ── Locked: not yet discovered ──
+  if (!isUnlocked) {
+    return (
+      <div
+        className="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 w-full"
+        style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', minHeight: '110px', justifyContent: 'center' }}
+      >
+        <div
+          className="flex items-center justify-center rounded-full"
+          style={{ width: 40, height: 40, backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)' }}
+        >
+          <span style={{ color: 'var(--text-muted)', fontSize: 18, opacity: 0.3 }}>?</span>
+        </div>
+        {rarity && <RarityBadge rarity={rarity} />}
+      </div>
+    )
+  }
+
+  // ── Unrevealed or currently flipping ──
+  if (!revealed || isFlipping || flipDone) {
+    function handleClick() {
+      if (flipDone) {
+        // flip done → open detail
+        setOpen(true)
+        return
+      }
+      if (isFlipping) return
+      // start flip
+      setIsFlipping(true)
+      setTimeout(() => {
+        if (alias) revealPlanet(alias)
+        setFlipDone(true)
+        onReveal?.()
+      }, 560)
+    }
+
+    return (
+      <>
+        <div className="planet-card-scene" style={{ minHeight: '110px', cursor: 'pointer' }} onClick={handleClick}>
+          <div className={`planet-card-inner ${isFlipping || flipDone ? 'flipped' : ''}`} style={{ minHeight: '110px' }}>
+            {/* Front: mystery */}
+            <div
+              className={`planet-card-face ${!isFlipping && !flipDone ? 'planet-card-unrevealed' : ''}`}
+              style={{ backgroundColor: 'var(--bg-secondary)', border: `2px solid ${rarityColor}`, ['--rarity-color' as string]: rarityColor, boxShadow: !isFlipping && !flipDone ? `0 0 10px ${rarityColor}66` : 'none' }}
+            >
+              <div className="flex items-center justify-center rounded-full" style={{ width: 40, height: 40, backgroundColor: `${rarityColor}22`, border: `1px solid ${rarityColor}66` }}>
+                <span style={{ color: rarityColor, fontSize: 20, fontWeight: 700 }}>?</span>
+              </div>
+              <p className="text-[11px] font-bold" style={{ color: rarityColor }}>???</p>
+              {rarity && <RarityBadge rarity={rarity} />}
+              {!isFlipping && !flipDone && (
+                <p className="text-[9px] text-center" style={{ color: 'var(--text-muted)', lineHeight: 1.2 }}>Tocca per rivelare</p>
+              )}
+            </div>
+            {/* Back: revealed planet */}
+            <div className="planet-card-face planet-card-back" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow }}>
+              <MiniPlanet color={color} size={40} />
+              <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>{alias}</p>
+              {source && <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)' }}>{source}</p>}
+              {rarity && <RarityBadge rarity={rarity} />}
+            </div>
+          </div>
+        </div>
+
+        {/* Detail modal (available once flip is done) */}
+        {open && flipDone && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setOpen(false)}>
+            <div
+              className="flex flex-col items-center gap-4 rounded-2xl p-6 w-full max-w-xs"
+              style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: `0 0 32px ${rarityColor}44` }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MiniPlanet color={color} size={80} />
+              <p className="text-2xl font-bold text-center" style={{ color: 'var(--text-primary)' }}>{alias}</p>
+              {rarity && <RarityBadge rarity={rarity} />}
+              {source && (
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                  {medium ? MEDIUM_CONFIG[medium].icon : '🎬'} {source}{medium ? ` · ${MEDIUM_CONFIG[medium].label}` : ''}
+                </p>
+              )}
+              {lore && <p className="text-sm text-center leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{lore}</p>}
+              <Button variant="primary" fullWidth onClick={() => setOpen(false)}>Chiudi</Button>
+            </div>
+          </div>
+        )}
+      </>
+    )
+  }
+
+  // ── Revealed: normal planet card ──
   return (
     <>
-      {/* ── Card ── */}
       <button
         onClick={() => setOpen(true)}
         className="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 w-full transition-all active:scale-95"
-        style={{
-          backgroundColor: isUnlocked ? 'var(--bg-card)' : 'var(--bg-secondary)',
-          border: `1px solid ${isUnlocked ? rarityBorder : 'var(--border)'}`,
-          boxShadow: rarityGlow,
-          cursor: 'pointer',
-          minHeight: '110px',
-          justifyContent: 'center',
-        }}
+        style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow, cursor: 'pointer', minHeight: '110px', justifyContent: 'center' }}
       >
-        {/* Planet visual */}
-        {isUnlocked ? (
-          <MiniPlanet color={color} size={40} />
-        ) : (
-          <div
-            className="flex items-center justify-center rounded-full"
-            style={{ width: 40, height: 40, backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)' }}
-          >
-            <span style={{ color: 'var(--text-muted)', fontSize: 18, opacity: 0.5 }}>?</span>
-          </div>
-        )}
-
-        {/* Name + source */}
-        {isUnlocked ? (
-          <>
-            <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>
-              {alias}
-            </p>
-            {source && (
-              <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)' }}>
-                {source}
-              </p>
-            )}
-          </>
-        ) : null}
-
-        {/* Rarity badge */}
+        <MiniPlanet color={color} size={40} />
+        <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>{alias}</p>
+        {source && <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)' }}>{source}</p>}
         {rarity && <RarityBadge rarity={rarity} />}
       </button>
 
-      {/* ── Detail popup ── */}
       {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-6"
-          style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
-          onClick={() => setOpen(false)}
-        >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setOpen(false)}>
           <div
             className="flex flex-col items-center gap-4 rounded-2xl p-6 w-full max-w-xs"
-            style={{
-              backgroundColor: 'var(--bg-card)',
-              border: `1px solid ${isUnlocked ? rarityBorder : 'var(--border)'}`,
-              boxShadow: isUnlocked ? `0 0 32px ${RARITY_CONFIG[rarity!]?.color}44` : 'none',
-            }}
+            style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: `0 0 32px ${rarityColor}44` }}
             onClick={(e) => e.stopPropagation()}
           >
-            {isUnlocked ? (
-              <>
-                <MiniPlanet color={color} size={80} />
-                <p className="text-2xl font-bold text-center" style={{ color: 'var(--text-primary)' }}>{alias}</p>
-                {rarity && <RarityBadge rarity={rarity} />}
-                {source && (
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    {medium ? MEDIUM_CONFIG[medium].icon : '🎬'} {source}{medium ? ` · ${MEDIUM_CONFIG[medium].label}` : ''}
-                  </p>
-                )}
-                {lore && (
-                  <p className="text-sm text-center leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                    {lore}
-                  </p>
-                )}
-              </>
-            ) : (
-              <>
-                <div
-                  className="flex items-center justify-center rounded-full"
-                  style={{ width: 80, height: 80, backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)' }}
-                >
-                  <span style={{ fontSize: 36, color: 'var(--text-muted)', opacity: 0.4 }}>?</span>
-                </div>
-                <p className="text-2xl font-bold" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>???</p>
-                {rarity && <RarityBadge rarity={rarity} />}
-                <p className="text-sm text-center" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>
-                  Pianeta non ancora scoperto.
-                </p>
-              </>
+            <MiniPlanet color={color} size={80} />
+            <p className="text-2xl font-bold text-center" style={{ color: 'var(--text-primary)' }}>{alias}</p>
+            {rarity && <RarityBadge rarity={rarity} />}
+            {source && (
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                {medium ? MEDIUM_CONFIG[medium].icon : '🎬'} {source}{medium ? ` · ${MEDIUM_CONFIG[medium].label}` : ''}
+              </p>
             )}
+            {lore && <p className="text-sm text-center leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{lore}</p>}
             <Button variant="primary" fullWidth onClick={() => setOpen(false)}>Chiudi</Button>
           </div>
         </div>
@@ -162,3 +194,5 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity }: Planet
 }
 
 export default PlanetCard
+
+

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useState, useCallback } from 'react'
 import { PageHeader } from '../components/ui'
 import { getAllPlanets, SETTINGS } from '../shared/labels'
 import type { PlanetRarity } from '../shared/labels'
@@ -9,16 +9,24 @@ const RARITY_ORDER: Record<PlanetRarity, number> = {
   common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4, mythic: 5,
 }
 
+function buildPlanetSets() {
+  const log = loadPlanetLog()
+  const discoveredSet = new Set(log.map((e) => e.alias))
+  // revealed: true or undefined (legacy) → treat as revealed
+  const revealedSet = new Set(log.filter((e) => e.revealed !== false).map((e) => e.alias))
+  const allPlanets = getAllPlanets().sort((a, b) => RARITY_ORDER[a.rarity] - RARITY_ORDER[b.rarity])
+  const discoveredCount = allPlanets.filter((p) => discoveredSet.has(p.alias)).length
+  return { allPlanets, discoveredSet, revealedSet, discoveredCount }
+}
+
 function PlanetsCatalog() {
-  const { allPlanets, discoveredSet, discoveredCount } = useMemo(() => {
-    const log = loadPlanetLog()
-    const discoveredSet = new Set(log.map((e) => e.alias))
-    const allPlanets = getAllPlanets().sort((a, b) => RARITY_ORDER[a.rarity] - RARITY_ORDER[b.rarity])
-    const discoveredCount = allPlanets.filter((p) =>
-      discoveredSet.has(p.alias)
-    ).length
-    return { allPlanets, discoveredSet, discoveredCount }
+  const [data, setData] = useState(() => buildPlanetSets())
+
+  const handleReveal = useCallback(() => {
+    setData(buildPlanetSets())
   }, [])
+
+  const { allPlanets, discoveredSet, revealedSet, discoveredCount } = data
 
   return (
     <div style={{ minHeight: '100%', paddingBottom: '80px' }}>
@@ -37,6 +45,7 @@ function PlanetsCatalog() {
       >
         {allPlanets.map((planet) => {
           const isDiscovered = discoveredSet.has(planet.alias)
+          const isRevealed = revealedSet.has(planet.alias)
           return (
             <PlanetCard
               key={planet.alias}
@@ -47,6 +56,8 @@ function PlanetsCatalog() {
               medium={isDiscovered ? planet.medium : undefined}
               lore={isDiscovered ? planet.lore : undefined}
               rarity={planet.rarity}
+              revealed={!isDiscovered ? undefined : isRevealed}
+              onReveal={handleReveal}
             />
           )
         })}
@@ -56,3 +67,4 @@ function PlanetsCatalog() {
 }
 
 export default PlanetsCatalog
+

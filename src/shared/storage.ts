@@ -273,11 +273,13 @@ export function addTransaction(tx: Transaction) {
 export function deleteTransaction(id: string) {
   const all = loadTransactions().filter((t) => t.id !== id)
   saveTransactions(all)
+  pruneOrphanPlanets(all)
 }
 
 export function deleteTransactionsByGroupId(groupId: string) {
   const all = loadTransactions().filter((t) => t.recurringGroupId !== groupId)
   saveTransactions(all)
+  pruneOrphanPlanets(all)
 }
 
 export function updateTransactionsByGroupId(
@@ -806,6 +808,7 @@ export interface PlanetLogEntry {
   rarity: PlanetRarity
   year: number
   month: number // 0-indexed
+  revealed?: boolean // undefined = legacy entry → treat as revealed
 }
 
 const RARITY_WEIGHT: Record<PlanetRarity, number> = {
@@ -846,11 +849,45 @@ function savePlanetLog(log: PlanetLogEntry[]) {
   } catch { /* noop */ }
 }
 
+// Remove planet log entries whose category has no more 'uscita' transactions in the period
+function pruneOrphanPlanets(remainingTransactions: Transaction[]): void {
+  const { payDay = 27 } = loadSettings()
+  const log = loadPlanetLog()
+  const kept = log.filter((entry) => {
+    const periodStart = new Date(entry.year, entry.month, payDay)
+    const periodEnd = new Date(entry.year, entry.month + 1, payDay - 1)
+    const s = toLocalIso(periodStart)
+    const e = toLocalIso(periodEnd)
+    return remainingTransactions.some(
+      (t) =>
+        t.type === 'uscita' &&
+        normalizeCategoryKey(t.category, 'uscita') === entry.category &&
+        t.date >= s &&
+        t.date <= e,
+    )
+  })
+  if (kept.length !== log.length) savePlanetLog(kept)
+}
+
+// Mark a discovered planet as revealed (card flipped by user)
+export function revealPlanet(alias: string): void {
+  const log = loadPlanetLog()
+  savePlanetLog(log.map((e) => e.alias === alias ? { ...e, revealed: true } : e))
+}
+
+// Legacy entries (no revealed field) are treated as unrevealed — user must flip to discover
+export function isPlanetRevealed(alias: string): boolean {
+  const log = loadPlanetLog()
+  const entry = log.find((e) => e.alias === alias)
+  if (!entry) return false
+  return entry.revealed === true // must be explicitly true
+}
+
 export function resolveMonthPlanet(
   categoryKey: string,
   year: number,
   month: number,
-): { alias: string; source: string; lore: string; rarity: PlanetRarity } | null {
+): { alias: string; source: string; lore: string; rarity: PlanetRarity; isNew: boolean } | null {
   const allPlanets = getAllPlanets()
   if (allPlanets.length === 0) return null
 
@@ -859,7 +896,8 @@ export function resolveMonthPlanet(
   // Already assigned for this (category, year, month)?
   const existing = log.find((e) => e.category === categoryKey && e.year === year && e.month === month)
   if (existing) {
-    return allPlanets.find((p) => p.alias === existing.alias) ?? null
+    const found = allPlanets.find((p) => p.alias === existing.alias)
+    return found ? { ...found, isNew: false } : null
   }
 
   // Aliases already discovered globally (across all categories/months)
@@ -897,8 +935,8 @@ export function resolveMonthPlanet(
   }
 
   // Save to log
-  savePlanetLog([...log, { category: categoryKey, alias: chosen.alias, rarity: chosen.rarity, year, month }])
-  return chosen
+  savePlanetLog([...log, { category: categoryKey, alias: chosen.alias, rarity: chosen.rarity, year, month, revealed: false }])
+  return { ...chosen, isNew: true }
 }
 
 // Read-only: returns assigned planet for (category, year, month) if already in log, no side effect
@@ -929,6 +967,7 @@ export interface AppBackup {
   missionCardData?: Record<string, string>
   theme?: string
   lang?: string
+  planetLog?: PlanetLogEntry[]
 }
 
 // ─── Crypto helpers ──────────────────────────────────────
@@ -1115,6 +1154,20 @@ function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok
     }
   }
 
+  if (Array.isArray(data.planetLog)) {
+    if (options.mode === 'merge') {
+      const local = loadPlanetLog()
+      const existingKeys = new Set(local.map((e) => `${e.category}|${e.year}|${e.month}`))
+      const merged = [
+        ...local,
+        ...data.planetLog.filter((e) => !existingKeys.has(`${e.category}|${e.year}|${e.month}`)),
+      ]
+      savePlanetLog(merged)
+    } else {
+      savePlanetLog(data.planetLog)
+    }
+  }
+
   return 'ok'
 }
 
@@ -1140,6 +1193,7 @@ export async function exportAllData(password: string): Promise<void> {
     missionCardData,
     theme: localStorage.getItem('andromeda-theme') ?? undefined,
     lang: localStorage.getItem('andromeda-lang') ?? undefined,
+    planetLog: loadPlanetLog(),
   }
   const encrypted = await encryptJson(JSON.stringify(backup), password)
   const blob = new Blob([JSON.stringify(encrypted)], { type: 'application/json' })
@@ -1201,6 +1255,7 @@ export async function buildQrTransferLinks(password: string): Promise<string[]> 
     missionCardData,
     theme: localStorage.getItem('andromeda-theme') ?? undefined,
     lang: localStorage.getItem('andromeda-lang') ?? undefined,
+    planetLog: loadPlanetLog(),
   }
 
   const encrypted = await encryptJson(JSON.stringify(backup), password)
@@ -1242,6 +1297,7 @@ export async function buildTransferCode(password: string): Promise<string> {
     missionCardData,
     theme: localStorage.getItem('andromeda-theme') ?? undefined,
     lang: localStorage.getItem('andromeda-lang') ?? undefined,
+    planetLog: loadPlanetLog(),
   }
 
   const encrypted = await encryptJson(JSON.stringify(backup), password)

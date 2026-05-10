@@ -4,6 +4,26 @@
 
 ---
 
+## [Sessione corrente]
+
+### TASK-148 (feature): Planet flip-reveal system — sostituisce popup animato
+**File modificati:** `src/shared/storage.ts`, `src/components/PlanetCard.tsx`, `src/components/SpaceDonutChart.tsx`, `src/pages/PlanetsCatalog.tsx`, `src/pages/Dashboard.tsx`, `src/index.css`, `package.json`
+**File eliminati:** `src/components/PlanetUnlockPopup.tsx`
+
+- ✅ `PlanetLogEntry` ora ha campo `revealed?: boolean` (undefined = legacy = già rivelato)
+- ✅ `resolveMonthPlanet` imposta `revealed: false` per nuovi pianeti
+- ✅ Aggiunte `revealPlanet(alias)` e `isPlanetRevealed(alias)` in `storage.ts`
+- ✅ Legend SpaceDonutChart: pianeti non rivelati mostrano `🪐 ??? ›` cliccabile → `/pianeti`
+- ✅ PlanetCard: stato mystery (scoperto ma non rivelato) con glow colorato per rarità + animazione flip 3D al click
+- ✅ Dopo il flip: chiama `revealPlanet()`, aggiorna PlanetsCatalog in tempo reale
+- ✅ PlanetsCatalog: distingue non scoperto / scoperto-non-rivelato / rivelato
+- ✅ Dashboard: rimosso popup (`PlanetUnlockPopup`, `unlockedPlanet` state, `checkPlanetDiscovery`)
+- ✅ `handleSaved` semplificato: `refresh()` + `assignPlanetsForPeriod()`
+- ✅ `index.css`: rimossi keyframes popup, aggiunti keyframes flip card + glow pulse rarità
+- ✅ Versione bump → `0.12.0`
+
+---
+
 ## [09/05/2026] — Sessione 26
 
 ### TASK-141 (bugfix): CometChart crash su Safari/iOS — loop RAF infinito

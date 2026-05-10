@@ -655,6 +655,13 @@ const STRINGS = {
     passwordPlaceholder: t('Lascia vuoto = nessuna cifratura', 'Leave empty = no encryption',  'Dejar vacío = sin cifrar'),
     nota:            t('Con password: file cifrato AES-256. Senza: JSON non cifrato.', 'With password: AES-256 encrypted file. Without: plain JSON.', 'Con contraseña: cifrado AES-256. Sin ella: JSON sin cifrar.'),
   },
+
+  // ── Planet Unlock Popup ──────────────────────────────
+  planetUnlock: {
+    titolo:     t('Nuovo pianeta scoperto!', 'New planet discovered!', '¡Nuevo planeta descubierto!'),
+    sottotitolo: t('La tua stella ha brillato su un nuovo mondo', 'Your star shone on a new world', 'Tu estrella brilló sobre un nuevo mundo'),
+    chiudi:     t('Fantastico!', 'Amazing!', '¡Fantástico!'),
+  },
 }
 
 export type PlanetRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic'
@@ -875,3 +882,4 @@ export const OCR:         Labels['ocr']         = localize(STRINGS.ocr)
 export const RECEIPT_DETAIL: Labels['receiptDetail'] = localize(STRINGS.receiptDetail)
 export const PRODOTTI: Labels['prodotti'] = localize(STRINGS.prodotti)
 export const MISSIONI: Labels['missioni'] = localize(STRINGS.missioni)
+export const PLANET_UNLOCK: Labels['planetUnlock'] = localize(STRINGS.planetUnlock)
