@@ -1,7 +1,7 @@
 import { Trash2, GripVertical } from 'lucide-react'
 import type { ProductEntry } from '../shared/types'
 import type { ReceiptItem } from '../shared/receiptUtils'
-import { OCR, PRODOTTI } from '../shared/labels'
+import { OCR, PRODUCTS } from '../shared/labels'
 
 interface ReceiptItemRowProps {
   item: ReceiptItem
@@ -122,7 +122,7 @@ function ReceiptItemRow({
               alignSelf: 'flex-start',
             }}
           >
-            {PRODOTTI.prezzoNotoLabel(formatEuro(knownPrice))}
+            {PRODUCTS.prezzoNotoLabel(formatEuro(knownPrice))}
             {priceDiffers ? ' ⚠️' : ''}
           </span>
         )}

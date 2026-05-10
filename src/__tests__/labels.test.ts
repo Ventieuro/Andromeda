@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { setLocale, getLocale, LAYOUT, DASHBOARD, MASCOTTE, FORM, CATEGORIE, NOT_FOUND } from '../shared/labels'
+import { setLocale, getLocale, LAYOUT, DASHBOARD, MASCOT, FORM, CATEGORIES, NOT_FOUND } from '../shared/labels'
 
 describe('labels.ts', () => {
   beforeEach(() => {
@@ -55,14 +55,14 @@ describe('labels.ts', () => {
 
   describe('MASCOTTE labels', () => {
     it('returns mascot messages as strings', () => {
-      expect(typeof MASCOTTE.messaggi.vuoto).toBe('string')
-      expect(typeof MASCOTTE.messaggi.ottimo).toBe('string')
-      expect(typeof MASCOTTE.messaggi.pari).toBe('string')
+      expect(typeof MASCOT.messaggi.vuoto).toBe('string')
+      expect(typeof MASCOT.messaggi.ottimo).toBe('string')
+      expect(typeof MASCOT.messaggi.pari).toBe('string')
     })
 
     it('returns parametric functions', () => {
-      expect(typeof MASCOTTE.messaggi.bene).toBe('function')
-      const msg = MASCOTTE.messaggi.bene('€100')
+      expect(typeof MASCOT.messaggi.bene).toBe('function')
+      const msg = MASCOT.messaggi.bene('€100')
       expect(msg).toContain('€100')
     })
   })
@@ -80,15 +80,15 @@ describe('labels.ts', () => {
 
   describe('CATEGORIE', () => {
     it('returns arrays for entrata and uscita', () => {
-      expect(Array.isArray(CATEGORIE.entrata)).toBe(true)
-      expect(Array.isArray(CATEGORIE.uscita)).toBe(true)
-      expect(CATEGORIE.entrata.length).toBeGreaterThan(0)
-      expect(CATEGORIE.uscita.length).toBeGreaterThan(0)
+      expect(Array.isArray(CATEGORIES.entrata)).toBe(true)
+      expect(Array.isArray(CATEGORIES.uscita)).toBe(true)
+      expect(CATEGORIES.entrata.length).toBeGreaterThan(0)
+      expect(CATEGORIES.uscita.length).toBeGreaterThan(0)
     })
 
     it('changes language for categories', () => {
       setLocale('en')
-      expect(CATEGORIE.entrata).toContain('Salary')
+      expect(CATEGORIES.entrata).toContain('Salary')
     })
   })
 

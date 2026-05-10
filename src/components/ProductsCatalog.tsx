@@ -9,7 +9,7 @@ import { useState, useMemo } from 'react'
 import { ListFilter, Pencil, Trash2 } from 'lucide-react'
 import type { ProductEntry } from '../shared/types'
 import { loadProducts, saveProducts, deleteProduct, updateProductName } from '../shared/storage'
-import { PRODOTTI } from '../shared/labels'
+import { PRODUCTS } from '../shared/labels'
 import { useDialog } from '../shared/DialogContext'
 
 // ─── Helpers ─────────────────────────────────────────────
@@ -71,9 +71,9 @@ function ProductsCatalog() {
 
   async function handleDelete(p: ProductEntry) {
     const ok = await showConfirm({
-      message: PRODOTTI.eliminaConferma(p.name),
-      confirmLabel: PRODOTTI.elimina,
-      cancelLabel: PRODOTTI.annulla,
+      message: PRODUCTS.eliminaConferma(p.name),
+      confirmLabel: PRODUCTS.elimina,
+      cancelLabel: PRODUCTS.annulla,
     })
     if (!ok) return
     deleteProduct(p.id)
@@ -111,7 +111,7 @@ function ProductsCatalog() {
       <div style={{ padding: '40px 24px', textAlign: 'center' }}>
         <p style={{ fontSize: '40px', margin: '0 0 16px' }}>🏷️</p>
         <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
-          {PRODOTTI.nessunProdotto}
+          {PRODUCTS.nessunProdotto}
         </p>
       </div>
     )
@@ -124,7 +124,7 @@ function ProductsCatalog() {
       <div style={{ marginBottom: '12px' }}>
         <input
           type="search"
-          placeholder={PRODOTTI.cerca}
+          placeholder={PRODUCTS.cerca}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -162,7 +162,7 @@ function ProductsCatalog() {
             flexShrink: 0,
           }}
           aria-hidden="true"
-          title={PRODOTTI.ordinaPer}
+          title={PRODUCTS.ordinaPer}
         >
           <ListFilter size={16} aria-hidden="true" />
         </div>
@@ -180,13 +180,13 @@ function ProductsCatalog() {
             fontSize: '13px',
             outline: 'none',
           }}
-          aria-label={PRODOTTI.ordinaPer}
+          aria-label={PRODUCTS.ordinaPer}
         >
-          <option value="insertion">{PRODOTTI.ordinaInserimento}</option>
-          <option value="name-asc">{PRODOTTI.ordinaNomeAsc}</option>
-          <option value="name-desc">{PRODOTTI.ordinaNomeDesc}</option>
-          <option value="price-asc">{PRODOTTI.ordinaPrezzoAsc}</option>
-          <option value="price-desc">{PRODOTTI.ordinaPrezzoDesc}</option>
+          <option value="insertion">{PRODUCTS.ordinaInserimento}</option>
+          <option value="name-asc">{PRODUCTS.ordinaNomeAsc}</option>
+          <option value="name-desc">{PRODUCTS.ordinaNomeDesc}</option>
+          <option value="price-asc">{PRODUCTS.ordinaPrezzoAsc}</option>
+          <option value="price-desc">{PRODUCTS.ordinaPrezzoDesc}</option>
         </select>
       </div>
 
@@ -251,7 +251,7 @@ function ProductsCatalog() {
                         {p.name}
                       </p>
                       <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'var(--text-muted)' }}>
-                        {PRODOTTI.visto}: {formatDate(p.lastSeen)} · {PRODOTTI.occorrenze(p.priceHistory.length)}
+                        {PRODUCTS.visto}: {formatDate(p.lastSeen)} · {PRODUCTS.occorrenze(p.priceHistory.length)}
                       </p>
                     </>
                   )}
@@ -294,13 +294,13 @@ function ProductsCatalog() {
                           onClick={() => saveEdit(p)}
                           style={actionBtnStyle('accent')}
                         >
-                          {PRODOTTI.salva}
+                          {PRODUCTS.salva}
                         </button>
                         <button
                           onClick={cancelEdit}
                           style={actionBtnStyle('ghost')}
                         >
-                          {PRODOTTI.annulla}
+                          {PRODUCTS.annulla}
                         </button>
                       </>
                     ) : (
@@ -309,13 +309,13 @@ function ProductsCatalog() {
                           onClick={() => startEdit(p)}
                           style={actionBtnStyle('ghost')}
                         >
-                          <Pencil size={13} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} />{PRODOTTI.modifica}
+                          <Pencil size={13} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} />{PRODUCTS.modifica}
                         </button>
                         <button
                           onClick={() => handleDelete(p)}
                           style={actionBtnStyle('danger')}
                         >
-                          <Trash2 size={13} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} />{PRODOTTI.elimina}
+                          <Trash2 size={13} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} />{PRODUCTS.elimina}
                         </button>
                       </>
                     )}
@@ -325,7 +325,7 @@ function ProductsCatalog() {
                   {p.priceHistory.length > 0 && (
                     <>
                       <p style={{ margin: '0 0 8px', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        {PRODOTTI.storia}
+                        {PRODUCTS.storia}
                       </p>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '180px', overflowY: 'auto' }}>
                         {[...p.priceHistory].reverse().map((entry, idx) => (
@@ -369,7 +369,7 @@ function ProductsCatalog() {
                   {p.aliases.length > 0 && (
                     <div style={{ marginTop: '12px' }}>
                       <p style={{ margin: '0 0 6px', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        {PRODOTTI.variantiOcr}
+                        {PRODUCTS.variantiOcr}
                       </p>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                         {p.aliases.map((alias) => (
@@ -390,7 +390,7 @@ function ProductsCatalog() {
                             <button
                               onClick={() => removeAlias(p.id, alias)}
                               style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', color: 'var(--text-muted)', padding: '0 2px', lineHeight: 1 }}
-                              aria-label={PRODOTTI.rimuoviAliasAria(alias)}
+                              aria-label={PRODUCTS.rimuoviAliasAria(alias)}
                             >✕</button>
                           </span>
                         ))}

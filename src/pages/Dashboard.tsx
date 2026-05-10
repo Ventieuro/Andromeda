@@ -9,7 +9,7 @@ import type { Transaction } from '../shared/types'
 import { normalizeCategoryKey } from '../shared/labels'
 import type { MonthDetail } from '../components/CometChart'
 import ExpensePieChart from '../components/ExpensePieChart'
-import { DASHBOARD, MASCOTTE, translateCategory } from '../shared/labels'
+import { DASHBOARD, MASCOT, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
 import { useAmounts } from '../shared/AmountsContext'
@@ -52,39 +52,39 @@ function getMascotMessage(
   consecutiveNegative: number,
   wasNegative: boolean,
 ): { mood: 'happy' | 'sad' | 'neutral' | 'excited'; message: string } {
-  if (count === 0) return { mood: 'neutral', message: MASCOTTE.messaggi.vuoto }
+  if (count === 0) return { mood: 'neutral', message: MASCOT.messaggi.vuoto }
 
   // Easter egg Bowie — 3+ mesi consecutivi in rosso
   if (consecutiveNegative >= 3) {
-    return { mood: 'sad', message: MASCOTTE.messaggi.majorTom }
+    return { mood: 'sad', message: MASCOT.messaggi.majorTom }
   }
   // Rientro positivo dopo periodo negativo
   if (wasNegative && saldo > 0) {
-    return { mood: 'excited', message: MASCOTTE.messaggi.majorTomRientro }
+    return { mood: 'excited', message: MASCOT.messaggi.majorTomRientro }
   }
 
   // Con obiettivo di risparmio attivo
   if (monthlyGoal > 0) {
     const shortfall = monthlyGoal - saldo
     if (saldo >= monthlyGoal) {
-      return { mood: 'excited', message: MASCOTTE.messaggi.obiettivoRaggiunto }
+      return { mood: 'excited', message: MASCOT.messaggi.obiettivoRaggiunto }
     }
     if (shortfall > 0 && shortfall <= monthlyGoal * 0.2) {
-      return { mood: 'happy', message: MASCOTTE.messaggi.obiettivoVicino(formatEuro(shortfall)) }
+      return { mood: 'happy', message: MASCOT.messaggi.obiettivoVicino(formatEuro(shortfall)) }
     }
     if (carryover > 0) {
-      return { mood: 'neutral', message: MASCOTTE.messaggi.carryover(formatEuro(carryover)) }
+      return { mood: 'neutral', message: MASCOT.messaggi.carryover(formatEuro(carryover)) }
     }
     if (saldo > 0) {
-      return { mood: 'neutral', message: MASCOTTE.messaggi.obiettivoMancato(formatEuro(shortfall)) }
+      return { mood: 'neutral', message: MASCOT.messaggi.obiettivoMancato(formatEuro(shortfall)) }
     }
   }
 
   // Senza obiettivo o fallback
-  if (saldo > 500) return { mood: 'excited', message: MASCOTTE.messaggi.ottimo }
-  if (saldo > 0) return { mood: 'happy', message: MASCOTTE.messaggi.bene(formatEuro(saldo)) }
-  if (saldo === 0) return { mood: 'neutral', message: MASCOTTE.messaggi.pari }
-  return { mood: 'sad', message: MASCOTTE.messaggi.rosso(formatEuro(Math.abs(saldo))) }
+  if (saldo > 500) return { mood: 'excited', message: MASCOT.messaggi.ottimo }
+  if (saldo > 0) return { mood: 'happy', message: MASCOT.messaggi.bene(formatEuro(saldo)) }
+  if (saldo === 0) return { mood: 'neutral', message: MASCOT.messaggi.pari }
+  return { mood: 'sad', message: MASCOT.messaggi.rosso(formatEuro(Math.abs(saldo))) }
 }
 
 function Dashboard() {

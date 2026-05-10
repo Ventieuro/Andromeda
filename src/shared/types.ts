@@ -66,6 +66,5 @@ export interface SavingsGoal {
 }
 
 
-// Le categorie sono ora in src/shared/labels.ts → CATEGORIE
-import { CATEGORIE } from './labels'
-export const CATEGORIES = CATEGORIE
+// Le categorie sono ora in src/shared/labels.ts → CATEGORIES
+export { CATEGORIES } from './labels'

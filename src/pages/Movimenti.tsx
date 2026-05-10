@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { ListFilter, Pencil, Trash2 } from 'lucide-react'
 import { loadTransactions, deleteTransaction, deleteTransactionsByGroupId, loadSettings, loadGoals, updateGoal } from '../shared/storage'
 import type { Transaction } from '../shared/types'
-import { MOVIMENTI, PRODOTTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '../shared/labels'
+import { TRANSACTIONS, PRODUCTS, CATEGORIES, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
 import AddTransactionForm from '../components/AddTransactionForm'
@@ -78,7 +78,7 @@ function Movimenti() {
   const allCategories = useMemo(() => {
     // Normalizza le categorie esistenti alla chiave canonica IT, poi traduci per la visualizzazione
     const fromTx = new Set(allTx.map((t) => normalizeCategoryKey(t.category, t.type)).filter(Boolean))
-    const fromLabels = [...CATEGORIE.entrata, ...CATEGORIE.uscita]
+    const fromLabels = [...CATEGORIES.entrata, ...CATEGORIES.uscita]
     return Array.from(new Set([...fromLabels, ...fromTx])).sort()
   }, [allTx.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -120,16 +120,16 @@ function Movimenti() {
 
   async function handleDelete(tx: Transaction) {
     const ok = await showConfirm({
-      message: MOVIMENTI.eliminaConferma(tx.description),
-      confirmLabel: MOVIMENTI.eliminaLabel,
+      message: TRANSACTIONS.eliminaConferma(tx.description),
+      confirmLabel: TRANSACTIONS.eliminaLabel,
       cancelLabel: 'Annulla',
     })
     if (!ok) return
     if (tx.recurringGroupId) {
       const deleteAll = await showConfirm({
-        message: MOVIMENTI.eliminaRicorrenteScope,
-        confirmLabel: MOVIMENTI.eliminaTutte,
-        cancelLabel: MOVIMENTI.eliminaSoloQuesta,
+        message: TRANSACTIONS.eliminaRicorrenteScope,
+        confirmLabel: TRANSACTIONS.eliminaTutte,
+        cancelLabel: TRANSACTIONS.eliminaSoloQuesta,
       })
       if (deleteAll) {
         if (tx.goalId) {
@@ -173,7 +173,7 @@ function Movimenti() {
     <div style={{ paddingBottom: '96px' }}>
 
       {/* ─── Titolo ─── */}
-      <PageHeader title={MOVIMENTI.titolo} />
+      <PageHeader title={TRANSACTIONS.titolo} />
 
       {/* ─── Tabs Movimenti / Prodotti ─── */}
       <div style={{ padding: '0 16px 12px' }}>
@@ -199,7 +199,7 @@ function Movimenti() {
               color: activeTab === 'movimenti' ? 'var(--fab-text)' : 'var(--text-secondary)',
             }}
           >
-            {PRODOTTI.tabMovimenti}
+            {PRODUCTS.tabMovimenti}
           </button>
           <button
             onClick={() => setActiveTab('prodotti')}
@@ -214,12 +214,12 @@ function Movimenti() {
               color: activeTab === 'prodotti' ? 'var(--fab-text)' : 'var(--text-secondary)',
             }}
           >
-            {PRODOTTI.tabProdotti}
+            {PRODUCTS.tabProdotti}
           </button>
         </div>
         {activeTab === 'prodotti' && (
           <p style={{ margin: '6px 0 0', fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center' }}>
-            {PRODOTTI.tabProdottiHint}
+            {PRODUCTS.tabProdottiHint}
           </p>
         )}
       </div>
@@ -257,7 +257,7 @@ function Movimenti() {
       <div style={{ padding: '0 16px 10px' }}>
         <input
           type="search"
-          placeholder={MOVIMENTI.cercaPlaceholder}
+          placeholder={TRANSACTIONS.cercaPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -278,7 +278,7 @@ function Movimenti() {
       <div style={{ padding: '0 16px 12px', display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
         <div style={{ flex: 1 }}>
           <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>
-            {MOVIMENTI.dalLabel}
+            {TRANSACTIONS.dalLabel}
           </label>
           <input
             type="date"
@@ -300,7 +300,7 @@ function Movimenti() {
         </div>
         <div style={{ flex: 1 }}>
           <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>
-            {MOVIMENTI.alLabel}
+            {TRANSACTIONS.alLabel}
           </label>
           <input
             type="date"
@@ -347,16 +347,16 @@ function Movimenti() {
       {/* ─── Filtri tipo + ricorrenti ─── */}
       <div style={{ padding: '0 16px 12px', display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none' }}>
         <button style={chipStyle(filterType === 'all')} onClick={() => setFilterType('all')}>
-          {MOVIMENTI.filtroTutti}
+          {TRANSACTIONS.filtroTutti}
         </button>
         <button style={chipStyle(filterType === 'entrata')} onClick={() => setFilterType('entrata')}>
-          {MOVIMENTI.filtroEntrate}
+          {TRANSACTIONS.filtroEntrate}
         </button>
         <button style={chipStyle(filterType === 'uscita')} onClick={() => setFilterType('uscita')}>
-          {MOVIMENTI.filtroUscite}
+          {TRANSACTIONS.filtroUscite}
         </button>
         <button style={chipStyle(filterRecurring)} onClick={() => setFilterRecurring((v) => !v)}>
-          🔁 {MOVIMENTI.filtroRicorrenti}
+          🔁 {TRANSACTIONS.filtroRicorrenti}
         </button>
       </div>
 
@@ -376,7 +376,7 @@ function Movimenti() {
             flexShrink: 0,
           }}
           aria-hidden="true"
-          title={MOVIMENTI.ordinaPer}
+          title={TRANSACTIONS.ordinaPer}
         >
           <ListFilter size={16} aria-hidden="true" />
         </div>
@@ -394,14 +394,14 @@ function Movimenti() {
             fontSize: '13px',
             outline: 'none',
           }}
-          aria-label={MOVIMENTI.ordinaPer}
+          aria-label={TRANSACTIONS.ordinaPer}
         >
-          <option value="insertion">{MOVIMENTI.ordinaInserimento}</option>
-          <option value="insertion-asc">{MOVIMENTI.ordinaInserimentoAntichi}</option>
-          <option value="date-desc">{MOVIMENTI.ordinaData}</option>
-          <option value="date-asc">{MOVIMENTI.ordinaDataAntichi}</option>
-          <option value="amount-asc">{MOVIMENTI.ordinaImporto}</option>
-          <option value="amount-desc">{MOVIMENTI.ordinaImportoDesc}</option>
+          <option value="insertion">{TRANSACTIONS.ordinaInserimento}</option>
+          <option value="insertion-asc">{TRANSACTIONS.ordinaInserimentoAntichi}</option>
+          <option value="date-desc">{TRANSACTIONS.ordinaData}</option>
+          <option value="date-asc">{TRANSACTIONS.ordinaDataAntichi}</option>
+          <option value="amount-asc">{TRANSACTIONS.ordinaImporto}</option>
+          <option value="amount-desc">{TRANSACTIONS.ordinaImportoDesc}</option>
         </select>
       </div>
 
@@ -439,7 +439,7 @@ function Movimenti() {
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
           }}>
-            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '14px' }}>{MOVIMENTI.nessuno}</p>
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '14px' }}>{TRANSACTIONS.nessuno}</p>
           </div>
         ) : (
           filtered.map((tx) => (
@@ -490,9 +490,9 @@ function Movimenti() {
                     fontWeight: 600,
                     flexShrink: 0,
                   }}
-                  aria-label={MOVIMENTI.dettaglioScontrino}
+                  aria-label={TRANSACTIONS.dettaglioScontrino}
                 >
-                  {MOVIMENTI.dettaglioScontrino}
+                  {TRANSACTIONS.dettaglioScontrino}
                 </button>
               )}
               <span style={{

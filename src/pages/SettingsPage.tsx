@@ -29,7 +29,7 @@ import {
   type AutoBackupSettings,
 } from '../shared/autoBackup'
 import {
-  SETTINGS, NOTIFICHE, AUTO_BACKUP, PIN, LAYOUT,
+  SETTINGS, NOTIFICATIONS, AUTO_BACKUP, PIN, LAYOUT,
   getLocale, setLocale, type Locale,
 } from '../shared/labels'
 import { FEATURES } from '../app/features'
@@ -182,9 +182,9 @@ export function NotificheSection() {
             <button
               onClick={() => {
                 if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                  navigator.serviceWorker.ready.then((reg) => reg.showNotification(LAYOUT.appName, { body: NOTIFICHE.messaggioPromemoria, icon: '/Andromeda/pwa-192x192.svg' }))
+                  navigator.serviceWorker.ready.then((reg) => reg.showNotification(LAYOUT.appName, { body: NOTIFICATIONS.messaggioPromemoria, icon: '/Andromeda/pwa-192x192.svg' }))
                 } else if ('Notification' in window && Notification.permission === 'granted') {
-                  new Notification(LAYOUT.appName, { body: NOTIFICHE.messaggioPromemoria })
+                  new Notification(LAYOUT.appName, { body: NOTIFICATIONS.messaggioPromemoria })
                 }
               }}
               className="w-full py-2 rounded-xl text-xs font-medium transition active:scale-95"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { SavingsGoal } from '../shared/types'
 import { loadGoals, addGoal, updateGoal, deleteGoal } from '../shared/storage'
-import { MISSIONI } from '../shared/labels'
+import { MISSIONS } from '../shared/labels'
 import { useDialog } from '../shared/DialogContext'
 import { Button, Input, SectionHeader, FAB } from '../components/ui'
 import MissionCard from '../components/MissionCard'
@@ -101,13 +101,13 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
         }}
       >
         <h2 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
-          {initial ? MISSIONI.modifica : MISSIONI.aggiungi}
+          {initial ? MISSIONS.modifica : MISSIONS.aggiungi}
         </h2>
 
         {/* Emoji picker */}
         <div style={{ marginBottom: '16px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            {MISSIONI.emoji}
+            {MISSIONS.emoji}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {EMOJIS.map((e) => (
@@ -131,19 +131,19 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
         {/* Nome */}
         <div style={{ marginBottom: '16px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            {MISSIONI.nome}
+            {MISSIONS.nome}
           </div>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder={MISSIONI.nome}
+            placeholder={MISSIONS.nome}
           />
         </div>
 
         {/* Già risparmiato */}
         <div style={{ marginBottom: '16px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            {MISSIONI.giaRisparmiato}
+            {MISSIONS.giaRisparmiato}
           </div>
           <Input
             type="number"
@@ -156,7 +156,7 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
         {/* Modalità */}
         <div style={{ marginBottom: '16px' }}>
           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            {MISSIONI.modalita}
+            {MISSIONS.modalita}
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <Button
@@ -164,18 +164,18 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
               selected={mode === 'mensile'}
               onClick={() => setMode('mensile')}
             >
-              💰 {MISSIONI.modMensile}
+              💰 {MISSIONS.modMensile}
             </Button>
             <Button
               variant="secondary"
               selected={mode === 'data'}
               onClick={() => setMode('data')}
             >
-              📅 {MISSIONI.modData}
+              📅 {MISSIONS.modData}
             </Button>
           </div>
           <p style={{ margin: '8px 0 0', fontSize: '12px', lineHeight: '1.5', color: 'var(--text-muted)' }}>
-            {mode === 'mensile' ? MISSIONI.hintMensile : MISSIONI.hintData}
+            {mode === 'mensile' ? MISSIONS.hintMensile : MISSIONS.hintData}
           </p>
         </div>
 
@@ -184,7 +184,7 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
           <>
             <div style={{ marginBottom: '16px' }}>
               <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {MISSIONI.importoMensile}
+                {MISSIONS.importoMensile}
               </div>
               <Input
                 type="number"
@@ -195,7 +195,7 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
             </div>
             <div style={{ marginBottom: '20px' }}>
               <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {MISSIONI.importoTotale} {MISSIONI.opzionale}
+                {MISSIONS.importoTotale} {MISSIONS.opzionale}
               </div>
               <Input
                 type="number"
@@ -212,7 +212,7 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
           <>
             <div style={{ marginBottom: '16px' }}>
               <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {MISSIONI.importoTotale}
+                {MISSIONS.importoTotale}
               </div>
               <Input
                 type="number"
@@ -223,7 +223,7 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
             </div>
             <div style={{ marginBottom: '16px' }}>
               <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {MISSIONI.dataObiet}
+                {MISSIONS.dataObiet}
               </div>
               <Input
                 type="date"
@@ -239,7 +239,7 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
                 border: '1px solid var(--accent)',
               }}>
                 <span style={{ color: 'var(--accent)', fontWeight: 600, fontSize: '14px' }}>
-                  {MISSIONI.mensileCalc(formatEuro(previewMonthly))} × {months} {MISSIONI.mesiPlurali(months)}
+                  {MISSIONS.mensileCalc(formatEuro(previewMonthly))} × {months} {MISSIONS.mesiPlurali(months)}
                 </span>
               </div>
             )}
@@ -248,8 +248,8 @@ function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
 
         {/* Bottoni */}
         <div style={{ display: 'flex', gap: '10px' }}>
-          <Button variant="secondary" fullWidth onClick={onCancel}>{MISSIONI.annulla}</Button>
-          <Button variant="primary" fullWidth onClick={handleSave} disabled={!isValid}>{MISSIONI.salva}</Button>
+          <Button variant="secondary" fullWidth onClick={onCancel}>{MISSIONS.annulla}</Button>
+          <Button variant="primary" fullWidth onClick={handleSave} disabled={!isValid}>{MISSIONS.salva}</Button>
         </div>
       </div>
     </div>
@@ -285,9 +285,9 @@ function Missions() {
 
   async function handleDelete(goal: SavingsGoal) {
     const ok = await showConfirm({
-      message: MISSIONI.eliminaConferma(goal.name),
-      confirmLabel: MISSIONI.elimina,
-      cancelLabel: MISSIONI.annulla,
+      message: MISSIONS.eliminaConferma(goal.name),
+      confirmLabel: MISSIONS.elimina,
+      cancelLabel: MISSIONS.annulla,
     })
     if (ok) {
       deleteGoal(goal.id)
@@ -300,11 +300,11 @@ function Missions() {
       {/* Header */}
       <div style={{ padding: '20px 16px 8px' }}>
         <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary)' }}>
-          🎯 {MISSIONI.titolo}
+          🎯 {MISSIONS.titolo}
         </h1>
         {goals.length === 0 && (
           <p style={{ marginTop: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>
-            {MISSIONI.suggerimento}
+            {MISSIONS.suggerimento}
           </p>
         )}
       </div>
@@ -313,11 +313,11 @@ function Missions() {
         {goals.length === 0 ? (
           <div style={{ textAlign: 'center', paddingTop: '40px' }}>
             <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>🎯</span>
-            <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>{MISSIONI.nessunObiettivo}</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>{MISSIONS.nessunObiettivo}</p>
           </div>
         ) : (
           <>
-            <SectionHeader>{MISSIONI.titolo}</SectionHeader>
+            <SectionHeader>{MISSIONS.titolo}</SectionHeader>
             {[...goals].reverse().map((g) => (
               <MissionCard
                 key={g.id}
@@ -338,7 +338,7 @@ function Missions() {
       {/* FAB */}
       <FAB
         onClick={() => { setEditingGoal(null); setShowForm(true) }}
-        ariaLabel={MISSIONI.aggiungi}
+        ariaLabel={MISSIONS.aggiungi}
         style={{ bottom: '96px', backgroundColor: '#00D4FF', color: '#080b18' }}
       >
         +

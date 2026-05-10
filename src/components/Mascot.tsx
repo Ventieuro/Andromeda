@@ -1,4 +1,4 @@
-import { MASCOTTE as MASCOTTE_LABELS } from '../shared/labels'
+import { MASCOT as MASCOTTE_LABELS } from '../shared/labels'
 
 interface MascotProps {
   mood: 'happy' | 'sad' | 'neutral' | 'excited'

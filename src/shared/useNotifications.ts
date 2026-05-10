@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { loadNotificationSettings } from './storage'
-import { NOTIFICHE } from './labels'
+import { NOTIFICATIONS } from './labels'
 
 const LAST_NOTIF_KEY = 'andromeda-last-notification'
 
@@ -43,7 +43,7 @@ function tryNotify(): boolean {
   // Fire if we're at or past the target time (catch-up for missed notifications)
   if (nowMinutes >= targetMinutes) {
     markSentToday()
-    showNotification(NOTIFICHE.messaggioPromemoria)
+    showNotification(NOTIFICATIONS.messaggioPromemoria)
     return true
   }
   return false

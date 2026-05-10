@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
-import { GESTIONE_CATEGORIE, CATEGORIE } from '../shared/labels'
+import { MANAGE_CATEGORIES, CATEGORIES } from '../shared/labels'
 import { PageHeader } from '../components/ui'
 import { loadCustomCategories, addCustomCategory, deleteCustomCategory, renameCustomCategory, saveCustomIcon, deleteCustomIcon } from '../shared/storage'
 import { getCategoryIcon } from '../shared/categoryIcons'
@@ -42,7 +42,7 @@ function Categories() {
 
   async function handleDelete(type: 'entrata' | 'uscita', name: string) {
     const ok = await showConfirm({
-      message: GESTIONE_CATEGORIE.confermaElimina(name),
+      message: MANAGE_CATEGORIES.confermaElimina(name),
       confirmLabel: 'Elimina',
       cancelLabel: 'Annulla',
     })
@@ -71,7 +71,7 @@ function Categories() {
 
   function renderCustomCats(type: 'entrata' | 'uscita', cats: string[]) {
     if (cats.length === 0) {
-      return <p className="text-xs italic" style={{ color: 'var(--text-muted)' }}>{GESTIONE_CATEGORIE.nessuna}</p>
+      return <p className="text-xs italic" style={{ color: 'var(--text-muted)' }}>{MANAGE_CATEGORIES.nessuna}</p>
     }
     return (
       <div className="space-y-2">
@@ -98,14 +98,14 @@ function Categories() {
                   className="text-xs font-bold px-2 py-1 rounded-lg transition"
                   style={{ color: 'var(--accent)' }}
                 >
-                  {GESTIONE_CATEGORIE.salva}
+                  {MANAGE_CATEGORIES.salva}
                 </button>
                 <button
                   onClick={() => { setEditingCat(null); setEditName('') }}
                   className="text-xs px-2 py-1 rounded-lg transition"
                   style={{ color: 'var(--text-muted)' }}
                 >
-                  {GESTIONE_CATEGORIE.annulla}
+                  {MANAGE_CATEGORIES.annulla}
                 </button>
               </>
             ) : (
@@ -117,7 +117,7 @@ function Categories() {
                   className="text-xs px-2 py-1 rounded-lg transition hover:opacity-80 flex items-center gap-1"
                   style={{ color: 'var(--text-muted)' }}
                 >
-                  <Pencil size={13} /> {GESTIONE_CATEGORIE.rinomina}
+                  <Pencil size={13} /> {MANAGE_CATEGORIES.rinomina}
                 </button>
                 <button
                   onClick={() => handleDelete(type, cat)}
@@ -138,12 +138,12 @@ function Categories() {
     <div className="space-y-6 pb-10">
 
       {/* Header */}
-      <PageHeader title={GESTIONE_CATEGORIE.titolo} />
+      <PageHeader title={MANAGE_CATEGORIES.titolo} />
 
       {/* ─── Create Form ─── */}
       <div className="rounded-2xl p-4" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>
         <h2 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-          {GESTIONE_CATEGORIE.nuovaCategoria}
+          {MANAGE_CATEGORIES.nuovaCategoria}
         </h2>
 
         {/* Type selector */}
@@ -160,7 +160,7 @@ function Categories() {
               '--tw-ring-color': 'var(--tx-income-text)',
             } as React.CSSProperties}
           >
-            ➕ {GESTIONE_CATEGORIE.categorieEntrata}
+            ➕ {MANAGE_CATEGORIES.categorieEntrata}
           </button>
           <button
             type="button"
@@ -174,7 +174,7 @@ function Categories() {
               '--tw-ring-color': 'var(--tx-expense-text)',
             } as React.CSSProperties}
           >
-            ➖ {GESTIONE_CATEGORIE.categorieUscita}
+            ➖ {MANAGE_CATEGORIES.categorieUscita}
           </button>
         </div>
 
@@ -185,13 +185,13 @@ function Categories() {
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             className="w-10 h-10 rounded-xl flex items-center justify-center text-lg transition shrink-0"
             style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
-            title={GESTIONE_CATEGORIE.scegliIcona}
+            title={MANAGE_CATEGORIES.scegliIcona}
           >
             {newIcon}
           </button>
           <input
             type="text"
-            placeholder={GESTIONE_CATEGORIE.placeholderNome}
+            placeholder={MANAGE_CATEGORIES.placeholderNome}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
@@ -204,7 +204,7 @@ function Categories() {
             className="px-4 py-2 rounded-xl text-sm font-bold text-white transition active:scale-95 disabled:opacity-40 shrink-0"
             style={{ backgroundColor: 'var(--accent)' }}
           >
-            {GESTIONE_CATEGORIE.aggiungi}
+            {MANAGE_CATEGORIES.aggiungi}
           </button>
         </div>
 
@@ -231,12 +231,12 @@ function Categories() {
       {/* ─── Categorie Entrata ─── */}
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--text-muted)' }}>
-          {GESTIONE_CATEGORIE.categorieEntrata}
+          {MANAGE_CATEGORIES.categorieEntrata}
         </h2>
 
-        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{GESTIONE_CATEGORIE.predefinite}</p>
+        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{MANAGE_CATEGORIES.predefinite}</p>
         <div className="flex flex-wrap gap-2 mb-4">
-          {CATEGORIE.entrata.map((cat) => (
+          {CATEGORIES.entrata.map((cat) => (
             <span
               key={cat}
               className="px-3 py-1.5 rounded-full text-xs font-medium"
@@ -247,19 +247,19 @@ function Categories() {
           ))}
         </div>
 
-        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{GESTIONE_CATEGORIE.personalizzate}</p>
+        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{MANAGE_CATEGORIES.personalizzate}</p>
         {renderCustomCats('entrata', custom.entrata)}
       </section>
 
       {/* ─── Categorie Uscita ─── */}
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--text-muted)' }}>
-          {GESTIONE_CATEGORIE.categorieUscita}
+          {MANAGE_CATEGORIES.categorieUscita}
         </h2>
 
-        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{GESTIONE_CATEGORIE.predefinite}</p>
+        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{MANAGE_CATEGORIES.predefinite}</p>
         <div className="flex flex-wrap gap-2 mb-4">
-          {CATEGORIE.uscita.map((cat) => (
+          {CATEGORIES.uscita.map((cat) => (
             <span
               key={cat}
               className="px-3 py-1.5 rounded-full text-xs font-medium"
@@ -270,7 +270,7 @@ function Categories() {
           ))}
         </div>
 
-        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{GESTIONE_CATEGORIE.personalizzate}</p>
+        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{MANAGE_CATEGORIES.personalizzate}</p>
         {renderCustomCats('uscita', custom.uscita)}
       </section>
     </div>
