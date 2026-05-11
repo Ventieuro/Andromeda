@@ -87,6 +87,43 @@ function RarityBadge({ rarity }: { rarity: PlanetRarity }) {
   )
 }
 
+// ─── J1407b: MiniPlanet con anelli ──────────────────────
+function RingedMiniPlanet({ color, size }: { color: string; size: number }) {
+  const ringW = size * 1.8
+  const cx = ringW / 2
+  return (
+    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+      <MiniPlanet color={color} size={size} />
+      <svg
+        width={ringW}
+        height={ringW}
+        viewBox={`0 0 ${ringW} ${ringW}`}
+        style={{
+          position: 'absolute',
+          top: -(size * 0.4),
+          left: -(size * 0.4),
+          pointerEvents: 'none',
+          animation: 'j1407b-ring-spin 35s linear infinite',
+          transformOrigin: 'center',
+        }}
+      >
+        <ellipse cx={cx} cy={cx} rx={size * 0.82} ry={size * 0.20} fill="none" stroke="#f59e0b" strokeWidth={size * 0.055} opacity="0.55" />
+        <ellipse cx={cx} cy={cx} rx={size * 0.64} ry={size * 0.16} fill="none" stroke="#f59e0b" strokeWidth={size * 0.030} opacity="0.32" />
+      </svg>
+    </div>
+  )
+}
+
+function PlanetVisual({ color, size, alias }: { color: string; size: number; alias: string }) {
+  if (alias === 'J1407b') return <RingedMiniPlanet color={color} size={size} />
+  if (alias === 'PSR B1257+12 b') return (
+    <div style={{ animation: 'pulsar-beat 375ms steps(1, end) infinite', display: 'flex' }}>
+      <MiniPlanet color={color} size={size} />
+    </div>
+  )
+  return <MiniPlanet color={color} size={size} />
+}
+
 function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed = true, onReveal, instrumentIcon, instrumentLabel, isPlaying, onToggleInstrument }: PlanetCardProps) {
   const [open, setOpen] = useState(false)
   const [isFlipping, setIsFlipping] = useState(false)
@@ -166,10 +203,13 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setOpen(false)}>
             <div
               className="flex flex-col items-center gap-4 rounded-2xl p-6 w-full max-w-xs"
-              style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: `0 0 32px ${rarityColor}44` }}
+              style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: `0 0 32px ${rarityColor}44`, position: 'relative', overflow: 'hidden' }}
               onClick={(e) => e.stopPropagation()}
             >
-              <MiniPlanet color={color} size={80} />
+              {alias === 'Krypton' && (
+                <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', animation: 'krypton-flash 1.4s ease-out forwards', pointerEvents: 'none', zIndex: 10 }} />
+              )}
+              <PlanetVisual color={color} size={80} alias={alias} />
               <p className="text-2xl font-bold text-center" style={{ color: 'var(--text-primary)' }}>{alias}</p>
               {rarity && <RarityBadge rarity={rarity} />}
               {source && (
@@ -197,7 +237,7 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
         className="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 w-full transition-all active:scale-95"
         style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow, cursor: 'pointer', height: '100%', justifyContent: 'center', position: 'relative' }}
       >
-        <MiniPlanet color={color} size={40} />
+        <PlanetVisual color={color} size={40} alias={alias} />
         <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>{alias}</p>
         {source && <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{source}</p>}
         {rarity && <RarityBadge rarity={rarity} />}
@@ -236,10 +276,13 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setOpen(false)}>
           <div
             className="flex flex-col items-center gap-4 rounded-2xl p-6 w-full max-w-xs"
-            style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: `0 0 32px ${rarityColor}44` }}
+            style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: `0 0 32px ${rarityColor}44`, position: 'relative', overflow: 'hidden' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <MiniPlanet color={color} size={80} />
+            {alias === 'Krypton' && (
+              <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', animation: 'krypton-flash 1.4s ease-out forwards', pointerEvents: 'none', zIndex: 10 }} />
+            )}
+            <PlanetVisual color={color} size={80} alias={alias} />
             <p className="text-2xl font-bold text-center" style={{ color: 'var(--text-primary)' }}>{alias}</p>
             {rarity && <RarityBadge rarity={rarity} />}
             {source && (

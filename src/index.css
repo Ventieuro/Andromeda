@@ -97,6 +97,22 @@
   50%       { box-shadow: 0 0 8px #38bdf8, 0 0 18px #38bdf888; transform: scale(1.15); }
 }
 
+@keyframes krypton-flash {
+  0%   { opacity: 0;    background: #ffffff; }
+  6%   { opacity: 0.92; background: #ffffff; }
+  38%  { opacity: 0.45; background: #dc2626; }
+  100% { opacity: 0;    background: #450a0a; }
+}
+
+@keyframes j1407b-ring-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes pulsar-beat {
+  0%,  5%  { transform: scale(1.2);  filter: brightness(2.2) drop-shadow(0 0 7px #c7d2fe); }
+  10%, 100% { transform: scale(1);   filter: brightness(1); }
+}
 .dock-plus-core {
   position: relative;
   z-index: 2;
