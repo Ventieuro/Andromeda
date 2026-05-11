@@ -6,6 +6,17 @@
 
 ## [Sessione corrente]
 
+### TASK-150 (bugfix): PlanetsCatalog — card altezza uniforme
+**File modificati:** `src/pages/PlanetsCatalog.tsx`, `src/components/PlanetCard.tsx`, `package.json`
+
+- ✅ Causa: card usavano `minHeight: 110px` → crescevano col contenuto (source lungo, testo a 2 righe)
+- ✅ Fix: `gridAutoRows: '130px'` sulla griglia → tutte le celle in ogni riga hanno altezza identica
+- ✅ Card (`height: '100%'` su tutti e 3 gli stati: locked, flip, revealed) si adattano alla cella
+- ✅ Source text troncato a 1 riga (`overflow: hidden`, `textOverflow: ellipsis`, `whiteSpace: nowrap`)
+- ✅ Versione bump → `0.12.2`
+
+---
+
 ### TASK-149 (bugfix): CometChart — crash "Totale accumulato" (infinite re-render)
 **File modificati:** `src/pages/Dashboard.tsx`, `package.json`
 

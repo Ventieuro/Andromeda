@@ -41,7 +41,7 @@ function PlanetsCatalog() {
       {/* ── Planet grid (3 columns) ── */}
       <div
         className="px-3"
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', gridAutoRows: '130px' }}
       >
         {allPlanets.map((planet) => {
           const isDiscovered = discoveredSet.has(planet.alias)

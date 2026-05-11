@@ -97,7 +97,7 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
     return (
       <div
         className="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 w-full"
-        style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', minHeight: '110px', justifyContent: 'center' }}
+        style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', height: '100%', justifyContent: 'center' }}
       >
         <div
           className="flex items-center justify-center rounded-full"
@@ -130,8 +130,8 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
 
     return (
       <>
-        <div className="planet-card-scene" style={{ minHeight: '110px', cursor: 'pointer' }} onClick={handleClick}>
-          <div className={`planet-card-inner ${isFlipping || flipDone ? 'flipped' : ''} ${rarity ? RARITY_FLIP_CLASS[rarity] : ''}`} style={{ minHeight: '110px' }}>
+        <div className="planet-card-scene" style={{ height: '100%', cursor: 'pointer' }} onClick={handleClick}>
+          <div className={`planet-card-inner ${isFlipping || flipDone ? 'flipped' : ''} ${rarity ? RARITY_FLIP_CLASS[rarity] : ''}`} style={{ height: '100%' }}>
             {/* Front: mystery */}
             <div
               className={`planet-card-face ${!isFlipping && !flipDone && rarity ? RARITY_UNREVEALED_CLASS[rarity] : ''}`}
@@ -150,7 +150,7 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
             <div className={`planet-card-face planet-card-back ${flipDone && rarity ? RARITY_BURST_CLASS[rarity] : ''}`} style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow, ['--rarity-color' as string]: rarityColor }}>
               <MiniPlanet color={color} size={40} />
               <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>{alias}</p>
-              {source && <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)' }}>{source}</p>}
+              {source && <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{source}</p>}
               {rarity && <RarityBadge rarity={rarity} />}
             </div>
           </div>
@@ -187,11 +187,11 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
       <button
         onClick={() => setOpen(true)}
         className="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 w-full transition-all active:scale-95"
-        style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow, cursor: 'pointer', minHeight: '110px', justifyContent: 'center' }}
+        style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow, cursor: 'pointer', height: '100%', justifyContent: 'center' }}
       >
         <MiniPlanet color={color} size={40} />
         <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>{alias}</p>
-        {source && <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)' }}>{source}</p>}
+        {source && <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{source}</p>}
         {rarity && <RarityBadge rarity={rarity} />}
       </button>
 
