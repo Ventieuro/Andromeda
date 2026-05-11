@@ -6,6 +6,16 @@
 
 ## [Sessione corrente]
 
+### TASK-149 (bugfix): CometChart — crash "Totale accumulato" (infinite re-render)
+**File modificati:** `src/pages/Dashboard.tsx`, `package.json`
+
+- ✅ Causa: `loadTransactions()` chiamato ad ogni render di Dashboard → nuova reference array → `monthlyData` useMemo si ricalcolava → `onTotalsChange` effect si rilanciava → `setCometTotals` → loop infinito React ("Maximum update depth exceeded")
+- ✅ Fix: `allTx` ora è `useMemo(() => loadTransactions(), [refreshKey])` — reference stabile tra render non causati da cambio dati
+- ✅ Rimosso workaround `void refreshKey` (sostituito da dep esplicita nel useMemo)
+- ✅ Versione bump → `0.12.1`
+
+---
+
 ### TASK-148 (feature): Planet flip-reveal system — sostituisce popup animato
 **File modificati:** `src/shared/storage.ts`, `src/components/PlanetCard.tsx`, `src/components/SpaceDonutChart.tsx`, `src/pages/PlanetsCatalog.tsx`, `src/pages/Dashboard.tsx`, `src/index.css`, `package.json`
 **File eliminati:** `src/components/PlanetUnlockPopup.tsx`

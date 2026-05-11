@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Pencil, Trash2 } from 'lucide-react'
 import Mascot from '../components/Mascot'
@@ -140,9 +140,8 @@ function Dashboard() {
     assignPlanetsForPeriod(start, start.getMonth(), start.getFullYear())
   }
 
-  const allTx = loadTransactions()
+  const allTx = useMemo(() => loadTransactions(), [refreshKey])
   const goals = loadGoals()
-  void refreshKey // trigger re-render on data change
   const periodTx = getTransactionsInPeriod(allTx, start, end)
 
   const entrate = periodTx.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
