@@ -20,11 +20,14 @@ function buildPlanetSets() {
   return { allPlanets, discoveredSet, revealedSet, discoveredCount }
 }
 
+const HINT_KEY = 'andromeda-pianeti-hint-dismissed'
+
 function PlanetsCatalog() {
   const [data, setData] = useState(() => buildPlanetSets())
   const audioMapRef = useRef<Map<string, HTMLAudioElement>>(new Map())
   const initializedRef = useRef(false)
   const [playing, setPlaying] = useState<Set<string>>(new Set())
+  const [showHint, setShowHint] = useState(() => localStorage.getItem(HINT_KEY) !== '1')
 
   // Ferma tutto al dismount
   useEffect(() => {
@@ -36,6 +39,11 @@ function PlanetsCatalog() {
   const handleReveal = useCallback(() => {
     setData(buildPlanetSets())
   }, [])
+
+  function dismissHint() {
+    localStorage.setItem(HINT_KEY, '1')
+    setShowHint(false)
+  }
 
   // Al primo toggle: avvia TUTTI i track insieme (muted) per tenerli in sync.
   // I successivi toggle sono solo mute/unmute.
@@ -86,6 +94,29 @@ function PlanetsCatalog() {
           {SETTINGS.pianetiSbloccatiCount(discoveredCount, allPlanets.length)}
         </p>
       </div>
+
+      {/* ── Hint banner ── */}
+      {showHint && (
+        <div
+          className="mx-4 mb-3 rounded-2xl px-4 py-3 flex items-start gap-3"
+          style={{ background: 'var(--accent-light)', border: '1px solid var(--accent)', opacity: 0.95 }}
+        >
+          <span style={{ fontSize: 22, flexShrink: 0, lineHeight: 1.4 }}>🪐</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--accent)' }}>
+              {SETTINGS.pianetiHintTitolo}
+            </p>
+            <p style={{ margin: '3px 0 0', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              {SETTINGS.pianetiHintBody}
+            </p>
+          </div>
+          <button
+            onClick={dismissHint}
+            aria-label="Chiudi suggerimento"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 16, lineHeight: 1, padding: '2px 0 0', flexShrink: 0 }}
+          >✕</button>
+        </div>
+      )}
 
       {/* ── Planet grid (3 columns) ── */}
       <div

@@ -6,6 +6,24 @@
 
 ## [Sessione corrente]
 
+### TASK-153 (ux): Miglioramenti onboarding utente nuovo
+**File modificati:** `src/pages/PlanetsCatalog.tsx`, `src/components/PinLock.tsx`, `src/pages/Dashboard.tsx`, `src/index.css`, `src/shared/labels.ts`
+
+- ✅ **Archivio Pianeti**: banner dismissibile "Come si sbloccano?" con spiegazione meccanica (persistito in localStorage)
+- ✅ **Grafico vuoto**: testo cambiato da "Nessuna uscita" a "Aggiungi la prima spesa per vedere il grafico"
+- ✅ **PIN setup**: aggiunto sottotitolo "I tuoi dati finanziari restano privati sul dispositivo"
+- ✅ **Dashboard empty state**: hint FAB più preciso ("Usa il tasto + in basso") + freccia animata bounce-down
+- ✅ Versione bump → `0.13.2`
+
+### TASK-152 (feature): Effetti visivi speciali — pianeti legendary
+**File modificati:** `src/components/PlanetCard.tsx`, `src/index.css`
+
+- ✅ **J1407b**: componente `RingedMiniPlanet` — 2 ellissi SVG dorate che ruotano 35s loop intorno al pianeta (card + detail modal)
+- ✅ **Krypton**: al click sul detail modal → overlay `krypton-flash` (1.4s): bianco → rosso scuro, `forwards` one-shot
+- ✅ **PSR B1257+12 b**: animazione `pulsar-beat` — flash secco a 160 BPM (`steps(1, end)`, 375ms) su scala + brightness
+- ✅ Componente `PlanetVisual` che seleziona rendering corretto per alias
+- ✅ Versione bump → `0.13.1`
+
 ### TASK-151 (feature): OW Traveler Theme — strumenti musicali sui pianeti
 **File creati/modificati:** `src/shared/owInstruments.ts` (nuovo), `src/components/PlanetCard.tsx`, `src/pages/PlanetsCatalog.tsx`, `src/index.css`, `src/shared/labels.ts`, `package.json`
 

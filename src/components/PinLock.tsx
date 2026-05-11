@@ -212,11 +212,19 @@ function PinLock({ onUnlocked }: PinLockProps) {
         </h1>
 
         {/* Istruzione */}
-        <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
+        <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>
           {isSetup
             ? (step === 'enter' ? PIN.primoAccesso : PIN.confermaPin)
             : (showPin ? PIN.inserisciPin : '')}
         </p>
+
+        {/* Sottotitolo privacy — solo al primo setup */}
+        {isSetup && step === 'enter' && (
+          <p className="text-xs mb-5" style={{ color: 'var(--text-muted)' }}>
+            {PIN.primoAccessoSottotitolo}
+          </p>
+        )}
+        {!(isSetup && step === 'enter') && <div className="mb-5" />}
 
         {/* ─── Biometric button (unlock mode, credential registered) ─── */}
         {!isSetup && biometricAvailable && !showPin && (

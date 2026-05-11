@@ -92,6 +92,11 @@
   }
 }
 
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50%       { transform: translateY(6px); opacity: 0.6; }
+}
+
 @keyframes instrument-playing {
   0%, 100% { box-shadow: 0 0 4px #38bdf8, 0 0 8px #38bdf855; transform: scale(1); }
   50%       { box-shadow: 0 0 8px #38bdf8, 0 0 18px #38bdf888; transform: scale(1.15); }

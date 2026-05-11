@@ -403,11 +403,15 @@ function Dashboard() {
         </div>
 
         {sortedTx.length === 0 ? (
-          <div style={{ padding: '32px 16px', textAlign: 'center', borderRadius: '18px', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+          <div style={{ padding: '24px 16px 32px', textAlign: 'center', borderRadius: '18px', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
             <p style={{ margin: 0, fontSize: '32px' }}>{DASHBOARD.nessunoMovimentoEmoji}</p>
-            <p style={{ margin: '8px 0 0', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+            <p style={{ margin: '8px 0 16px', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
               {DASHBOARD.nessunoMovimento}<br />{DASHBOARD.nessunoMovimentoSuggerimento}
             </p>
+            {/* Freccia verso il FAB */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, animation: 'bounce-down 1.4s ease-in-out infinite' }}>
+              <span style={{ fontSize: 18, color: 'var(--accent)' }}>↓</span>
+            </div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

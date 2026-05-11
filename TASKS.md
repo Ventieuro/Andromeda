@@ -23,6 +23,14 @@
 
 ## Completati (sessione corrente)
 
+### ✅ TASK-153 — Miglioramenti onboarding utente nuovo
+- Completato 12/05/2026
+- Banner pianeti, testi empty state, PIN sottotitolo, freccia FAB
+
+### ✅ TASK-152 — Effetti visivi speciali pianeti legendary
+- Completato 12/05/2026
+- J1407b: anelli SVG rotanti; Krypton: flash modale; PSR B1257+12 b: pulsar beat 160 BPM
+
 ### ✅ TASK-151 — OW Traveler Theme: strumenti musicali sui pianeti
 - Completato 12/05/2026
 - 6 pianeti OW → strumenti in sync, mixing, quantum moon mythic
