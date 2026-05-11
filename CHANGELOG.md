@@ -6,6 +6,17 @@
 
 ## [Sessione corrente]
 
+### TASK-151 (feature): OW Traveler Theme — strumenti musicali sui pianeti
+**File creati/modificati:** `src/shared/owInstruments.ts` (nuovo), `src/components/PlanetCard.tsx`, `src/pages/PlanetsCatalog.tsx`, `src/index.css`, `src/shared/labels.ts`, `package.json`
+
+- ✅ 6 pianeti Outer Wilds mappati a strumenti audio: Timber Hearth (fischio), Ember Twin (percussioni), Giant's Deep (flauto), Brittle Hollow (banjo), Dark Bramble (fisarmonica), Quantum Moon (pianoforte)
+- ✅ Quantum Moon aggiunto come pianeta **mythic**; Dark Bramble promosso a **legendary**
+- ✅ Bottone strumento (~22px, posizione assoluta bottom-right) visibile solo su pianeti OW rivelati
+- ✅ Tutti i 6 track partono sincronizzati in background (muted) al primo click — toggle = solo mute/unmute per mixing perfetto
+- ✅ Quando tutti disattivati: audio si ferma e resetta a t=0
+- ✅ Cleanup audio al dismount della pagina
+- ✅ Animazione `instrument-playing` (cyan glow + pulse) su bottone attivo
+
 ### TASK-150 (bugfix): PlanetsCatalog — card altezza uniforme
 **File modificati:** `src/pages/PlanetsCatalog.tsx`, `src/components/PlanetCard.tsx`, `package.json`
 

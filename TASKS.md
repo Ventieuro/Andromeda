@@ -21,6 +21,12 @@
   in questo file PRIMA di essere eseguita, e spostata in "Completati" dopo.
 -->
 
+## Completati (sessione corrente)
+
+### ✅ TASK-151 — OW Traveler Theme: strumenti musicali sui pianeti
+- Completato 12/05/2026
+- 6 pianeti OW → strumenti in sync, mixing, quantum moon mythic
+
 ## Da Fare
 
 <!-- TASK-083 completato: vedi sezione Completati -->
