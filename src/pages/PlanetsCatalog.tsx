@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { PageHeader } from '../components/ui'
 import { getAllPlanets, SETTINGS } from '../shared/labels'
 import type { PlanetRarity } from '../shared/labels'
 import { loadPlanetLog } from '../shared/storage'
 import PlanetCard from '../components/PlanetCard'
+import { OW_INSTRUMENTS } from '../shared/owInstruments'
 
 const RARITY_ORDER: Record<PlanetRarity, number> = {
   common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4, mythic: 5,
@@ -21,10 +22,58 @@ function buildPlanetSets() {
 
 function PlanetsCatalog() {
   const [data, setData] = useState(() => buildPlanetSets())
+  const audioMapRef = useRef<Map<string, HTMLAudioElement>>(new Map())
+  const initializedRef = useRef(false)
+  const [playing, setPlaying] = useState<Set<string>>(new Set())
+
+  // Ferma tutto al dismount
+  useEffect(() => {
+    return () => {
+      audioMapRef.current.forEach((audio) => { audio.pause(); audio.currentTime = 0 })
+    }
+  }, [])
 
   const handleReveal = useCallback(() => {
     setData(buildPlanetSets())
   }, [])
+
+  // Al primo toggle: avvia TUTTI i track insieme (muted) per tenerli in sync.
+  // I successivi toggle sono solo mute/unmute.
+  function toggleInstrument(alias: string) {
+    if (!OW_INSTRUMENTS[alias]) return
+
+    if (!initializedRef.current) {
+      initializedRef.current = true
+      // Crea e avvia tutti i track contemporaneamente, tutti mutati
+      Object.entries(OW_INSTRUMENTS).forEach(([key, instr]) => {
+        const audio = new Audio(instr.src)
+        audio.loop = true
+        audio.muted = true
+        audioMapRef.current.set(key, audio)
+        audio.play().catch(() => {})
+      })
+    }
+
+    setPlaying((prev) => {
+      const next = new Set(prev)
+      const audio = audioMapRef.current.get(alias)
+      if (!audio) return prev
+      if (next.has(alias)) {
+        audio.muted = true
+        next.delete(alias)
+      } else {
+        audio.muted = false
+        next.add(alias)
+      }
+      // Se non rimane nessuno attivo: ferma tutto e resetta
+      if (next.size === 0) {
+        audioMapRef.current.forEach((a) => { a.pause(); a.currentTime = 0 })
+        audioMapRef.current.clear()
+        initializedRef.current = false
+      }
+      return next
+    })
+  }
 
   const { allPlanets, discoveredSet, revealedSet, discoveredCount } = data
 
@@ -46,6 +95,8 @@ function PlanetsCatalog() {
         {allPlanets.map((planet) => {
           const isDiscovered = discoveredSet.has(planet.alias)
           const isRevealed = revealedSet.has(planet.alias)
+          const owInstr = OW_INSTRUMENTS[planet.alias]
+          const showInstrument = isDiscovered && isRevealed && !!owInstr
           return (
             <PlanetCard
               key={planet.alias}
@@ -58,6 +109,10 @@ function PlanetsCatalog() {
               rarity={planet.rarity}
               revealed={!isDiscovered ? undefined : isRevealed}
               onReveal={handleReveal}
+              instrumentIcon={showInstrument ? owInstr.icon : undefined}
+              instrumentLabel={showInstrument ? owInstr.label : undefined}
+              isPlaying={playing.has(planet.alias)}
+              onToggleInstrument={showInstrument ? () => toggleInstrument(planet.alias) : undefined}
             />
           )
         })}

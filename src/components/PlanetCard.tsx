@@ -68,6 +68,11 @@ interface PlanetCardProps {
   rarity?: PlanetRarity
   revealed?: boolean     // false = discovered but not yet flipped
   onReveal?: () => void  // called after flip completes
+  // ─── Outer Wilds instrument ───
+  instrumentIcon?: string
+  instrumentLabel?: string
+  isPlaying?: boolean
+  onToggleInstrument?: () => void
 }
 
 function RarityBadge({ rarity }: { rarity: PlanetRarity }) {
@@ -82,7 +87,7 @@ function RarityBadge({ rarity }: { rarity: PlanetRarity }) {
   )
 }
 
-function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed = true, onReveal }: PlanetCardProps) {
+function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed = true, onReveal, instrumentIcon, instrumentLabel, isPlaying, onToggleInstrument }: PlanetCardProps) {
   const [open, setOpen] = useState(false)
   const [isFlipping, setIsFlipping] = useState(false)
   const [flipDone, setFlipDone] = useState(false)
@@ -184,16 +189,48 @@ function PlanetCard({ categoryKey, alias, source, medium, lore, rarity, revealed
   // ── Revealed: normal planet card ──
   return (
     <>
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setOpen(true)}
+        onKeyDown={(e) => e.key === 'Enter' && setOpen(true)}
         className="flex flex-col items-center gap-1.5 rounded-2xl p-2.5 w-full transition-all active:scale-95"
-        style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow, cursor: 'pointer', height: '100%', justifyContent: 'center' }}
+        style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${rarityBorder}`, boxShadow: rarityGlow, cursor: 'pointer', height: '100%', justifyContent: 'center', position: 'relative' }}
       >
         <MiniPlanet color={color} size={40} />
         <p className="text-[11px] font-bold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>{alias}</p>
         {source && <p className="text-[9px] text-center leading-tight" style={{ color: 'var(--text-muted)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{source}</p>}
         {rarity && <RarityBadge rarity={rarity} />}
-      </button>
+
+        {/* ─── Bottone strumento OW ─────────────────────── */}
+        {onToggleInstrument && instrumentIcon && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleInstrument() }}
+            title={instrumentLabel}
+            aria-label={isPlaying ? `Ferma ${instrumentLabel}` : `Suona ${instrumentLabel}`}
+            style={{
+              position: 'absolute',
+              bottom: 5,
+              right: 5,
+              width: 22,
+              height: 22,
+              borderRadius: '50%',
+              border: `1px solid ${isPlaying ? '#38bdf8' : 'rgba(255,255,255,0.15)'}`,
+              backgroundColor: isPlaying ? 'rgba(56,189,248,0.2)' : 'rgba(0,0,0,0.4)',
+              color: isPlaying ? '#38bdf8' : 'rgba(255,255,255,0.4)',
+              fontSize: 11,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s',
+              animation: isPlaying ? 'instrument-playing 1.6s ease-in-out infinite' : 'none',
+            }}
+          >
+            {instrumentIcon}
+          </button>
+        )}
+      </div>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setOpen(false)}>

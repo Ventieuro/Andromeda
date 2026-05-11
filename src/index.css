@@ -92,6 +92,11 @@
   }
 }
 
+@keyframes instrument-playing {
+  0%, 100% { box-shadow: 0 0 4px #38bdf8, 0 0 8px #38bdf855; transform: scale(1); }
+  50%       { box-shadow: 0 0 8px #38bdf8, 0 0 18px #38bdf888; transform: scale(1.15); }
+}
+
 .dock-plus-core {
   position: relative;
   z-index: 2;
