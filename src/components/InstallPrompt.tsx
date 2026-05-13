@@ -12,6 +12,10 @@ function isIos() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream?: unknown }).MSStream
 }
 
+function isSamsungBrowser() {
+  return /SamsungBrowser/i.test(navigator.userAgent)
+}
+
 function isInStandaloneMode() {
   return window.matchMedia('(display-mode: standalone)').matches
     || ('standalone' in navigator && (navigator as unknown as { standalone: boolean }).standalone)
@@ -21,6 +25,7 @@ function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [visible, setVisible] = useState(false)
   const [iosMode, setIosMode] = useState(false)
+  const [samsungMode, setSamsungMode] = useState(false)
 
   useEffect(() => {
     // Already installed as PWA
@@ -51,7 +56,26 @@ function InstallPrompt() {
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall)
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall)
+
+    // Samsung Browser: if no beforeinstallprompt fires within 3s, show manual guide
+    let samsungTimer: ReturnType<typeof setTimeout> | undefined
+    if (isSamsungBrowser()) {
+      samsungTimer = setTimeout(() => {
+        // Only show manual guide if the native prompt didn't fire
+        setDeferredPrompt(prev => {
+          if (prev === null) {
+            setSamsungMode(true)
+            setVisible(true)
+          }
+          return prev
+        })
+      }, 3000)
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall)
+      if (samsungTimer !== undefined) clearTimeout(samsungTimer)
+    }
   }, [])
 
   async function handleInstall() {
@@ -89,13 +113,20 @@ function InstallPrompt() {
             <li>Scorri e tocca <strong style={{ color: 'var(--text-primary)' }}>"Aggiungi a schermata Home"</strong></li>
             <li>Tocca <strong style={{ color: 'var(--text-primary)' }}>Aggiungi</strong> in alto a destra</li>
           </ol>
+        ) : samsungMode ? (
+          <ol className="mt-1.5 space-y-1" style={{ color: 'var(--text-muted)', fontSize: '12px', paddingLeft: '14px', listStyleType: 'decimal' }}>
+            <li><strong style={{ color: 'var(--text-primary)' }}>{PWA.samsungStep1}</strong></li>
+            <li><strong style={{ color: 'var(--text-primary)' }}>{PWA.samsungStep2}</strong></li>
+            <li><strong style={{ color: 'var(--text-primary)' }}>{PWA.samsungStep3}</strong></li>
+            <li><strong style={{ color: 'var(--text-primary)' }}>{PWA.samsungStep4}</strong></li>
+          </ol>
         ) : (
           <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
             {PWA.installMessage}
           </p>
         )}
         <div className="flex gap-2 mt-3">
-          {!iosMode && (
+          {!iosMode && !samsungMode && (
             <button
               onClick={handleInstall}
               className="px-4 py-1.5 rounded-xl text-xs font-bold text-white transition active:scale-95"

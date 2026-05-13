@@ -6,6 +6,37 @@
 
 ## [Sessione corrente]
 
+### TASK-157 (fix): Blocco Dark Mode automatica Samsung Browser nuovo
+**File modificati:** `index.html`, `src/index.css`
+
+- ✅ `color-scheme: only dark` su `html {}` in CSS — keyword `only` impedisce override automatico dark mode del browser
+- ✅ `<meta name="color-scheme" content="only dark">` in `index.html`
+- ✅ Override hex per utility oklch Tailwind 4 (compatibilità Samsung Browser vecchio)
+- ✅ Versione bump → `0.13.6`
+
+### TASK-156 (feature): Guida installazione Samsung Browser
+**File modificati:** `src/components/InstallPrompt.tsx`, `src/shared/labels.ts`
+
+- ✅ Rilevamento `SamsungBrowser` via user agent
+- ✅ Se `beforeinstallprompt` non arriva entro 3s, mostra guida 4 step: ⋮ → "Aggiungi pagina a..." → "Schermata Home" → "Aggiungi"
+- ✅ Label `samsungStep1-4` aggiunte in `labels.ts` con traduzione IT/EN/ES
+- ✅ Versione bump → `0.13.5`
+
+### TASK-155 (fix): Blocco Samsung Browser Night Mode
+**File modificati:** `index.html`, `src/index.css`
+
+- ✅ **color-scheme meta**: aggiunto `<meta name="color-scheme" content="dark light">` in `index.html` — segnala al browser che l'app gestisce già i colori
+- ✅ **CSS color-scheme**: aggiunto `color-scheme: dark light` su `:root` in `index.css` — impedisce a Samsung Internet di applicare filtro Night Mode forzato
+- ✅ Versione bump → `0.13.4`
+
+### TASK-154 (fix): Compatibilità Samsung Browser
+**File modificati:** `vite.config.ts`, `index.html`, `src/index.css`, `public/` (PNG generati)
+
+- ✅ **PWA install prompt**: aggiunte icone PNG (64x64, 192x192, 512x512, maskable 512x512, apple-touch-icon 180x180) al manifest — Samsung Internet richiede PNG per attivare `beforeinstallprompt`
+- ✅ **favicon.ico** generato e linkato in `index.html`
+- ✅ **color-mix() fallback**: `.dock-plus-ring` usa `var(--accent)` come fallback + `@supports` per browser con `color-mix` support
+- ✅ Versione bump → `0.13.3`
+
 ### TASK-153 (ux): Miglioramenti onboarding utente nuovo
 **File modificati:** `src/pages/PlanetsCatalog.tsx`, `src/components/PinLock.tsx`, `src/pages/Dashboard.tsx`, `src/index.css`, `src/shared/labels.ts`
 

@@ -23,6 +23,26 @@
 
 ## Completati (sessione corrente)
 
+### ✅ TASK-157 — Fix colori Samsung Browser nuovo (Dark Mode automatica)
+- Completato 13/05/2026
+- `color-scheme: only dark` in CSS + meta tag — blocca override automatico "Modalità scura per contenuti web"
+
+### ✅ TASK-156 — Guida installazione manuale per Samsung Browser
+- Completato 13/05/2026
+- Rilevamento `SamsungBrowser` in `InstallPrompt.tsx`
+- Se `beforeinstallprompt` non scatta entro 3s, mostra guida 4 step (⋮ → Aggiungi pagina → Schermata Home → Aggiungi)
+- Label Samsung aggiunte in `labels.ts` (IT/EN/ES)
+
+### ✅ TASK-155 — Fix Samsung Browser Night Mode forzata sui temi
+- Completato 13/05/2026
+- `color-scheme: dark light` su `:root` in `index.css` + `<meta name="color-scheme">` in `index.html`
+- Previene override forzato dei colori da Samsung Internet Night Mode
+
+### ✅ TASK-154 — Fix compatibilità Samsung Browser: icone PWA PNG + color-mix fallback
+- Completato 12/05/2026
+- Popup install: aggiunte icone PNG 64/192/512/maskable + apple-touch-icon; manifest aggiornato
+- Colori: `color-mix()` wrappato in `@supports` con fallback `var(--accent)` per Samsung Browser
+
 ### ✅ TASK-153 — Miglioramenti onboarding utente nuovo
 - Completato 12/05/2026
 - Banner pianeti, testi empty state, PIN sottotitolo, freccia FAB

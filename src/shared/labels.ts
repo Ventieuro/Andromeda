@@ -587,8 +587,10 @@ const STRINGS = {
     chiudi:         t('Non ora',                                        'Not now',                                'Ahora no'),
     iosMessage:     t('Per installare: tocca ⬆️ poi "Aggiungi alla schermata Home"',
                       'To install: tap ⬆️ then "Add to Home Screen"',
-                      'Para instalar: toca ⬆️ y luego "Añadir a pantalla de inicio"'),
-  },
+                      'Para instalar: toca ⬆️ y luego "Añadir a pantalla de inicio"'),    samsungStep1:   t('Tocca ⋮ in alto a destra',         'Tap ⋮ at the top right',          'Toca ⋮ arriba a la derecha'),
+    samsungStep2:   t('Seleziona "Aggiungi pagina a..."', 'Select "Add page to..."',          'Selecciona "Añadir página a..."'),
+    samsungStep3:   t('Tocca "Schermata Home"',           'Tap "Home screen"',               'Toca "Pantalla de inicio"'),
+    samsungStep4:   t('Tocca "Aggiungi"',                 'Tap "Add"',                       'Toca "Añadir"'),  },
 
   // ── OCR Scontrino ──────────────────────────────────────
   ocr: {
