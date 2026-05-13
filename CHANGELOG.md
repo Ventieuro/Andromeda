@@ -6,6 +6,15 @@
 
 ## [Sessione corrente]
 
+### TASK-158 (feature): Auto-aggiornamento PWA silenzioso
+**File modificati:** `vite.config.ts`, `src/main.tsx`
+
+- ✅ `skipWaiting: true` + `clientsClaim: true` in workbox: nuovo SW si attiva subito senza aspettare che le tab si chiudano
+- ✅ Listener `controllerchange` → reload automatico quando il nuovo SW prende controllo
+- ✅ `visibilitychange` (ritorno in foreground) → `reg.update()` per scaricare aggiornamenti appena l'utente riapre l'app
+- ✅ Rimosso banner manuale "Aggiorna" (obsoleto con skipWaiting)
+- ✅ Versione bump → `0.13.8`
+
 ### TASK-157 (fix): Blocco Dark Mode automatica Samsung Browser nuovo
 **File modificati:** `index.html`, `src/index.css`
 

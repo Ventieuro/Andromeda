@@ -23,6 +23,10 @@
 
 ## Completati (sessione corrente)
 
+### ✅ TASK-158 — Auto-aggiornamento PWA silenzioso
+- Completato 13/05/2026
+- skipWaiting + clientsClaim in workbox; controllerchange → reload; visibilitychange → reg.update()
+
 ### ✅ TASK-157 — Fix colori Samsung Browser nuovo (Dark Mode automatica)
 - Completato 13/05/2026
 - `color-scheme: only dark` in CSS + meta tag — blocca override automatico "Modalità scura per contenuti web"
