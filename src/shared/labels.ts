@@ -510,7 +510,7 @@ const STRINGS = {
     diverseTitle:    t('Diversificato', 'Diversified', 'Diversificado'),
     diverseDesc:     t('Usa almeno 4 categorie di spesa diverse', 'Use at least 4 different expense categories', 'Usa al menos 4 categorías de gasto distintas'),
     punctualTitle:   t('Puntuale',      'Punctual',    'Puntual'),
-    punctualDesc:    t('Inserisci 3 spese nei primi 7 giorni del mese', 'Add 3 expenses in the first 7 days of the month', 'Añade 3 gastos en los primeros 7 días del mes'),
+    punctualDesc:    t('Inserisci 3 spese nei primi 7 giorni del periodo', 'Add 3 expenses in the first 7 days of the period', 'Añade 3 gastos en los primeros 7 días del período'),
   },
 
   // ── Settings ───────────────────────────────────────────
