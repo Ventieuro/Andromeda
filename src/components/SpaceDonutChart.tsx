@@ -419,10 +419,9 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     const cx = W / 2
     const cy = H / 2
     const scale = W / 320
-    const outerR = 84 * scale
-    const innerR = 60 * scale
+    const outerR = 100 * scale
+    const innerR = 58 * scale
 
-    // Planet orbit config — keep planets inside canvas, prevent inter-orbit overlap
     // Cap planets to top 8 by amount
     const PLANET_LIMIT = 8
     const planetSlices = slices.length > PLANET_LIMIT
@@ -432,7 +431,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     const orbitBase = outerR + 12
     const orbitStep = 10
     const orbitRadii = planetSlices.map((_, i) => orbitBase + i * orbitStep)
-    // 3D inclinations — strong tilts so orbits cross through the donut
+    // 3D inclinations - strong tilts so orbits cross through the donut
     const TILT_BASE = [0.78, -0.65, 0.92, -0.72, 0.58, -0.85, 0.68, -0.55]
     const inclinations = planetSlices.map((_, i) => TILT_BASE[i % TILT_BASE.length])
     // Slower speeds + larger step between planets → reduces convergence over time
