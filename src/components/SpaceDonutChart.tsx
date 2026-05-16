@@ -251,81 +251,91 @@ function drawDonut(
   // }
 }
 
-// ─── Planet drawing ──────────────────────────────────────
+// ─── Planet drawing (3D projected) ──────────────────────
 function drawPlanet(
   ctx: CanvasRenderingContext2D,
   cx: number,
   cy: number,
   orbitR: number,
   angle: number,
+  inclination: number,
   planetR: number,
   color: string,
   direction: number,
 ) {
+  const cosI = Math.cos(inclination)
+  const sinI = Math.sin(inclination)
   const px = cx + orbitR * Math.cos(angle)
-  const py = cy + orbitR * Math.sin(angle)
+  const py = cy + orbitR * Math.sin(angle) * cosI
+  const z = orbitR * Math.sin(angle) * sinI
+  // Perspective: closer = slightly bigger, farther = slightly smaller
+  const perspScale = 1 + (z / (orbitR * 1.5)) * 0.2
+  const effectiveR = planetR * Math.max(0.6, perspScale)
 
   // Glow
   const { r, g, b } = hexToRgb(color)
-  const grad = ctx.createRadialGradient(px, py, 0, px, py, planetR * 3)
+  const grad = ctx.createRadialGradient(px, py, 0, px, py, effectiveR * 3)
   grad.addColorStop(0, `rgba(${r},${g},${b},0.35)`)
   grad.addColorStop(1, `rgba(${r},${g},${b},0)`)
   ctx.beginPath()
-  ctx.arc(px, py, planetR * 3, 0, Math.PI * 2)
+  ctx.arc(px, py, effectiveR * 3, 0, Math.PI * 2)
   ctx.fillStyle = grad
   ctx.fill()
 
   // Planet body gradient
   const bodyGrad = ctx.createRadialGradient(
-    px - planetR * 0.3,
-    py - planetR * 0.3,
+    px - effectiveR * 0.3,
+    py - effectiveR * 0.3,
     0,
     px,
     py,
-    planetR,
+    effectiveR,
   )
   bodyGrad.addColorStop(0, `rgba(${Math.min(r + 60, 255)},${Math.min(g + 60, 255)},${Math.min(b + 60, 255)},1)`)
   bodyGrad.addColorStop(1, color)
   ctx.beginPath()
-  ctx.arc(px, py, planetR, 0, Math.PI * 2)
+  ctx.arc(px, py, effectiveR, 0, Math.PI * 2)
   ctx.fillStyle = bodyGrad
   ctx.fill()
 
-  // Crescent shadow — flip X offset based on direction
+  // Crescent shadow
   ctx.beginPath()
-  ctx.arc(px + planetR * 0.25 * direction, py + planetR * 0.15, planetR * 0.85, 0, Math.PI * 2)
+  ctx.arc(px + effectiveR * 0.25 * direction, py + effectiveR * 0.15, effectiveR * 0.85, 0, Math.PI * 2)
   ctx.fillStyle = 'rgba(0,0,0,0.3)'
   ctx.globalCompositeOperation = 'source-atop'
   ctx.fill()
   ctx.globalCompositeOperation = 'source-over'
 
-  // Trail — always behind the planet
+  // Trail
   const trailLen = 8
   for (let t = 1; t <= trailLen; t++) {
     const ta = angle - t * 0.04 * direction
     const tx = cx + orbitR * Math.cos(ta)
-    const ty = cy + orbitR * Math.sin(ta)
+    const ty = cy + orbitR * Math.sin(ta) * cosI
     const alpha = 0.15 * (1 - t / trailLen)
     ctx.beginPath()
-    ctx.arc(tx, ty, planetR * (1 - t / trailLen * 0.5), 0, Math.PI * 2)
+    ctx.arc(tx, ty, effectiveR * (1 - t / trailLen * 0.5), 0, Math.PI * 2)
     ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`
     ctx.fill()
   }
 }
 
-// ─── Orbit rings ─────────────────────────────────────────
+// ─── Orbit rings (3D ellipses) ───────────────────────────
 function drawOrbits(
   ctx: CanvasRenderingContext2D,
   cx: number,
   cy: number,
   radii: number[],
+  inclinations: number[],
 ) {
   ctx.setLineDash([4, 6])
   ctx.lineWidth = 0.7
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)'
-  for (const r of radii) {
+  for (let i = 0; i < radii.length; i++) {
+    const rX = radii[i]
+    const rY = rX * Math.abs(Math.cos(inclinations[i]))
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'
     ctx.beginPath()
-    ctx.arc(cx, cy, r, 0, Math.PI * 2)
+    ctx.ellipse(cx, cy, rX, rY, 0, 0, Math.PI * 2)
     ctx.stroke()
   }
   ctx.setLineDash([])
@@ -419,16 +429,12 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
       ? [...slices].sort((a, b) => b.amount - a.amount).slice(0, PLANET_LIMIT)
       : slices
 
-    const orbitBase = outerR + 28
-    const rawMaxOrbitR = W / 2 - 6
-    const orbitRange = rawMaxOrbitR - orbitBase
-    const rawStep = planetSlices.length > 1 ? orbitRange / (planetSlices.length - 1) : orbitRange
-    // Planet radius must fit inside the orbit gap so adjacent orbits never overlap
-    const maxPlanetR = Math.max(3, Math.min(10 - Math.floor(planetSlices.length / 3), Math.floor((rawStep - 2) / 2)))
-    const maxOrbitR = W / 2 - maxPlanetR - 4
-    const usableRange = maxOrbitR - orbitBase
-    const orbitStep = planetSlices.length > 1 ? usableRange / (planetSlices.length - 1) : usableRange
+    const orbitBase = outerR + 12
+    const orbitStep = 10
     const orbitRadii = planetSlices.map((_, i) => orbitBase + i * orbitStep)
+    // 3D inclinations — strong tilts so orbits cross through the donut
+    const TILT_BASE = [0.78, -0.65, 0.92, -0.72, 0.58, -0.85, 0.68, -0.55]
+    const inclinations = planetSlices.map((_, i) => TILT_BASE[i % TILT_BASE.length])
     // Slower speeds + larger step between planets → reduces convergence over time
     const planetSpeeds = planetSlices.map((_, i) => (i % 2 === 0 ? 1 : -1) * (0.15 + i * 0.07))
     const maxPercent = Math.max(...planetSlices.map((s) => s.percent))
@@ -454,31 +460,43 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
       // Stars
       drawStars(c, starsRef.current, elapsed)
 
-      // Orbit rings
-      drawOrbits(c, cx, cy, orbitRadii)
+      // Orbit rings (3D ellipses)
+      drawOrbits(c, cx, cy, orbitRadii, inclinations)
+
+      // Compute planet states with Z depth
+      const planetStates = planetSlices.map((slice, i) => {
+        const baseAngle = -Math.PI / 2 + (i * Math.PI * 2) / planetSlices.length
+        const angle = baseAngle + elapsed * planetSpeeds[i]
+        const dir = planetSpeeds[i] >= 0 ? 1 : -1
+        const z = orbitRadii[i] * Math.sin(angle) * Math.sin(inclinations[i])
+        return { slice, i, angle, dir, z }
+      })
+
+      // Planets behind the donut (z < 0)
+      planetStates
+        .filter(s => s.z < 0)
+        .sort((a, b) => a.z - b.z)
+        .forEach(({ slice, i, angle, dir }) =>
+          drawPlanet(c, cx, cy, orbitRadii[i], angle, inclinations[i], planetRadius(slice.percent), slice.color, dir)
+        )
 
       // Donut
       drawDonut(c, cx, cy, outerR, innerR, slices, elapsed)
 
-      // Savings goal flag — planted at the goal threshold on the outer ring
+      // Savings goal flag
       if (savingsGoal > 0) {
         drawSavingsGoalFlag(c, cx, cy, outerR, totalIncome, totalIncome - totalExpenses + missionSaved, savingsGoal, elapsed)
       }
 
-      // Manual savings arc (blue = already deposited into goals this period) — hidden for now
-      // if (missionSaved > 0) {
-      //   drawManualSavingsArc(c, cx, cy, outerR, totalIncome, missionSaved, elapsed)
-      // }
+      // Planets in front of the donut (z >= 0)
+      planetStates
+        .filter(s => s.z >= 0)
+        .sort((a, b) => a.z - b.z)
+        .forEach(({ slice, i, angle, dir }) =>
+          drawPlanet(c, cx, cy, orbitRadii[i], angle, inclinations[i], planetRadius(slice.percent), slice.color, dir)
+        )
 
-      // Planets (capped to top 8)
-      planetSlices.forEach((slice, i) => {
-        const baseAngle = -Math.PI / 2 + (i * Math.PI * 2) / planetSlices.length
-        const angle = baseAngle + elapsed * planetSpeeds[i]
-        const dir = planetSpeeds[i] >= 0 ? 1 : -1
-        drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(slice.percent), slice.color, dir)
-      })
-
-      // Center text
+      // Center text (always on top)
       drawCenter(c, cx, cy, innerR, totalIncome, totalExpenses, hideIncome)
 
       animRef.current = requestAnimationFrame(frame)
