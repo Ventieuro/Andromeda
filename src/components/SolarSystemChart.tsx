@@ -162,29 +162,6 @@ function drawSun(ctx: CanvasRenderingContext2D, cx: number, cy: number, radius: 
   ctx.fillText(formatEuro(total), cx, cy + 9)
 }
 
-// ─── Important orbit ring ────────────────────────────────
-function drawImportantRing(
-  ctx: CanvasRenderingContext2D,
-  cx: number, cy: number,
-  orbitR: number,
-  importantRatio: number,
-  time: number,
-) {
-  const pulse = 0.5 + 0.5 * Math.sin(time * 2.5)
-  const alpha = 0.25 + 0.35 * pulse
-  // Arc = fixed max (36°) × importantRatio — constant indicator, independent of expense size
-  // 100% important → 36°, 50% important → 18°
-  const arcLen = Math.PI / 5 * importantRatio
-  if (arcLen < 0.04) return
-  ctx.beginPath()
-  ctx.arc(cx, cy, orbitR, -Math.PI / 2, -Math.PI / 2 + arcLen)
-  ctx.strokeStyle = `rgba(251,191,36,${alpha})`
-  ctx.lineWidth = 1.8
-  ctx.setLineDash([6, 5])
-  ctx.stroke()
-  ctx.setLineDash([])
-}
-
 // ─── Planet ──────────────────────────────────────────────
 function drawPlanet(
   ctx: CanvasRenderingContext2D,
@@ -194,7 +171,6 @@ function drawPlanet(
   icon: string, percent: number,
   time: number,
   direction: number,
-  importantRatio: number,
 ) {
   const px = cx + orbitR * Math.cos(angle)
   const py = cy + orbitR * Math.sin(angle)
@@ -268,21 +244,8 @@ function drawPlanet(
   }
   ctx.textBaseline = 'alphabetic'
 
-  // Important: partial arc around planet proportional to importantRatio × planet size
-  if (importantRatio > 0) {
-    const pulse = 0.6 + 0.4 * Math.sin(time * 3)
-    const ringR = planetR + 3 + pulse * 2
-    // Arc = portion of full circle matching (percent/100) × importantRatio
-    // e.g. Svago 1.2% totale, 100% important → arc ≈ 4°, not 360°
-    const arcLen = Math.PI / 5 * importantRatio
-    if (arcLen >= 0.06) {
-      ctx.beginPath()
-      ctx.arc(px, py, ringR, -Math.PI / 2, -Math.PI / 2 + arcLen)
-      ctx.strokeStyle = `rgba(251,191,36,${0.55 + 0.35 * pulse})`
-      ctx.lineWidth = 2
-      ctx.stroke()
-    }
-  }
+  // Important ring disabled
+  // if (importantRatio > 0) { ... }
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -357,19 +320,14 @@ function SolarSystemChart({ transactions, onCategoryClick, sortMode = 'amount' }
       // Sun
       drawSun(c, cx, cy, sunR, total, elapsed)
 
-      // Important orbit rings (drawn before planets so they appear below)
-      planets.forEach((planet, i) => {
-        if (planet.importantRatio > 0) {
-          drawImportantRing(c, cx, cy, orbitRadii[i], planet.importantRatio, elapsed)
-        }
-      })
+
 
       // Planets
       planets.forEach((planet, i) => {
         const baseAngle = (i * goldenAngle * Math.PI) / 180
         const angle = baseAngle + elapsed * speeds[i]
         const dir = speeds[i] >= 0 ? 1 : -1
-        drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(planet.percent), planet.color, planet.icon, planet.percent, elapsed, dir, planet.importantRatio)
+        drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(planet.percent), planet.color, planet.icon, planet.percent, elapsed, dir)
       })
 
       animRef.current = requestAnimationFrame(frame)

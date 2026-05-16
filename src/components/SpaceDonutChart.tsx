@@ -76,37 +76,8 @@ function drawStars(ctx: CanvasRenderingContext2D, stars: Star[], time: number) {
 }
 
 // ─── Important needle ────────────────────────────────────
-function drawImportantNeedle(
-  ctx: CanvasRenderingContext2D,
-  cx: number, cy: number,
-  outerR: number,
-  startAngle: number, sweep: number, importantRatio: number,
-  time: number,
-) {
-  // Arc proportional to the slice: 100% important = covers full slice
-  const importantSweep = importantRatio > 0 ? Math.min(Math.max(importantRatio * sweep, 0.15), sweep) : 0
-  if (importantSweep <= 0.04) return
-
-  const arcEnd = startAngle + importantSweep
-  const midAngle = startAngle + importantSweep / 2
-  const pulse = 0.5 + 0.5 * Math.sin(time * 2.5)
-
-  // Outer arc — proportional to the important portion of the slice
-  ctx.beginPath()
-  ctx.arc(cx, cy, outerR + 4, startAngle + 0.03, arcEnd - 0.03)
-  ctx.strokeStyle = `rgba(251,191,36,${0.5 + 0.3 * pulse})`
-  ctx.lineWidth = 3
-  ctx.setLineDash([])
-  ctx.stroke()
-
-  // Tip dot floating above the arc at midpoint
-  const tx = cx + (outerR + 9) * Math.cos(midAngle)
-  const ty = cy + (outerR + 9) * Math.sin(midAngle)
-  ctx.beginPath()
-  ctx.arc(tx, ty, 3, 0, Math.PI * 2)
-  ctx.fillStyle = `rgba(251,191,36,${0.8 + 0.2 * pulse})`
-  ctx.fill()
-}
+// ─── Important needle (disabled — kept for reference) ────────────────────────
+// function drawImportantNeedle(...) { ... }
 
 // ─── Savings goal flag ────────────────────────────────────
 function drawSavingsGoalFlag(
@@ -270,16 +241,16 @@ function drawDonut(
     startAngle = endAngle
   }
 
-  // Second pass: draw important needles on top of all slices
-  startAngle = -Math.PI / 2
-  for (const slice of slices) {
-    const sweep = (slice.percent / 100) * Math.PI * 2
-    const ratio = slice.importantRatio ?? 0
-    if (ratio > 0) {
-      drawImportantNeedle(ctx, cx, cy, outerR, startAngle, sweep, ratio, time)
-    }
-    startAngle += sweep
-  }
+  // Second pass: important needles disabled (info kept in legend only)
+  // startAngle = -Math.PI / 2
+  // for (const slice of slices) {
+  //   const sweep = (slice.percent / 100) * Math.PI * 2
+  //   const ratio = slice.importantRatio ?? 0
+  //   if (ratio > 0) {
+  //     drawImportantNeedle(ctx, cx, cy, outerR, startAngle, sweep, ratio, time)
+  //   }
+  //   startAngle += sweep
+  // }
 }
 
 // ─── Planet drawing ──────────────────────────────────────
@@ -446,20 +417,26 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     const innerR = 60 * scale
 
     // Planet orbit config — keep planets inside canvas, prevent inter-orbit overlap
+    // Cap planets to top 8 by amount
+    const PLANET_LIMIT = 8
+    const planetSlices = slices.length > PLANET_LIMIT
+      ? [...slices].sort((a, b) => b.amount - a.amount).slice(0, PLANET_LIMIT)
+      : slices
+
     const orbitBase = outerR + 28
     const rawMaxOrbitR = W / 2 - 6
     const orbitRange = rawMaxOrbitR - orbitBase
-    const rawStep = slices.length > 1 ? orbitRange / (slices.length - 1) : orbitRange
+    const rawStep = planetSlices.length > 1 ? orbitRange / (planetSlices.length - 1) : orbitRange
     // Planet radius must fit inside the orbit gap so adjacent orbits never overlap
-    const maxPlanetR = Math.max(3, Math.min(10 - Math.floor(slices.length / 3), Math.floor((rawStep - 2) / 2)))
+    const maxPlanetR = Math.max(3, Math.min(10 - Math.floor(planetSlices.length / 3), Math.floor((rawStep - 2) / 2)))
     const maxOrbitR = W / 2 - maxPlanetR - 4
     const usableRange = maxOrbitR - orbitBase
-    const orbitStep = slices.length > 1 ? usableRange / (slices.length - 1) : usableRange
-    const orbitRadii = slices.map((_, i) => orbitBase + i * orbitStep)
+    const orbitStep = planetSlices.length > 1 ? usableRange / (planetSlices.length - 1) : usableRange
+    const orbitRadii = planetSlices.map((_, i) => orbitBase + i * orbitStep)
     // Slower speeds + larger step between planets → reduces convergence over time
-    const planetSpeeds = slices.map((_, i) => (i % 2 === 0 ? 1 : -1) * (0.15 + i * 0.07))
-    const maxPercent = Math.max(...slices.map((s) => s.percent))
-    const minPercent = Math.min(...slices.map((s) => s.percent))
+    const planetSpeeds = planetSlices.map((_, i) => (i % 2 === 0 ? 1 : -1) * (0.15 + i * 0.07))
+    const maxPercent = Math.max(...planetSlices.map((s) => s.percent))
+    const minPercent = Math.min(...planetSlices.map((s) => s.percent))
     const planetRadius = (pct: number) => {
       if (maxPercent === minPercent) return 7
       return 4 + ((pct - minPercent) / (maxPercent - minPercent)) * 6
@@ -497,9 +474,9 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
       //   drawManualSavingsArc(c, cx, cy, outerR, totalIncome, missionSaved, elapsed)
       // }
 
-      // Planets
-      slices.forEach((slice, i) => {
-        const baseAngle = -Math.PI / 2 + (i * Math.PI * 2) / slices.length
+      // Planets (capped to top 8)
+      planetSlices.forEach((slice, i) => {
+        const baseAngle = -Math.PI / 2 + (i * Math.PI * 2) / planetSlices.length
         const angle = baseAngle + elapsed * planetSpeeds[i]
         const dir = planetSpeeds[i] >= 0 ? 1 : -1
         drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(slice.percent), slice.color, dir)
@@ -705,7 +682,6 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
               </div>
               <div style={{ color: tappedSlice.color, fontSize: '12px', marginTop: '1px' }}>
                 {formatEuro(tappedSlice.amount)} · {tappedSlice.percent.toFixed(1)}%
-                {(tappedSlice.importantRatio ?? 0) > 0 && ' ⭐'}
               </div>
             </div>
           </div>
@@ -757,13 +733,9 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
                           {s.category}
                         </span>
                       )}
-                      {(s.importantRatio ?? 0) > 0 && (
-                        <span
-                          className="text-xs font-semibold px-1.5 py-0.5 rounded-full shrink-0"
-                          style={{ backgroundColor: 'rgba(251,191,36,0.15)', color: '#f59e0b', border: '1px solid rgba(251,191,36,0.4)' }}
-                        >
-                          ⭐ {DASHBOARD.spesaImportante}
-                          {(s.importantRatio ?? 0) < 1 ? ` ${Math.round((s.importantRatio ?? 0) * 100)}%` : ''}
+                      {s.importantRatio != null && s.importantRatio > 0 && (
+                        <span style={{ fontSize: '10px', color: '#f59e0b', fontWeight: 700, background: 'rgba(245,158,11,0.15)', borderRadius: '4px', padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                          ⭐{s.importantRatio < 1 ? ` ${Math.round(s.importantRatio * 100)}%` : ''}
                         </span>
                       )}
                     </div>

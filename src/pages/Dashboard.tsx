@@ -430,7 +430,7 @@ function Dashboard() {
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {tx.description}{tx.recurring && ' 🔄'}
+                    {tx.description}{tx.recurring && ' 🔄'}{tx.important && <span style={{ fontSize: '11px', marginLeft: '6px', color: '#f59e0b' }}>⭐</span>}
                   </p>
                   <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'var(--text-muted)' }}>
                     {tx.goalId

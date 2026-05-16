@@ -243,8 +243,8 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
         )}
       </div>
 
-      {/* Sort toggle — solo se ci sono spese importanti e vista pertinente */}
-      {slices.length > 0 && hasAnyImportant && view !== 'comet' && (
+      {/* Sort toggle — important sort disabled, keeping only amount sort */}
+      {/* {slices.length > 0 && hasAnyImportant && view !== 'comet' && (
         <div className="flex gap-1.5 mb-3">
           <button
             onClick={() => setSortMode('amount')}
@@ -268,8 +268,7 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
           >
             ⭐ {DASHBOARD.ordinaPerImportante}
           </button>
-        </div>
-      )}
+      )} */}
 
       {slices.length === 0 && totalMonthlyGoal === 0 ? (
         <p className="text-sm text-center py-4" style={{ color: 'var(--text-muted)' }}>
