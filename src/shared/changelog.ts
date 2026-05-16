@@ -12,6 +12,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.14.0',
+    date: '2026-05-16',
+    changes: {
+      it: [
+        '🔭 Ricerche e Pianeti ora accessibili dall\'icona telescopio in alto a destra',
+        '🏆 Obiettivi (ex Missioni): nome aggiornato',
+        '🗑️ Archivio Pianeti rimosso dalle Configurazioni (disponibile nel telescopio)',
+        '✉️ Nuova voce "Contattaci" nelle Configurazioni',
+      ],
+      en: [
+        '🔭 Research & Planets now accessible from the telescope icon top-right',
+        '🏆 Goals (ex Missions): name updated',
+        '🗑️ Planet Archive removed from Settings (available in telescope)',
+        '✉️ New "Contact us" entry in Settings',
+      ],
+      es: [
+        '🔭 Investigación y Planetas ahora accesibles desde el icono telescopio arriba a la derecha',
+        '🏆 Objetivos (ex Misiones): nombre actualizado',
+        '🗑️ Archivo de Planetas eliminado de Configuraciones (disponible en telescopio)',
+        '✉️ Nueva entrada "Contáctanos" en Configuraciones',
+      ],
+    },
+  },
+  {
     version: '2.0.0',
     date: '2026-04-24',
     changes: {

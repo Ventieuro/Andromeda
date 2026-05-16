@@ -157,7 +157,7 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
   const [view, setView] = useState<'pie' | 'solar' | 'comet'>('pie')
-  const [sortMode, setSortMode] = useState<'amount' | 'important'>('amount')
+  const [sortMode, _setSortMode] = useState<'amount' | 'important'>('amount')
   const { amountsVisible } = useAmounts()
 
   const activeGoals = loadGoals().filter((g) => !periodEnd || g.createdAt.slice(0, 10) <= periodEnd)
@@ -172,8 +172,6 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
         }
         return s + (g.monthlyAmount ?? 0)
       }, 0)
-
-  const hasAnyImportant = rawSlices.some((s) => (s.importantRatio ?? 0) > 0)
 
   const slices = sortMode === 'important'
     ? [

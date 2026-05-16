@@ -818,20 +818,6 @@ const RARITY_WEIGHT: Record<PlanetRarity, number> = {
   mythic: 0.5,
 }
 
-function seededRandom(seed: number) {
-  let s = seed >>> 0
-  return () => {
-    s = (Math.imul(1664525, s) + 1013904223) >>> 0
-    return s / 4294967296
-  }
-}
-
-function strHash(s: string): number {
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) >>> 0
-  return h
-}
-
 export function loadPlanetLog(): PlanetLogEntry[] {
   try {
     const raw = localStorage.getItem(PLANET_LOG_KEY)
