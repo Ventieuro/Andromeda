@@ -1,6 +1,7 @@
 import { Outlet, Link } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import BottomNav from './BottomNav'
+import ResearchButton from './ResearchButton'
 import { LAYOUT } from '../shared/labels'
 import { useAmounts } from '../shared/AmountsContext'
 
@@ -17,6 +18,7 @@ function Layout() {
           {LAYOUT.appName}
         </Link>
         <div className="flex-1" />
+        <ResearchButton />
         <button
           onClick={toggleAmounts}
           className="flex items-center gap-1.5 px-2.5 h-9 rounded-full transition hover:opacity-80 active:scale-90"

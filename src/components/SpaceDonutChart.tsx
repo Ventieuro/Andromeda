@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
 import { DASHBOARD } from '../shared/labels'
-import { resolveMonthPlanet, isPlanetRevealed } from '../shared/storage'
+import { getRandomRevealedPlanet } from '../shared/storage'
 import { haptic } from '../shared/platform'
 import MiniPlanet from './MiniPlanet'
 
@@ -26,8 +26,6 @@ interface SpaceDonutChartProps {
   onCategoryClick?: (canonicalKey: string) => void
   savingsGoal?: number
   missionSaved?: number
-  periodYear?: number
-  periodMonth?: number
 }
 
 // ─── Helpers ─────────────────────────────────────────────
@@ -382,9 +380,7 @@ function drawCenter(
 }
 
 // ─── Component ───────────────────────────────────────────
-function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideIncome = false, onCategoryClick, savingsGoal = 0, missionSaved = 0, periodYear, periodMonth }: SpaceDonutChartProps) {
-  const _year = periodYear ?? new Date().getFullYear()
-  const _month = periodMonth ?? new Date().getMonth()
+function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideIncome = false, onCategoryClick, savingsGoal = 0, missionSaved = 0 }: SpaceDonutChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const animRef = useRef<number>(0)
@@ -750,27 +746,8 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
                       {s.percent.toFixed(1)}%
                     </span>
                     {s.type === 'uscita' && s.canonicalKey && (() => {
-                      const planet = resolveMonthPlanet(s.canonicalKey, _year, _month)
+                      const planet = getRandomRevealedPlanet()
                       if (!planet) return null
-                      const revealed = isPlanetRevealed(planet.alias)
-                      if (!revealed) {
-                        return (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); window.location.hash = '#/settings/pianeti' }}
-                            className="text-[10px] text-right font-medium"
-                            style={{
-                              color: 'var(--accent)',
-                              background: 'none',
-                              border: 'none',
-                              cursor: 'pointer',
-                              padding: 0,
-                              lineHeight: 1.3,
-                            }}
-                          >
-                            🪐 ??? ›
-                          </button>
-                        )
-                      }
                       return (
                         <span className="text-[10px] text-right" style={{ color: 'var(--text-muted)', opacity: 0.8, lineHeight: 1.3 }}>
                           🪐 {planet.alias} · {planet.source}

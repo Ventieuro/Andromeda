@@ -302,40 +302,36 @@ function Missions() {
         <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary)' }}>
           🎯 {MISSIONS.titolo}
         </h1>
-        {goals.length === 0 && (
-          <p style={{ marginTop: '8px', fontSize: '14px', color: 'var(--text-muted)' }}>
-            {MISSIONS.suggerimento}
-          </p>
-        )}
       </div>
 
       <div style={{ padding: '0 16px' }}>
+        {/* ── Obiettivi di Risparmio ── */}
         {goals.length === 0 ? (
-          <div style={{ textAlign: 'center', paddingTop: '40px' }}>
-            <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>🎯</span>
-            <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>{MISSIONS.nessunObiettivo}</p>
-          </div>
-        ) : (
-          <>
-            <SectionHeader>{MISSIONS.titolo}</SectionHeader>
-            {[...goals].reverse().map((g) => (
-              <MissionCard
-                key={g.id}
-                id={g.id}
-                name={g.name}
-                icon={g.emoji}
-                current={g.savedAmount}
-                target={g.targetAmount ?? 0}
-                monthlyRate={g.monthlyAmount}
-                onEdit={() => { setEditingGoal(g); setShowForm(true) }}
-                onDelete={() => handleDelete(g)}
-              />
-            ))}
-          </>
-        )}
+              <div style={{ textAlign: 'center', paddingTop: '40px' }}>
+                <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>🎯</span>
+                <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>{MISSIONS.nessunObiettivo}</p>
+              </div>
+            ) : (
+              <>
+                <SectionHeader>{MISSIONS.titolo}</SectionHeader>
+                {[...goals].reverse().map((g) => (
+                  <MissionCard
+                    key={g.id}
+                    id={g.id}
+                    name={g.name}
+                    icon={g.emoji}
+                    current={g.savedAmount}
+                    target={g.targetAmount ?? 0}
+                    monthlyRate={g.monthlyAmount}
+                    onEdit={() => { setEditingGoal(g); setShowForm(true) }}
+                    onDelete={() => handleDelete(g)}
+                  />
+                ))}
+              </>
+            )}
       </div>
 
-      {/* FAB */}
+      {/* FAB — aggiungi obiettivo */}
       <FAB
         onClick={() => { setEditingGoal(null); setShowForm(true) }}
         ariaLabel={MISSIONS.aggiungi}

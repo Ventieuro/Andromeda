@@ -273,13 +273,11 @@ export function addTransaction(tx: Transaction) {
 export function deleteTransaction(id: string) {
   const all = loadTransactions().filter((t) => t.id !== id)
   saveTransactions(all)
-  pruneOrphanPlanets(all)
 }
 
 export function deleteTransactionsByGroupId(groupId: string) {
   const all = loadTransactions().filter((t) => t.recurringGroupId !== groupId)
   saveTransactions(all)
-  pruneOrphanPlanets(all)
 }
 
 export function updateTransactionsByGroupId(
@@ -849,24 +847,20 @@ function savePlanetLog(log: PlanetLogEntry[]) {
   } catch { /* noop */ }
 }
 
-// Remove planet log entries whose category has no more 'uscita' transactions in the period
-function pruneOrphanPlanets(remainingTransactions: Transaction[]): void {
-  const { payDay = 27 } = loadSettings()
+// Returns a random already-revealed planet for display purposes (no side effects)
+export function getRandomRevealedPlanet(
+  seed?: number,
+): { alias: string; source: string; lore: string; rarity: PlanetRarity } | null {
   const log = loadPlanetLog()
-  const kept = log.filter((entry) => {
-    const periodStart = new Date(entry.year, entry.month, payDay)
-    const periodEnd = new Date(entry.year, entry.month + 1, payDay - 1)
-    const s = toLocalIso(periodStart)
-    const e = toLocalIso(periodEnd)
-    return remainingTransactions.some(
-      (t) =>
-        t.type === 'uscita' &&
-        normalizeCategoryKey(t.category, 'uscita') === entry.category &&
-        t.date >= s &&
-        t.date <= e,
-    )
-  })
-  if (kept.length !== log.length) savePlanetLog(kept)
+  const revealedAliases = log.filter((e) => e.revealed === true).map((e) => e.alias)
+  if (revealedAliases.length === 0) return null
+  const allPlanets = getAllPlanets()
+  const pool = allPlanets.filter((p) => revealedAliases.includes(p.alias))
+  if (pool.length === 0) return null
+  const idx = seed !== undefined
+    ? Math.abs(seed) % pool.length
+    : Math.floor(Math.random() * pool.length)
+  return pool[idx]
 }
 
 // Mark a discovered planet as revealed (card flipped by user)
@@ -880,75 +874,160 @@ export function isPlanetRevealed(alias: string): boolean {
   const log = loadPlanetLog()
   const entry = log.find((e) => e.alias === alias)
   if (!entry) return false
-  return entry.revealed === true // must be explicitly true
+  return entry.revealed === true
 }
 
-export function resolveMonthPlanet(
-  categoryKey: string,
-  year: number,
-  month: number,
-): { alias: string; source: string; lore: string; rarity: PlanetRarity; isNew: boolean } | null {
-  const allPlanets = getAllPlanets()
-  if (allPlanets.length === 0) return null
+// ─── Monthly Achievements ────────────────────────────────
 
-  const log = loadPlanetLog()
+const ACHIEVEMENTS_KEY = 'andromeda-achievements'
 
-  // Already assigned for this (category, year, month)?
-  const existing = log.find((e) => e.category === categoryKey && e.year === year && e.month === month)
-  if (existing) {
-    const found = allPlanets.find((p) => p.alias === existing.alias)
-    return found ? { ...found, isNew: false } : null
+/**
+ * Per ogni achievement completato l'utente può riscuotere 1 pianeta (qualsiasi rarità).
+ * Completare tutti e 5 sblocca un 6° pianeta bonus di rarità ≥ rare.
+ *
+ * claimed: { [achievementId]: alias }   → pianeta riscosso per quell'achievement
+ * bonusClaimed: boolean                  → se il bonus (tutti e 5) è stato riscosso
+ * bonusAlias?: string                    → alias del pianeta bonus
+ */
+export interface AchievementRecord {
+  claimed: Record<string, string>  // achievementId → planet alias
+  bonusClaimed: boolean
+  bonusAlias?: string
+}
+
+type AchievementsStore = Record<string, AchievementRecord>  // key = `${year}-${month}`
+
+function loadAchievementsRaw(): AchievementsStore {
+  try {
+    const raw = localStorage.getItem(ACHIEVEMENTS_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
   }
+}
 
-  // Aliases already discovered globally (across all categories/months)
-  const discoveredGlobally = new Set(log.map((e) => e.alias))
-  // Aliases used this month (any category)
-  const usedThisMonth = new Set(
-    log.filter((e) => e.year === year && e.month === month).map((e) => e.alias)
-  )
+function saveAchievementsRaw(data: AchievementsStore) {
+  try {
+    localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(data))
+  } catch { /* noop */ }
+}
 
-  // P1: not discovered globally AND not used this month
-  let candidates = allPlanets.filter((p) => !discoveredGlobally.has(p.alias) && !usedThisMonth.has(p.alias))
+export function loadAchievementRecord(year: number, month: number): AchievementRecord {
+  const key = `${year}-${month}`
+  return loadAchievementsRaw()[key] ?? { claimed: {}, bonusClaimed: false }
+}
 
-  // P2: not used this month (cycle reset — all discovered globally)
-  if (candidates.length === 0) {
-    candidates = allPlanets.filter((p) => !usedThisMonth.has(p.alias))
-  }
-
-  // P3: ignore month constraint (every planet used this month somewhere)
-  if (candidates.length === 0) {
-    candidates = allPlanets.filter((p) => !discoveredGlobally.has(p.alias))
-  }
-
-  // P4: all discovered → absolute fallback
-  if (candidates.length === 0) candidates = allPlanets
-
-  // Weighted pick using seeded RNG
-  const seed = (year * 12 + month) * 65537 + strHash(categoryKey)
-  const rand = seededRandom(seed)
-  const totalWeight = candidates.reduce((s, p) => s + RARITY_WEIGHT[p.rarity], 0)
-  let pick = rand() * totalWeight
-  let chosen = candidates[candidates.length - 1]
-  for (const p of candidates) {
+/** Helpers interni per il pick casuale di un pianeta non ancora assegnato globalmente */
+function pickRandomPlanet(
+  pool: ReturnType<typeof getAllPlanets>,
+): ReturnType<typeof getAllPlanets>[number] | null {
+  if (pool.length === 0) return null
+  const totalWeight = pool.reduce((s, p) => s + RARITY_WEIGHT[p.rarity], 0)
+  let pick = Math.random() * totalWeight
+  let chosen = pool[pool.length - 1]
+  for (const p of pool) {
     pick -= RARITY_WEIGHT[p.rarity]
     if (pick <= 0) { chosen = p; break }
   }
-
-  // Save to log
-  savePlanetLog([...log, { category: categoryKey, alias: chosen.alias, rarity: chosen.rarity, year, month, revealed: false }])
-  return { ...chosen, isNew: true }
+  return chosen
 }
 
-// Read-only: returns assigned planet for (category, year, month) if already in log, no side effect
-export function getLoggedPlanet(
-  categoryKey: string,
+function availablePool(
+  allPlanets: ReturnType<typeof getAllPlanets>,
+  rarityFilter?: (r: PlanetRarity) => boolean,
+): ReturnType<typeof getAllPlanets> {
+  const log = loadPlanetLog()
+  const assigned = new Set(log.map((e) => e.alias))
+  const base = allPlanets.filter((p) => !assigned.has(p.alias))
+  // Tutti i pianeti già assegnati: fallback a lista completa
+  const source = base.length > 0 ? base : allPlanets
+  const filtered = rarityFilter ? source.filter((p) => rarityFilter(p.rarity)) : source
+  return filtered.length > 0 ? filtered : source
+}
+
+/**
+ * Riscuote il pianeta per un singolo achievement.
+ * Restituisce il pianeta assegnato (o quello già assegnato se chiamato di nuovo).
+ */
+export function claimAchievementPlanet(
+  achievementId: string,
   year: number,
   month: number,
 ): { alias: string; source: string; lore: string; rarity: PlanetRarity } | null {
+  const store = loadAchievementsRaw()
+  const key = `${year}-${month}`
+  const record = store[key] ?? { claimed: {}, bonusClaimed: false }
+
+  // Già riscosso — ritorna il pianeta salvato
+  if (record.claimed[achievementId]) {
+    const alias = record.claimed[achievementId]
+    return getAllPlanets().find((p) => p.alias === alias) ?? null
+  }
+
+  const allPlanets = getAllPlanets()
+  const pool = availablePool(allPlanets)
+  const chosen = pickRandomPlanet(pool)
+  if (!chosen) return null
+
+  // Aggiunge al planet log (non rivelato — l'utente scopre nel catalogo pianeti)
   const log = loadPlanetLog()
-  const entry = log.find((e) => e.category === categoryKey && e.year === year && e.month === month)
-  if (!entry) return null
-  return getAllPlanets().find((p) => p.alias === entry.alias) ?? null
+  savePlanetLog([...log, {
+    category: `__ach_${achievementId}__`,
+    alias: chosen.alias,
+    rarity: chosen.rarity,
+    year,
+    month,
+    revealed: false,
+  }])
+
+  record.claimed[achievementId] = chosen.alias
+  store[key] = record
+  saveAchievementsRaw(store)
+
+  return chosen
+}
+
+/**
+ * Riscuote il pianeta bonus per aver completato tutti e 5 gli achievement.
+ * Rarità ≥ rare garantita.
+ */
+export function claimBonusPlanet(
+  year: number,
+  month: number,
+): { alias: string; source: string; lore: string; rarity: PlanetRarity } | null {
+  const store = loadAchievementsRaw()
+  const key = `${year}-${month}`
+  const record = store[key] ?? { claimed: {}, bonusClaimed: false }
+
+  if (record.bonusClaimed) {
+    if (record.bonusAlias) {
+      return getAllPlanets().find((p) => p.alias === record.bonusAlias) ?? null
+    }
+    return null
+  }
+
+  const eligibleRarities: PlanetRarity[] = ['rare', 'epic', 'legendary', 'mythic']
+  const allPlanets = getAllPlanets()
+  const pool = availablePool(allPlanets, (r) => eligibleRarities.includes(r))
+  const chosen = pickRandomPlanet(pool)
+  if (!chosen) return null
+
+  const log = loadPlanetLog()
+  savePlanetLog([...log, {
+    category: '__ach_bonus__',
+    alias: chosen.alias,
+    rarity: chosen.rarity,
+    year,
+    month,
+    revealed: false,
+  }])
+
+  record.bonusClaimed = true
+  record.bonusAlias = chosen.alias
+  store[key] = record
+  saveAchievementsRaw(store)
+
+  return chosen
 }
 
 // ─── Export / Import JSON ────────────────────────────────

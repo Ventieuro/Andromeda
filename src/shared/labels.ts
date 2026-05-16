@@ -396,7 +396,7 @@ const STRINGS = {
 
   // ── Missioni ───────────────────────────────────────────
   missioni: {
-    titolo:           t('Missioni',                         'Missions',                    'Misiones'),
+    titolo:           t('Obiettivi',                        'Goals',                       'Objetivos'),
     nessunObiettivo:  t('Nessun obiettivo ancora.',         'No goals yet.',               'Ningún objetivo aún.'),
     aggiungi:         t('Nuovo obiettivo',                  'New goal',                    'Nuevo objetivo'),
     modifica:         t('Modifica',                         'Edit',                        'Editar'),
@@ -484,6 +484,35 @@ const STRINGS = {
     applicaColore:      t('✓ Applica colore', '✓ Apply color', '✓ Aplicar color'),
   },
 
+  // ── Achievements ──────────────────────────────────────
+  achievements: {
+    titolo:          t('Ricerche Mensili',                    'Monthly Research',                    'Investigaciones Mensuales'),
+    sottotitolo:     t('Completa tutte e 5 le ricerche per sbloccare un pianeta raro!', 'Complete all 5 research tasks to unlock a rare planet!', '¡Completa las 5 investigaciones para desbloquear un planeta raro!'),
+    completate:      t('Tutte completate!',                   'All completed!',                      '¡Todas completadas!'),
+    riscuoti:        t('🪐 Scopri il pianeta',                '🪐 Discover planet',                   '🪐 Descubrir planeta'),
+    pianetaSbloccato: t('Pianeta sbloccato!',                 'Planet unlocked!',                    '¡Planeta desbloqueado!'),
+    bonusPianeta:    t('🌟 Bonus: pianeta raro sbloccato!',   '🌟 Bonus: rare planet unlocked!',       '🌟 ¡Bono: planeta raro desbloqueado!'),
+    riscuotiSingolo: t('🪐 Riscuoti pianeta',                 '🪐 Claim planet',                       '🪐 Reclamar planeta'),
+    riscuotiBonus:   t('🌟 Riscuoti pianeta bonus',           '🌟 Claim bonus planet',                 '🌟 Reclamar planeta bono'),
+    progressoLabel:  tf(
+      (n: number) => `${n}/5 completate`,
+      (n: number) => `${n}/5 completed`,
+      (n: number) => `${n}/5 completadas`,
+    ),
+    reset:           t('Si resettano a inizio mese',          'Resets at the start of each month',   'Se reinicia al inicio del mes'),
+    // Achievement definitions
+    explorerTitle:   t('Esploratore',   'Explorer',    'Explorador'),
+    explorerDesc:    t('Inserisci almeno 5 spese nel mese', 'Add at least 5 expenses this month', 'Añade al menos 5 gastos este mes'),
+    analystTitle:    t('Analista',      'Analyst',     'Analista'),
+    analystDesc:     t('Scansiona almeno uno scontrino con l\'OCR', 'Scan at least one receipt with OCR', 'Escanea al menos un ticket con OCR'),
+    saverTitle:      t('Risparmiatore', 'Saver',       'Ahorrador'),
+    saverDesc:       t('Raggiungi il 50% dell\'obiettivo risparmio', 'Reach 50% of your savings goal', 'Alcanza el 50% de tu objetivo de ahorro'),
+    diverseTitle:    t('Diversificato', 'Diversified', 'Diversificado'),
+    diverseDesc:     t('Usa almeno 4 categorie di spesa diverse', 'Use at least 4 different expense categories', 'Usa al menos 4 categorías de gasto distintas'),
+    punctualTitle:   t('Puntuale',      'Punctual',    'Puntual'),
+    punctualDesc:    t('Inserisci 3 spese nei primi 7 giorni del mese', 'Add 3 expenses in the first 7 days of the month', 'Añade 3 gastos en los primeros 7 días del mes'),
+  },
+
   // ── Settings ───────────────────────────────────────────
   settings: {
     impostazioni:      t('Configurazioni',               'Settings',                    'Configuración'),
@@ -565,7 +594,7 @@ const STRINGS = {
     spazioLocaleWarning: t('⚠️ Spazio locale quasi pieno: valuta backup/esportazione e pulizia dati vecchi.', '⚠️ Local storage is getting full: consider backup/export and cleaning old data.', '⚠️ El espacio local se está llenando: considera backup/exportación y limpieza de datos antiguos.'),
     spazioLocaleNota:   t('Stima basata su limite tipico IndexedDB (~50 MB per dominio).', 'Estimate based on typical IndexedDB limit (~50 MB per origin).', 'Estimación basada en el límite típico de IndexedDB (~50 MB por dominio).'),
     versione:           t('Versione', 'Version', 'Versión'),
-    svuotaDati:         t('🗑️ Svuota tutti i dati', '🗑️ Clear all data', '🗑️ Borrar todos los datos'),
+    svuotaDati:         t('Svuota tutti i dati', 'Clear all data', 'Borrar todos los datos'),
     svuotaConferma:     t('Verranno eliminati definitivamente:\n• Tutte le transazioni\n• Tutte le missioni\n• Tutti i prodotti\n• Categorie personalizzate\n\nImpostazioni, tema, lingua e PIN verranno mantenuti.', 'Will be permanently deleted:\n• All transactions\n• All missions\n• All products\n• Custom categories\n\nSettings, theme, language and PIN will be kept.', 'Se eliminarán permanentemente:\n• Todas las transacciones\n• Todas las misiones\n• Todos los productos\n• Categorías personalizadas\n\nLas configuraciones, tema, idioma y PIN se mantendrán.'),
     svuotaFatto:        t('✅ Dati cancellati', '✅ Data cleared', '✅ Datos eliminados'),
   },
@@ -893,4 +922,5 @@ export const OCR:         Labels['ocr']         = localize(STRINGS.ocr)
 export const RECEIPT_DETAIL: Labels['receiptDetail'] = localize(STRINGS.receiptDetail)
 export const PRODUCTS: Labels['prodotti'] = localize(STRINGS.prodotti)
 export const MISSIONS: Labels['missioni'] = localize(STRINGS.missioni)
+export const ACHIEVEMENTS: Labels['achievements'] = localize(STRINGS.achievements)
 export const PLANET_UNLOCK: Labels['planetUnlock'] = localize(STRINGS.planetUnlock)

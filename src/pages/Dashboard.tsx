@@ -4,9 +4,8 @@ import { Pencil, Trash2 } from 'lucide-react'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
 import ReceiptDetailModal from '../components/ReceiptDetailModal'
-import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings, loadGoals, updateGoal, resolveMonthPlanet } from '../shared/storage'
+import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings, loadGoals, updateGoal } from '../shared/storage'
 import type { Transaction } from '../shared/types'
-import { normalizeCategoryKey } from '../shared/labels'
 import type { MonthDetail } from '../components/CometChart'
 import ExpensePieChart from '../components/ExpensePieChart'
 import { DASHBOARD, MASCOT, translateCategory } from '../shared/labels'
@@ -109,21 +108,7 @@ function Dashboard() {
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
 
-  // ─── Planet discovery — assegna pianeti per tutte le categorie del periodo ───
-  const assignPlanetsForPeriod = useCallback((periodStart: Date, periodMonth: number, periodYear: number) => {
-    const allTx = loadTransactions()
-    const end = new Date(periodStart.getFullYear(), periodStart.getMonth() + 1, periodStart.getDate() - 1)
-    const periodTx = getTransactionsInPeriod(allTx, periodStart, end)
-    const categories = [...new Set(
-      periodTx
-        .filter((t) => t.type === 'uscita' && t.category)
-        .map((t) => normalizeCategoryKey(t.category, 'uscita'))
-        .filter(Boolean)
-    )]
-    for (const cat of categories) {
-      resolveMonthPlanet(cat, periodYear, periodMonth)
-    }
-  }, [])
+
 
   useEffect(() => {
     const handleAddTransaction = () => setShowForm(true)
@@ -137,7 +122,6 @@ function Dashboard() {
   // ─── Callback usato da AddTransactionForm (non edit) ─────────────
   function handleSaved() {
     refresh()
-    assignPlanetsForPeriod(start, start.getMonth(), start.getFullYear())
   }
 
   const allTx = useMemo(() => loadTransactions(), [refreshKey])
