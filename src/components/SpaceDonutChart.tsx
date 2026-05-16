@@ -428,14 +428,16 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
       ? [...slices].sort((a, b) => b.amount - a.amount).slice(0, PLANET_LIMIT)
       : slices
 
-    const orbitBase = outerR + 12
-    const orbitStep = 10
+    const orbitBase = outerR + 10
+    const maxOrbit = W / 2 - 12  // stay inside canvas
+    const orbitRange = maxOrbit - orbitBase
+    const orbitStep = planetSlices.length > 1 ? orbitRange / (planetSlices.length - 1) : 0
     const orbitRadii = planetSlices.map((_, i) => orbitBase + i * orbitStep)
     // 3D inclinations - strong tilts so orbits cross through the donut
     const TILT_BASE = [0.78, -0.65, 0.92, -0.72, 0.58, -0.85, 0.68, -0.55]
     const inclinations = planetSlices.map((_, i) => TILT_BASE[i % TILT_BASE.length])
-    // Slower speeds + larger step between planets → reduces convergence over time
-    const planetSpeeds = planetSlices.map((_, i) => (i % 2 === 0 ? 1 : -1) * (0.15 + i * 0.07))
+    // Slow speeds
+    const planetSpeeds = planetSlices.map((_, i) => (i % 2 === 0 ? 1 : -1) * (0.06 + i * 0.025))
     const maxPercent = Math.max(...planetSlices.map((s) => s.percent))
     const minPercent = Math.min(...planetSlices.map((s) => s.percent))
     const planetRadius = (pct: number) => {
