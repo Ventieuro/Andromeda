@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import type { ComponentType } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Download, FolderOpen, Trash2 } from 'lucide-react'
-import { PageHeader } from '../components/ui'
+import { ChevronLeft, ChevronRight, Tag, Palette, Globe, Bell, Lock, HardDrive, ArrowUpDown, Archive, Download, FolderOpen, Trash2, Mail } from 'lucide-react'
+import { PageHeader, Modal } from '../components/ui'
 import { useTheme } from '../shared/ThemeContext'
 import { NebulaIcon, CampfireIcon, NasaIcon, AuroraIcon, LunaIcon, SupernovaIcon } from '../shared/icons'
 import MoneyPlusImporter from '../components/MoneyPlusImporter'
@@ -557,11 +557,40 @@ function SettingsRow({ icon, label, onClick }: { icon: React.ReactNode; label: s
   )
 }
 
+// ─── Contact Modal ───────────────────────────────────────
+function ContactModal({ onClose }: { onClose: () => void }) {
+  return (
+    <Modal onClose={onClose} position="bottom">
+      <div
+        className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 flex flex-col gap-4"
+        style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Contattaci</h2>
+          <button onClick={onClose} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+        </div>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          Hai suggerimenti, esigenze o richieste per l&rsquo;app?<br />
+          Scrivici — le tue idee ci aiuteranno a migliorare l&rsquo;esperienza di tutti gli utenti.
+        </p>
+        <a
+          href="mailto:andromedaVenti@gmail.com"
+          className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition active:scale-[0.98]"
+          style={{ backgroundColor: 'var(--accent)', color: '#fff', textDecoration: 'none' }}
+        >
+          <Mail size={15} /> andromedaVenti@gmail.com
+        </a>
+      </div>
+    </Modal>
+  )
+}
+
 // ─── Main Page ────────────────────────────────────────────
 function SettingsPage() {
   const navigate = useNavigate()
   const { showConfirm } = useDialog()
   const [resetDone, setResetDone] = useState(false)
+  const [showContact, setShowContact] = useState(false)
 
   async function handleReset() {
     const ok = await showConfirm({
@@ -578,6 +607,7 @@ function SettingsPage() {
 
   return (
     <div style={{ minHeight: '100%' }}>
+      {showContact && <ContactModal onClose={() => setShowContact(false)} />}
       <PageHeader title={SETTINGS.impostazioni} />
 
       <div className="px-4 flex flex-col gap-2">
@@ -589,6 +619,7 @@ function SettingsPage() {
         <SettingsRow icon={<HardDrive size={18} />}    label={SETTINGS.spazioLocaleTitolo}  onClick={() => navigate('/settings/spazio')} />
         <SettingsRow icon={<ArrowUpDown size={18} />}  label={SETTINGS.esportaVoce}         onClick={() => navigate('/settings/esporta')} />
         <SettingsRow icon={<Archive size={18} />}      label={SETTINGS.backupVoce}          onClick={() => navigate('/settings/backup')} />
+        <SettingsRow icon={<Mail size={18} />}         label={SETTINGS.contattaci}          onClick={() => setShowContact(true)} />
       </div>
 
       {/* ─── Zona pericolosa ─── */}

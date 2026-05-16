@@ -593,6 +593,7 @@ const STRINGS = {
     ),
     spazioLocaleWarning: t('⚠️ Spazio locale quasi pieno: valuta backup/esportazione e pulizia dati vecchi.', '⚠️ Local storage is getting full: consider backup/export and cleaning old data.', '⚠️ El espacio local se está llenando: considera backup/exportación y limpieza de datos antiguos.'),
     spazioLocaleNota:   t('Stima basata su limite tipico IndexedDB (~50 MB per dominio).', 'Estimate based on typical IndexedDB limit (~50 MB per origin).', 'Estimación basada en el límite típico de IndexedDB (~50 MB por dominio).'),
+    contattaci:         t('Contattaci', 'Contact us', 'Contáctanos'),
     versione:           t('Versione', 'Version', 'Versión'),
     svuotaDati:         t('Svuota tutti i dati', 'Clear all data', 'Borrar todos los datos'),
     svuotaConferma:     t('Verranno eliminati definitivamente:\n• Tutte le transazioni\n• Tutte le missioni\n• Tutti i prodotti\n• Categorie personalizzate\n\nImpostazioni, tema, lingua e PIN verranno mantenuti.', 'Will be permanently deleted:\n• All transactions\n• All missions\n• All products\n• Custom categories\n\nSettings, theme, language and PIN will be kept.', 'Se eliminarán permanentemente:\n• Todas las transacciones\n• Todas las misiones\n• Todos los productos\n• Categorías personalizadas\n\nLas configuraciones, tema, idioma y PIN se mantendrán.'),
