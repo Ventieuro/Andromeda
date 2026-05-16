@@ -277,13 +277,13 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
         </p>
       ) : slices.length === 0 ? (
         // Nessuna transazione ma ci sono obiettivi: mostra donut vuoto con arco obiettivo
-        <SpaceDonutChart slices={[]} totalIncome={0} totalExpenses={0} size={280} hideIncome={!amountsVisible} savingsGoal={totalMonthlyGoal} missionSaved={0} periodYear={periodStart?.getFullYear()} periodMonth={periodStart?.getMonth()} />
+        <SpaceDonutChart slices={[]} totalIncome={0} totalExpenses={0} size={250} hideIncome={!amountsVisible} savingsGoal={totalMonthlyGoal} missionSaved={0} periodYear={periodStart?.getFullYear()} periodMonth={periodStart?.getMonth()} />
       ) : view === 'comet' ? (
         <CometChart allTransactions={allTransactions ?? transactions} payDay={payDay} onMonthSelect={onMonthSelect} selectedMonthIndex={selectedMonthIndex} onTotalsChange={onTotalsChange} />
       ) : view === 'solar' ? (
         <SolarSystemChart transactions={transactions} onCategoryClick={onCategoryClick} sortMode={sortMode} />
       ) : (
-        <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} size={280} hideIncome={!amountsVisible} onCategoryClick={onCategoryClick} savingsGoal={totalMonthlyGoal} missionSaved={missionTotal} periodYear={periodStart?.getFullYear()} periodMonth={periodStart?.getMonth()} />
+        <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} size={250} hideIncome={!amountsVisible} onCategoryClick={onCategoryClick} savingsGoal={totalMonthlyGoal} missionSaved={missionTotal} periodYear={periodStart?.getFullYear()} periodMonth={periodStart?.getMonth()} />
       )}
     </div>
   )

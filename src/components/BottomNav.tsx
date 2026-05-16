@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { House, List, Target, Settings } from 'lucide-react'
+import { House, List, Flag, Settings } from 'lucide-react'
 import { LAYOUT, DASHBOARD } from '../shared/labels'
 
 function BottomNav() {
@@ -88,7 +88,7 @@ function BottomNav() {
             title={LAYOUT.navMissioni}
           >
             <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/missions') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
-              <Target size={22} aria-hidden="true" />
+              <Flag size={22} aria-hidden="true" />
             </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navMissioni}</span>
           </Link>

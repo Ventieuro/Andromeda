@@ -37,11 +37,11 @@ interface GoalFormProps {
   onCancel: () => void
 }
 
-const EMOJIS = ['🎯', '🏠', '✈️', '🚗', '💍', '🎓', '💻', '🎮', '🩺', '🎁', '🏋️', '🏦']
+const EMOJIS = ['🚩', '🏠', '✈️', '🚗', '💍', '🎓', '💻', '🎮', '🩺', '🎁', '🏋️', '🏦']
 
 function GoalForm({ initial, onSave, onCancel }: GoalFormProps) {
   const [name, setName] = useState(initial?.name ?? '')
-  const [emoji, setEmoji] = useState(initial?.emoji ?? '🎯')
+  const [emoji, setEmoji] = useState(initial?.emoji ?? '🚩')
   const [mode, setMode] = useState<Mode>(() => {
     if (initial?.targetDate) return 'data'
     return 'mensile'

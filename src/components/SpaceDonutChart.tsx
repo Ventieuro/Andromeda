@@ -108,45 +108,99 @@ function drawImportantNeedle(
   ctx.fill()
 }
 
-// ─── Savings goal arc ────────────────────────────────────
-function drawSavingsGoalArc(
+// ─── Savings goal flag ────────────────────────────────────
+function drawSavingsGoalFlag(
   ctx: CanvasRenderingContext2D,
   cx: number, cy: number,
   outerR: number,
   totalIncome: number,
-  actualSavings: number,
+  _actualSavings: number,
   savingsGoal: number,
   time: number,
 ) {
   if (savingsGoal <= 0) return
-  // Arc proportional to goal/income when income > 0, fixed size (60°) otherwise
+  // Same sweep calculation as the old arc
   const goalSweep = totalIncome > 0
     ? Math.min((savingsGoal / totalIncome) * Math.PI * 2, Math.PI)
     : Math.PI / 3
   if (goalSweep < 0.05) return
 
-  const met = actualSavings >= savingsGoal
   const pulse = 0.5 + 0.5 * Math.sin(time * 2.5)
-  const baseColor = met ? '34,197,94' : '239,68,68'
+  const [r, g, b] = [0, 170, 255] // neon blue
+  const alpha = 0.8 + 0.2 * pulse
 
-  // Counter-clockwise from top: draw arc from (-π/2 - goalSweep) to (-π/2)
-  const startAngle = -Math.PI / 2
-  const endAngle = startAngle - goalSweep
-  const midAngle = startAngle - goalSweep / 2
+  // Flag plants at the outer end of the arc (counter-clockwise end from top)
+  const flagAngle = -Math.PI / 2 - goalSweep
 
+  // Radial unit vector (outward from center)
+  const radX = Math.cos(flagAngle)
+  const radY = Math.sin(flagAngle)
+  // Clockwise tangential (perpendicular to radial)
+  const cwX = -Math.sin(flagAngle)
+  const cwY = Math.cos(flagAngle)
+
+  const baseR = outerR + 1   // base of pole sits just outside the donut
+  const poleLen = 9           // pole extends outward
+
+  const bx = cx + baseR * radX
+  const by = cy + baseR * radY
+  const tx = bx + poleLen * radX
+  const ty = by + poleLen * radY
+
+  // Rectangular flag fabric — wave on the far edge only
+  const wave = Math.sin(time * 5) * 1.2
+  const flagW = 10   // width along CW tangential direction
+  const flagH = 7    // height along radial (outward)
+
+  // Four corners of the rectangle (top-left = pole tip, going CW)
+  // top-left  = tx, ty
+  // top-right = tx + cwX*flagW, ty + cwY*flagW  (+ slight wave)
+  // bot-right = top-right + radX*flagH (further out radially)
+  // bot-left  = tx + radX*flagH
+  const p0x = tx
+  const p0y = ty
+  const p1x = tx + cwX * (flagW + wave)
+  const p1y = ty + cwY * (flagW + wave)
+  const p2x = p1x + radX * flagH
+  const p2y = p1y + radY * flagH
+  const p3x = tx + radX * flagH
+  const p3y = ty + radY * flagH
+
+  // Glow at base
+  const glow = ctx.createRadialGradient(bx, by, 0, bx, by, 10)
+  glow.addColorStop(0, `rgba(${r},${g},${b},${0.35 * pulse})`)
+  glow.addColorStop(1, `rgba(${r},${g},${b},0)`)
   ctx.beginPath()
-  ctx.arc(cx, cy, outerR + 4, endAngle, startAngle)
-  ctx.strokeStyle = `rgba(${baseColor},${0.55 + 0.3 * pulse})`
-  ctx.lineWidth = 3
+  ctx.arc(bx, by, 10, 0, Math.PI * 2)
+  ctx.fillStyle = glow
+  ctx.fill()
+
+  // Pole
+  ctx.beginPath()
+  ctx.moveTo(bx, by)
+  ctx.lineTo(tx, ty)
+  ctx.strokeStyle = `rgba(220,220,255,${alpha})`
+  ctx.lineWidth = 1.5
   ctx.setLineDash([])
   ctx.stroke()
 
-  // Tip dot floating above the arc at the midpoint (same as important dot)
-  const tx = cx + (outerR + 9) * Math.cos(midAngle)
-  const ty = cy + (outerR + 9) * Math.sin(midAngle)
+  // Flag fabric
   ctx.beginPath()
-  ctx.arc(tx, ty, 3, 0, Math.PI * 2)
-  ctx.fillStyle = `rgba(${baseColor},${0.8 + 0.2 * pulse})`
+  ctx.moveTo(p0x, p0y)
+  ctx.lineTo(p1x, p1y)
+  ctx.lineTo(p2x, p2y)
+  ctx.lineTo(p3x, p3y)
+  ctx.closePath()
+  ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`
+  ctx.fill()
+  ctx.strokeStyle = `rgba(255,255,255,0.25)`
+  ctx.lineWidth = 0.5
+  ctx.stroke()
+
+  // Base dot
+  ctx.beginPath()
+  ctx.arc(bx, by, 2, 0, Math.PI * 2)
+  ctx.fillStyle = `rgba(220,220,255,${alpha})`
   ctx.fill()
 }
 
@@ -365,12 +419,12 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     const cx = W / 2
     const cy = H / 2
     const scale = W / 320
-    const outerR = 100 * scale
-    const innerR = 58 * scale
+    const outerR = 92 * scale
+    const innerR = 62 * scale
 
     // Planet orbit config — keep planets inside canvas
     const maxPlanetR = 10
-    const orbitBase = outerR + 16
+    const orbitBase = outerR + 28
     const maxOrbitR = W / 2 - maxPlanetR - 6
     const orbitRange = maxOrbitR - orbitBase
     const orbitStep = slices.length > 1 ? orbitRange / (slices.length - 1) : 0
@@ -405,9 +459,9 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
       // Donut
       drawDonut(c, cx, cy, outerR, innerR, slices, elapsed)
 
-      // Savings goal arc (counter-clockwise from top, green = met, red = not met)
+      // Savings goal flag — planted at the goal threshold on the outer ring
       if (savingsGoal > 0) {
-        drawSavingsGoalArc(c, cx, cy, outerR, totalIncome, totalIncome - totalExpenses + missionSaved, savingsGoal, elapsed)
+        drawSavingsGoalFlag(c, cx, cy, outerR, totalIncome, totalIncome - totalExpenses + missionSaved, savingsGoal, elapsed)
       }
 
       // Manual savings arc (blue = already deposited into goals this period) — hidden for now
