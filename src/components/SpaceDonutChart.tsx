@@ -140,8 +140,8 @@ function drawSavingsGoalFlag(
   const cwX = -Math.sin(flagAngle)
   const cwY = Math.cos(flagAngle)
 
-  const baseR = outerR + 1   // base of pole sits just outside the donut
-  const poleLen = 9           // pole extends outward
+  const baseR = outerR + 1
+  const poleLen = 7
 
   const bx = cx + baseR * radX
   const by = cy + baseR * radY
@@ -149,9 +149,9 @@ function drawSavingsGoalFlag(
   const ty = by + poleLen * radY
 
   // Rectangular flag fabric — wave on the far edge only
-  const wave = Math.sin(time * 5) * 1.2
-  const flagW = 10   // width along CW tangential direction
-  const flagH = 7    // height along radial (outward)
+  const wave = Math.sin(time * 5) * 0.8
+  const flagW = 7    // width along CW tangential direction
+  const flagH = 5    // height along radial (outward)
 
   // Four corners of the rectangle (top-left = pole tip, going CW)
   // top-left  = tx, ty
@@ -442,17 +442,22 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
     const cx = W / 2
     const cy = H / 2
     const scale = W / 320
-    const outerR = 92 * scale
-    const innerR = 62 * scale
+    const outerR = 84 * scale
+    const innerR = 60 * scale
 
-    // Planet orbit config — keep planets inside canvas
-    const maxPlanetR = 10
+    // Planet orbit config — keep planets inside canvas, prevent inter-orbit overlap
     const orbitBase = outerR + 28
-    const maxOrbitR = W / 2 - maxPlanetR - 6
-    const orbitRange = maxOrbitR - orbitBase
-    const orbitStep = slices.length > 1 ? orbitRange / (slices.length - 1) : 0
+    const rawMaxOrbitR = W / 2 - 6
+    const orbitRange = rawMaxOrbitR - orbitBase
+    const rawStep = slices.length > 1 ? orbitRange / (slices.length - 1) : orbitRange
+    // Planet radius must fit inside the orbit gap so adjacent orbits never overlap
+    const maxPlanetR = Math.max(3, Math.min(10 - Math.floor(slices.length / 3), Math.floor((rawStep - 2) / 2)))
+    const maxOrbitR = W / 2 - maxPlanetR - 4
+    const usableRange = maxOrbitR - orbitBase
+    const orbitStep = slices.length > 1 ? usableRange / (slices.length - 1) : usableRange
     const orbitRadii = slices.map((_, i) => orbitBase + i * orbitStep)
-    const planetSpeeds = slices.map((_, i) => (i % 2 === 0 ? 1 : -1) * (0.3 + i * 0.15))
+    // Slower speeds + larger step between planets → reduces convergence over time
+    const planetSpeeds = slices.map((_, i) => (i % 2 === 0 ? 1 : -1) * (0.15 + i * 0.07))
     const maxPercent = Math.max(...slices.map((s) => s.percent))
     const minPercent = Math.min(...slices.map((s) => s.percent))
     const planetRadius = (pct: number) => {
