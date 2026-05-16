@@ -47,7 +47,7 @@ const STRINGS = {
     navCategories:  t('Categorie',    'Categories',    'Categorias'),
     navMovimenti:   t('Movimenti',    'Transactions',  'Movimientos'),
     navSettings:    t('Configurazioni', 'Settings',      'Configuración'),
-    navMissioni:    t('Missioni',     'Missions',      'Misiones'),
+    navMissioni:    t('Obiettivi',    'Goals',         'Objetivos'),
     navAdd:         t('Aggiungi',     'Add',           'Agregar'),
     nascondiImporti: t('Nascondi importi', 'Hide amounts', 'Ocultar importes'),
     mostraImporti:   t('Mostra importi',   'Show amounts',  'Mostrar importes'),

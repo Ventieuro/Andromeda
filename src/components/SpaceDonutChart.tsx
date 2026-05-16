@@ -125,8 +125,9 @@ function drawSavingsGoalFlag(
     : Math.PI / 3
   if (goalSweep < 0.05) return
 
+  const met = _actualSavings >= savingsGoal
   const pulse = 0.5 + 0.5 * Math.sin(time * 2.5)
-  const [r, g, b] = [0, 170, 255] // neon blue
+  const [r, g, b] = met ? [0, 170, 255] : [239, 68, 68] // cyan = met, red = not met
   const alpha = 0.8 + 0.2 * pulse
 
   // Flag plants at the outer end of the arc (counter-clockwise end from top)
@@ -165,6 +166,28 @@ function drawSavingsGoalFlag(
   const p2y = p1y + radY * flagH
   const p3x = tx + radX * flagH
   const p3y = ty + radY * flagH
+
+  // Dashed arc from top (-π/2) to flag angle — outside the donut, neon blue
+  const dashArcR = outerR + 5
+  ctx.beginPath()
+  ctx.arc(cx, cy, dashArcR, flagAngle, -Math.PI / 2)
+  ctx.strokeStyle = `rgba(${r},${g},${b},0.75)`
+  ctx.lineWidth = 2.5
+  ctx.setLineDash([5, 4])
+  ctx.stroke()
+  ctx.setLineDash([])
+
+  // Small tick at the start point (top of donut = 12 o'clock)
+  const tickStartX = cx + (outerR + 1) * Math.cos(-Math.PI / 2)
+  const tickStartY = cy + (outerR + 1) * Math.sin(-Math.PI / 2)
+  const tickEndX = cx + (dashArcR + 3) * Math.cos(-Math.PI / 2)
+  const tickEndY = cy + (dashArcR + 3) * Math.sin(-Math.PI / 2)
+  ctx.beginPath()
+  ctx.moveTo(tickStartX, tickStartY)
+  ctx.lineTo(tickEndX, tickEndY)
+  ctx.strokeStyle = `rgba(${r},${g},${b},0.9)`
+  ctx.lineWidth = 2
+  ctx.stroke()
 
   // Glow at base
   const glow = ctx.createRadialGradient(bx, by, 0, bx, by, 10)
@@ -795,16 +818,20 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideI
         {savingsGoal > 0 && totalIncome > 0 && (() => {
           const actualSavings = totalIncome - totalExpenses
           const met = actualSavings >= savingsGoal
+          const flagColor = met ? '#00aaff' : '#ef4444'
           return (
             <div className="flex items-center gap-3 py-1 mt-1" style={{ borderTop: '1px solid var(--border)' }}>
-              <div style={{ width: 18, height: 18, borderRadius: '50%', background: met ? '#22c55e' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#fff', flexShrink: 0, fontWeight: 700 }}>
-                {met ? '✓' : '✗'}
+              <div style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="14" height="16" viewBox="0 0 14 16" fill="none">
+                  <line x1="2" y1="1" x2="2" y2="15" stroke={flagColor} strokeWidth="1.5" strokeLinecap="round"/>
+                  <rect x="2" y="1" width="10" height="7" rx="1" fill={flagColor} opacity="0.9"/>
+                </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <span className="block text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                <span className="block text-sm font-medium" style={{ color: flagColor }}>
                   {DASHBOARD.obiettivoRisparmio}
                 </span>
-                <span className="text-xs" style={{ color: met ? '#22c55e' : '#ef4444' }}>
+                <span className="text-xs" style={{ color: flagColor }}>
                   {formatEuro(actualSavings)} / {formatEuro(savingsGoal)}
                 </span>
               </div>
