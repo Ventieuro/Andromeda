@@ -562,7 +562,7 @@ function ContactModal({ onClose }: { onClose: () => void }) {
   return (
     <Modal onClose={onClose} position="bottom">
       <div
-        className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 flex flex-col gap-4"
+        className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 pb-24 flex flex-col gap-4"
         style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}
       >
         <div className="flex items-center justify-between">
