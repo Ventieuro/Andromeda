@@ -170,6 +170,12 @@ function PinLock({ onUnlocked }: PinLockProps) {
     )
   }
 
+  // Dev bypass - stripped by Vite in production builds
+  if (import.meta.env.DEV) {
+    onUnlocked()
+    return null
+  }
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center p-4"

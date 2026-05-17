@@ -171,7 +171,7 @@ export default function ResearchButton() {
             style={{
               width: '100%', maxHeight: '85vh', overflowY: 'auto',
               background: 'var(--bg-card)', borderRadius: '24px 24px 0 0',
-              padding: '20px 16px 40px',
+              padding: '20px 16px 20px',
             }}
             onClick={(e) => e.stopPropagation()}
           >

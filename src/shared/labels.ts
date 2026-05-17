@@ -213,6 +213,10 @@ const STRINGS = {
     labelMissione:           t('Missione (opzionale)',                'Mission (optional)',              'Misión (opcional)'),
     nessunaMessione:         t('Nessuna missione',                    'No mission',                     'Sin misión'),
     oDivider:                t('oppure associa a una missione',       'or link to a mission',           'o asocia a una misión'),
+    goalDeductNowLabel:      t('Conta questo mese',                   'Count this month',               'Contar este mes'),
+    goalDeductNowHint:       t('La bandiera obiettivo scende di questo importo nel periodo corrente', 'The goal flag drops by this amount in the current period', 'La bandera del objetivo baja en el período actual'),
+    goalDiluteLabel:         t('Distribuisci nelle rate future',      'Spread across future payments',  'Distribuir en pagos futuros'),
+    goalDiluteHint:          t('L\'importo viene aggiunto al risparmio del goal, le rate future si abbassano', 'Amount added to goal savings, future payments decrease', 'El importe se añade al objetivo, los pagos futuros disminuyen'),
   },
 
   // ── Categorie ──────────────────────────────────────────
@@ -506,7 +510,7 @@ const STRINGS = {
     analystTitle:    t('Analista',      'Analyst',     'Analista'),
     analystDesc:     t('Scansiona almeno uno scontrino con l\'OCR', 'Scan at least one receipt with OCR', 'Escanea al menos un ticket con OCR'),
     saverTitle:      t('Risparmiatore', 'Saver',       'Ahorrador'),
-    saverDesc:       t('Raggiungi il 50% dell\'obiettivo risparmio', 'Reach 50% of your savings goal', 'Alcanza el 50% de tu objetivo de ahorro'),
+    saverDesc:       t('Versa almeno una volta su un obiettivo risparmio', 'Make at least one deposit towards a savings goal', 'Realiza al menos un depósito hacia un objetivo de ahorro'),
     diverseTitle:    t('Diversificato', 'Diversified', 'Diversificado'),
     diverseDesc:     t('Usa almeno 4 categorie di spesa diverse', 'Use at least 4 different expense categories', 'Usa al menos 4 categorías de gasto distintas'),
     punctualTitle:   t('Puntuale',      'Punctual',    'Puntual'),

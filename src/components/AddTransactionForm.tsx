@@ -47,6 +47,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   const [showScanner, setShowScanner] = useState(false)
   const [entryMode, setEntryMode] = useState<'manual' | 'receipt'>('manual')
   const [goalId, setGoalId] = useState<string>(editTransaction?.goalId ?? '')
+  const [goalDeductNow, setGoalDeductNow] = useState<boolean>(editTransaction?.goalDeductNow ?? true)
   const goals = loadGoals().filter(g => !g.targetAmount || g.savedAmount < g.targetAmount)
 
   const customCats = loadCustomCategories()
@@ -110,7 +111,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
       important,
       recurring,
       recurringMonths: recurring ? recurringMonths : 0,
-      ...(goalId ? { goalId } : {}),
+      ...(goalId ? { goalId, goalDeductNow } : {}),
     }
 
     // Se ricorrente, crea una copia per ogni mese futuro con groupId condiviso
@@ -218,9 +219,9 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
                   }}
                   className="rounded-xl px-3 py-3 text-sm font-semibold transition active:scale-[0.98]"
                   style={{
-                    backgroundColor: entryMode === 'manual' ? 'var(--accent-light)' : 'transparent',
+                    backgroundColor: entryMode === 'manual' ? 'var(--accent)' : 'transparent',
                     border: 'none',
-                    color: entryMode === 'manual' ? 'var(--accent)' : 'var(--text-secondary)',
+                    color: entryMode === 'manual' ? 'var(--fab-text)' : 'var(--text-secondary)',
                   }}
                 >
                   {FORM.inserisciManualmente}
@@ -381,8 +382,8 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
             )}
           </div>
 
-          {/* Missione (solo per uscite) — mutualmente esclusiva con categoria — hidden for now */}
-          {false && type === 'uscita' && goals.length > 0 && (
+          {/* Missione (solo per uscite) — mutualmente esclusiva con categoria */}
+          {type === 'uscita' && goals.length > 0 && (
             <>
               <div className="flex items-center gap-2 my-1">
                 <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
@@ -408,6 +409,36 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
                     </button>
                   ))}
                 </div>
+                {/* Opzione deduct/dilute — visibile solo se un goal è selezionato */}
+                {goalId !== '' && (
+                  <div className="mt-2 rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                    <button
+                      type="button"
+                      onClick={() => setGoalDeductNow(true)}
+                      className="w-full flex items-start gap-2 px-3 py-2 text-left transition"
+                      style={{ backgroundColor: goalDeductNow ? 'var(--accent-light)' : 'transparent' }}
+                    >
+                      <span style={{ fontSize: '16px', lineHeight: 1, marginTop: '1px' }}>🎯</span>
+                      <div>
+                        <p className="text-xs font-semibold" style={{ color: goalDeductNow ? 'var(--accent)' : 'var(--text-primary)' }}>{FORM.goalDeductNowLabel}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{FORM.goalDeductNowHint}</p>
+                      </div>
+                    </button>
+                    <div style={{ height: '1px', backgroundColor: 'var(--border)' }} />
+                    <button
+                      type="button"
+                      onClick={() => setGoalDeductNow(false)}
+                      className="w-full flex items-start gap-2 px-3 py-2 text-left transition"
+                      style={{ backgroundColor: !goalDeductNow ? 'var(--accent-light)' : 'transparent' }}
+                    >
+                      <span style={{ fontSize: '16px', lineHeight: 1, marginTop: '1px' }}>📅</span>
+                      <div>
+                        <p className="text-xs font-semibold" style={{ color: !goalDeductNow ? 'var(--accent)' : 'var(--text-primary)' }}>{FORM.goalDiluteLabel}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{FORM.goalDiluteHint}</p>
+                      </div>
+                    </button>
+                  </div>
+                )}
               </div>
             </>
           )}

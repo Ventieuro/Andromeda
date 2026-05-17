@@ -42,6 +42,7 @@ export interface Transaction {
   isReceipt?: boolean
   receiptItems?: ReceiptDetailItem[]
   goalId?: string
+  goalDeductNow?: boolean  // true = sottrai dalla bandiera obiettivo questo mese
 }
 
 export interface AppSettings {

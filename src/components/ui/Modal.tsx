@@ -16,7 +16,9 @@ function Modal({ children, onClose, position = 'center' }: ModalProps) {
       className={`fixed inset-0 bg-black/40 flex justify-center z-50 p-0 sm:p-4 ${align}`}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      {children}
+      {position === 'bottom' ? (
+        <div className="w-full flex flex-col mb-16 sm:mb-0">{children}</div>
+      ) : children}
     </div>
   )
 }

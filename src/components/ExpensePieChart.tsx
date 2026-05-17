@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Transaction } from '../shared/types'
+import type { Transaction, SavingsGoal } from '../shared/types'
 import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import SolarSystemChart from './SolarSystemChart'
 import SpaceDonutChart from './SpaceDonutChart'
@@ -100,7 +100,9 @@ interface ExpensePieChartProps {
   onTotalsChange?: (totals: { income: number; expenses: number; savings: number } | null) => void
 }
 
-function buildSlices(transactions: Transaction[]): Slice[] {
+const GOAL_COLORS = ['#7c9eff', '#5b8dee', '#4a7cdc', '#a78bfa', '#818cf8', '#60a5fa', '#38bdf8', '#34d399']
+
+function buildSlices(transactions: Transaction[], goals: SavingsGoal[] = []): Slice[] {
   const incomeTx = transactions.filter((t) => t.type === 'entrata')
   const expenseTx = transactions.filter((t) => t.type === 'uscita')
   if (incomeTx.length === 0 && expenseTx.length === 0) return []
@@ -137,8 +139,27 @@ function buildSlices(transactions: Transaction[]): Slice[] {
       importantRatio: Math.min(1, (importantByCategory.get(canonicalKey) ?? 0) / amount),
     }))
 
-  // Green slice — total savings (includes money already put into goals)
-  const totalSavings = totalIncome - regularExpenses
+  // Goal slices — grouped by goalId, shown in blue shades
+  const byGoal = new Map<string, number>()
+  for (const tx of missionTx) {
+    if (tx.goalId) byGoal.set(tx.goalId, (byGoal.get(tx.goalId) ?? 0) + tx.amount)
+  }
+  const goalSlices: Slice[] = [...byGoal.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([goalId, amount], i) => {
+      const goal = goals.find(g => g.id === goalId)
+      return {
+        canonicalKey: `goal:${goalId}`,
+        category: goal ? `${goal.emoji} ${goal.name}` : '🎯 Obiettivo',
+        amount,
+        percent: Math.round((amount / base) * 1000) / 10,
+        color: GOAL_COLORS[i % GOAL_COLORS.length],
+        type: 'uscita' as const,
+      }
+    })
+
+  // Green slice — savings = income minus ALL expenses (goal tx already shown as own slices)
+  const totalSavings = totalIncome - regularExpenses - missionTotal
   const savingsSlices: Slice[] = totalSavings > 0 ? [{
     canonicalKey: '',
     category: DASHBOARD.risparmiLabel,
@@ -148,11 +169,12 @@ function buildSlices(transactions: Transaction[]): Slice[] {
     type: 'entrata' as const,
   }] : []
 
-  return [...expenseSlices, ...savingsSlices]
+  return [...expenseSlices, ...goalSlices, ...savingsSlices]
 }
 
 function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart, payDay = 27, onCategoryClick, onViewChange, onMonthSelect, selectedMonthIndex, onTotalsChange }: ExpensePieChartProps) {
-  const rawSlices = buildSlices(transactions)
+  const allGoals = loadGoals()
+  const rawSlices = buildSlices(transactions, allGoals)
   const missionTotal = transactions.filter((t) => t.type === 'uscita' && t.goalId).reduce((s, t) => s + t.amount, 0)
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
@@ -161,7 +183,7 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
   const { amountsVisible } = useAmounts()
 
   const activeGoals = loadGoals().filter((g) => !periodEnd || g.createdAt.slice(0, 10) <= periodEnd)
-  const totalMonthlyGoal = periodStart && allTransactions
+  const rawMonthlyGoal = periodStart && allTransactions
     ? effectiveMonthlyGoal(activeGoals, allTransactions, payDay, periodStart)
     : activeGoals.reduce((s, g) => {
         if (g.targetDate && g.targetAmount !== undefined) {
@@ -172,6 +194,11 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
         }
         return s + (g.monthlyAmount ?? 0)
       }, 0)
+  // Tx versate a un goal con "conta questo mese" spostano già la bandiera in avanti
+  const deductNowTotal = transactions
+    .filter((t) => t.type === 'uscita' && t.goalId && t.goalDeductNow)
+    .reduce((s, t) => s + t.amount, 0)
+  const totalMonthlyGoal = Math.max(0, rawMonthlyGoal - deductNowTotal)
 
   const slices = sortMode === 'important'
     ? [

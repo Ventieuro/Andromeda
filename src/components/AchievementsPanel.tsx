@@ -45,12 +45,7 @@ function buildAchievements(): AchievementDef[] {
       icon: '🎯',
       title: ACHIEVEMENTS.saverTitle,
       desc: ACHIEVEMENTS.saverDesc,
-      check: (ctx) => {
-        const saved = ctx.totalIncome - ctx.totalExpenses
-        const goal = ctx.goals.find((g) => g.targetAmount && g.targetAmount > 0)
-        if (!goal || !goal.targetAmount) return false
-        return saved >= goal.targetAmount * 0.5
-      },
+      check: (ctx) => ctx.expenses.some((tx) => tx.type === 'uscita' && !!tx.goalId),
     },
     {
       id: 'diversified',
