@@ -142,18 +142,18 @@ export default function ResearchButton() {
         aria-label={ACHIEVEMENTS.titolo}
         title={ACHIEVEMENTS.titolo}
         style={{
-          position: 'relative', background: 'none', border: 'none',
+          position: 'relative', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
           cursor: 'pointer', color: 'var(--nav-text)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           width: '36px', height: '36px', borderRadius: '50%',
-          transition: 'opacity 0.2s',
+          transition: 'background 0.2s', flexShrink: 0,
         }}
-        className="hover:opacity-70 active:scale-90"
+        className="hover:bg-white/20 active:scale-95"
       >
-        <TelescopeIcon size={22} />
+        <TelescopeIcon size={18} />
         {badgeCount > 0 && (
           <span style={{
-            position: 'absolute', top: '-2px', right: '-2px',
+            position: 'absolute', top: '-4px', right: '-4px',
             background: '#f59e0b', color: '#000', borderRadius: '50%',
             width: '16px', height: '16px', fontSize: '9px', fontWeight: 700,
             display: 'flex', alignItems: 'center', justifyContent: 'center',

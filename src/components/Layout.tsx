@@ -18,23 +18,27 @@ function Layout() {
           {LAYOUT.appName}
         </Link>
         <div className="flex-1" />
-        <ResearchButton />
-        <button
-          onClick={toggleAmounts}
-          className="flex items-center gap-1.5 px-2.5 h-9 rounded-full transition hover:opacity-80 active:scale-90"
-          style={{ color: 'var(--nav-text)', background: amountsVisible ? 'none' : 'rgba(239,68,68,0.15)', border: 'none', cursor: 'pointer' }}
-          aria-label={amountsVisible ? LAYOUT.nascondiImporti : LAYOUT.mostraImporti}
-          title={amountsVisible ? LAYOUT.nascondiImporti : LAYOUT.mostraImporti}
-        >
-          {amountsVisible ? (
-            <Eye size={20} aria-hidden="true" />
-          ) : (
-            <>
-              <EyeOff size={20} aria-hidden="true" />
-              <span className="text-xs font-medium" style={{ color: 'rgba(239,68,68,0.9)' }}>{LAYOUT.importiNascosti}</span>
-            </>
+        <div className="flex items-center gap-1.5">
+          {!amountsVisible && (
+            <span className="text-xs font-semibold" style={{ color: 'rgba(239,68,68,0.9)' }}>
+              {LAYOUT.importiNascosti}
+            </span>
           )}
-        </button>
+          <button
+            onClick={toggleAmounts}
+            className="flex items-center justify-center hover:bg-white/20 active:scale-95"
+            style={{
+              width: '36px', height: '36px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.15)',
+              background: amountsVisible ? 'rgba(255,255,255,0.08)' : 'rgba(239,68,68,0.25)',
+              cursor: 'pointer', color: 'var(--nav-text)', transition: 'background 0.2s', flexShrink: 0,
+            }}
+            aria-label={amountsVisible ? LAYOUT.nascondiImporti : LAYOUT.mostraImporti}
+            title={amountsVisible ? LAYOUT.nascondiImporti : LAYOUT.mostraImporti}
+          >
+            {amountsVisible ? <Eye size={18} aria-hidden="true" /> : <EyeOff size={18} aria-hidden="true" />}
+          </button>
+        </div>
+        <ResearchButton />
       </header>
 
       <main className="flex-1 px-4 py-6 md:px-8 pb-28 md:pb-28">
