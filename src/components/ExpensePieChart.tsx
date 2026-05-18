@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Star } from 'lucide-react'
 import type { Transaction, SavingsGoal } from '../shared/types'
 import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import SolarSystemChart from './SolarSystemChart'
@@ -291,7 +292,7 @@ function ExpensePieChart({ transactions, allTransactions, periodEnd, periodStart
               border: `1px solid ${sortMode === 'important' ? 'rgba(251,191,36,0.6)' : 'var(--border)'}`,
             }}
           >
-            ⭐ {DASHBOARD.ordinaPerImportante}
+            <Star size={12} fill={sortMode === 'important' ? '#f59e0b' : 'none'} stroke={sortMode === 'important' ? '#f59e0b' : 'currentColor'} /> {DASHBOARD.ordinaPerImportante}
           </button>
       )} */}
 

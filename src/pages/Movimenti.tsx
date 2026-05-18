@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { ListFilter, Pencil, Trash2 } from 'lucide-react'
+import { ListFilter, Pencil, Trash2, Star } from 'lucide-react'
 import { loadTransactions, deleteTransaction, deleteTransactionsByGroupId, loadSettings, loadGoals, updateGoal } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import { TRANSACTIONS, PRODUCTS, CATEGORIES, normalizeCategoryKey, translateCategory } from '../shared/labels'
@@ -466,7 +466,7 @@ function Movimenti() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {tx.description || (tx.goalId ? allGoals.find(g => g.id === tx.goalId)?.name : undefined) || translateCategory(tx.category)}
-                  {tx.important && <span style={{ marginLeft: '5px', fontSize: '12px' }}>⭐</span>}
+                  {tx.important && <Star size={12} fill="#f59e0b" stroke="#f59e0b" style={{ marginLeft: '5px', display: 'inline', verticalAlign: 'middle' }} />}
                 </p>
                 <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
                   {tx.goalId

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { RefreshCw, Star } from 'lucide-react'
 import type { TransactionType, Transaction } from '../shared/types'
 import { generateId, addTransaction, updateTransaction, updateTransactionsByGroupId, updateImportantByCategory, loadCustomCategories, addCustomCategory, loadGoals, updateGoal } from '../shared/storage'
 import Mascot from './Mascot'
@@ -36,11 +37,13 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   )
   const [important, setImportant] = useState(editTransaction?.important ?? false)
   const [recurring, setRecurring] = useState(editTransaction?.recurring ?? false)
-  // String state per evitare il bug degli zeri iniziali (es. "02" → "2")
   const [recurringMonthsStr, setRecurringMonthsStr] = useState(
-    String(editTransaction?.recurringMonths ?? 1)
+    String(editTransaction?.recurringMonths ?? 2)
   )
-  const recurringMonths = Math.max(1, Math.min(60, parseInt(recurringMonthsStr, 10) || 1))
+  const recurringMonths = Math.max(1, Math.min(60, parseInt(recurringMonthsStr, 10) || 2))
+  const [recurringFrequency, setRecurringFrequency] = useState(
+    editTransaction?.recurringFrequency ?? 1
+  )
   const [showNewCat, setShowNewCat] = useState(false)
   const [newCatName, setNewCatName] = useState('')
   const [saveForFuture, setSaveForFuture] = useState(false)
@@ -70,6 +73,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
         important,
         recurring,
         recurringMonths: recurring ? recurringMonths : 0,
+        recurringFrequency: recurring ? recurringFrequency : undefined,
       }
       updateTransaction({ ...editTransaction, ...patch })
       if (editTransaction.recurringGroupId) {
@@ -111,15 +115,16 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
       important,
       recurring,
       recurringMonths: recurring ? recurringMonths : 0,
+      recurringFrequency: recurring ? recurringFrequency : undefined,
       ...(goalId ? { goalId, goalDeductNow } : {}),
     }
 
-    // Se ricorrente, crea una copia per ogni mese futuro con groupId condiviso
+    // Se ricorrente, crea una copia per ogni occorrenza con groupId condiviso
     if (recurring && recurringMonths > 1) {
       const groupId = generateId()
       for (let i = 0; i < recurringMonths; i++) {
         const d = new Date(date)
-        d.setMonth(d.getMonth() + i)
+        d.setMonth(d.getMonth() + i * recurringFrequency)
         addTransaction({
           ...tx,
           id: generateId(),
@@ -479,7 +484,8 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
                   className="w-5 h-5 rounded accent-amber-400"
                 />
                 <div>
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                  <span className="text-sm font-medium flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
+                    <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
                     {FORM.labelImportante}
                   </span>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
@@ -499,40 +505,62 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
                 onChange={(e) => setRecurring(e.target.checked)}
                 className="w-5 h-5 rounded accent-amber-500"
               />
-                <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                {FORM.labelRicorrente}
-              </span>
+                <span className="text-sm font-medium flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
+                  <RefreshCw size={14} />
+                  {FORM.labelRicorrente}
+                </span>
             </label>
 
             {recurring && (
-              <div className="mt-3 flex items-center gap-2">
-                <Mascot mood="neutral" message={FORM.messaggioRicorrente} size="sm" />
-              </div>
-            )}
-
-            {recurring && (
-              <>
-                <div className="mt-2 flex items-center gap-2">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    min={1}
-                    max={60}
-                    value={recurringMonthsStr}
-                    onChange={(e) => {
-                      const v = e.target.value.replace(/[^0-9]/g, '')
-                      setRecurringMonthsStr(v === '' ? '' : String(Math.min(60, parseInt(v, 10) || 1)))
-                    }}
-                    onBlur={() => setRecurringMonthsStr(String(recurringMonths))}
-                    className="w-20 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2"
-                    style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
-                  />
-                  <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{FORM.unitaMesi}</span>
+              <div className="mt-3 flex flex-col gap-3">
+                {/* Ogni quanti mesi */}
+                <div>
+                  <p className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>{FORM.messaggioRicorrente}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[1, 2, 3, 6, 12].map((f) => (
+                      <button key={f} type="button"
+                        onClick={() => setRecurringFrequency(f)}
+                        className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
+                        style={{
+                          background: recurringFrequency === f ? 'var(--accent)' : 'var(--bg-primary)',
+                          color: recurringFrequency === f ? '#fff' : 'var(--text-secondary)',
+                          border: `1px solid ${recurringFrequency === f ? 'var(--accent)' : 'var(--border)'}`,
+                        }}
+                      >
+                        {f === 1 ? '1 mese' : `${f} mesi`}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-xs mt-2" style={{ color: 'var(--accent)', fontWeight: 500 }}>
-                  {FORM.ricorrentePreview(recurringMonths)}
+                {/* Per quante volte */}
+                <div>
+                  <p className="text-xs mb-1.5" style={{ color: 'var(--text-muted)' }}>{FORM.messaggioVolte}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[2, 3, 4, 6, 12].map((c) => (
+                      <button key={c} type="button"
+                        onClick={() => setRecurringMonthsStr(String(c))}
+                        className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
+                        style={{
+                          background: recurringMonths === c ? 'var(--accent)' : 'var(--bg-primary)',
+                          color: recurringMonths === c ? '#fff' : 'var(--text-secondary)',
+                          border: `1px solid ${recurringMonths === c ? 'var(--accent)' : 'var(--border)'}`,
+                        }}
+                      >
+                        {c}×
+                      </button>
+                    ))}
+                    {![2, 3, 4, 6, 12].includes(recurringMonths) && (
+                      <span className="px-3 py-1.5 rounded-full text-xs font-semibold"
+                        style={{ background: 'var(--accent)', color: '#fff', border: '1px solid var(--accent)' }}>
+                        {recurringMonths}×
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <p className="text-xs" style={{ color: 'var(--accent)', fontWeight: 600 }}>
+                  {FORM.ricorrentePreview(recurringFrequency, recurringMonths)}
                 </p>
-              </>
+              </div>
             )}
           </div>
 

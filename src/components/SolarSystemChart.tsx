@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback, useMemo } from 'react'
+import { Star } from 'lucide-react'
 import type { Transaction } from '../shared/types'
 import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
@@ -392,7 +393,7 @@ function SolarSystemChart({ transactions, onCategoryClick, sortMode = 'amount' }
                     className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
                     style={{ backgroundColor: 'rgba(251,191,36,0.15)', color: '#f59e0b', border: '1px solid rgba(251,191,36,0.4)' }}
                   >
-                    ⭐ {DASHBOARD.spesaImportante}
+                    <Star size={10} fill="#f59e0b" stroke="#f59e0b" /> {DASHBOARD.spesaImportante}
                     {p.importantRatio < 1 ? ` ${Math.round(p.importantRatio * 100)}%` : ''}
                   </span>
                 )}

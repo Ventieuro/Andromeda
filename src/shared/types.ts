@@ -35,8 +35,9 @@ export interface Transaction {
   amount: number
   date: string // ISO yyyy-mm-dd
   recurring: boolean
-  recurringMonths: number // 0 = non ricorrente, N = quanti mesi
-  recurringGroupId?: string // ID condiviso fra le occorrenze della stessa serie
+  recurringMonths: number    // 0 = non ricorrente, N = quante volte si ripete
+  recurringFrequency?: number // ogni quanti mesi (default 1)
+  recurringGroupId?: string  // ID condiviso fra le occorrenze della stessa serie
   category: string
   important?: boolean
   isReceipt?: boolean

@@ -207,6 +207,7 @@ function isValidTransaction(data: unknown): data is Transaction {
     typeof t.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(t.date) &&
     typeof t.recurring === 'boolean' &&
     typeof t.recurringMonths === 'number' &&
+    (t.recurringFrequency === undefined || typeof t.recurringFrequency === 'number') &&
     (t.recurringGroupId === undefined || typeof t.recurringGroupId === 'string') &&
     typeof t.category === 'string' &&
     (t.isReceipt === undefined || typeof t.isReceipt === 'boolean') &&
