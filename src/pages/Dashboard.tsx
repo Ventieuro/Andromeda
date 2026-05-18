@@ -311,7 +311,7 @@ function Dashboard() {
       </div>
 
       {/* ── 2. Grafico grande ─────────────────────────────── */}
-      <div style={{ padding: '12px 16px 0' }}>
+      {periodTx.length > 0 && <div style={{ padding: '12px 16px 0' }}>
         <ExpensePieChart
           transactions={periodTx}
           allTransactions={allTx}
@@ -324,7 +324,7 @@ function Dashboard() {
           selectedMonthIndex={selectedMonth?.index ?? null}
           onTotalsChange={setCometTotals}
         />
-      </div>
+      </div>}
 
       {/* ── 3. Riepilogo Entrate / Uscite / Risparmi ─────── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', padding: '12px 16px 0' }}>
