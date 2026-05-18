@@ -17,6 +17,8 @@ import {
   loadNotificationSettings,
   loadProducts,
   loadGoals,
+  loadPlanetLog,
+  loadAchievementsStore,
   encryptJson,
 } from './storage'
 
@@ -133,6 +135,8 @@ async function buildBackupContent(password: string | null): Promise<string> {
     missionCardData,
     theme: localStorage.getItem('andromeda-theme') ?? undefined,
     lang: localStorage.getItem('andromeda-lang') ?? undefined,
+    planetLog: loadPlanetLog(),
+    achievementsStore: loadAchievementsStore(),
   }
   if (password) {
     const encrypted = await encryptJson(JSON.stringify(backup), password)

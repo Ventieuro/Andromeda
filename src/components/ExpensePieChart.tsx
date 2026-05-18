@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Star } from 'lucide-react'
 import type { Transaction, SavingsGoal } from '../shared/types'
 import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import SolarSystemChart from './SolarSystemChart'

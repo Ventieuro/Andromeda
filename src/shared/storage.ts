@@ -884,6 +884,14 @@ export interface AchievementRecord {
 
 type AchievementsStore = Record<string, AchievementRecord>  // key = `${year}-${month}`
 
+export function loadAchievementsStore(): AchievementsStore {
+  return loadAchievementsRaw()
+}
+
+export function saveAchievementsStore(data: AchievementsStore): void {
+  saveAchievementsRaw(data)
+}
+
 function loadAchievementsRaw(): AchievementsStore {
   try {
     const raw = localStorage.getItem(ACHIEVEMENTS_KEY)
@@ -1034,6 +1042,7 @@ export interface AppBackup {
   theme?: string
   lang?: string
   planetLog?: PlanetLogEntry[]
+  achievementsStore?: AchievementsStore
 }
 
 // ─── Crypto helpers ──────────────────────────────────────
@@ -1234,6 +1243,15 @@ function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok
     }
   }
 
+  if (data.achievementsStore && typeof data.achievementsStore === 'object') {
+    if (options.mode === 'merge') {
+      const local = loadAchievementsRaw()
+      saveAchievementsRaw({ ...data.achievementsStore, ...local })
+    } else {
+      saveAchievementsRaw(data.achievementsStore)
+    }
+  }
+
   return 'ok'
 }
 
@@ -1260,6 +1278,7 @@ export async function exportAllData(password: string): Promise<void> {
     theme: localStorage.getItem('andromeda-theme') ?? undefined,
     lang: localStorage.getItem('andromeda-lang') ?? undefined,
     planetLog: loadPlanetLog(),
+    achievementsStore: loadAchievementsRaw(),
   }
   const encrypted = await encryptJson(JSON.stringify(backup), password)
   const blob = new Blob([JSON.stringify(encrypted)], { type: 'application/json' })
@@ -1322,6 +1341,7 @@ export async function buildQrTransferLinks(password: string): Promise<string[]> 
     theme: localStorage.getItem('andromeda-theme') ?? undefined,
     lang: localStorage.getItem('andromeda-lang') ?? undefined,
     planetLog: loadPlanetLog(),
+    achievementsStore: loadAchievementsRaw(),
   }
 
   const encrypted = await encryptJson(JSON.stringify(backup), password)
@@ -1364,6 +1384,7 @@ export async function buildTransferCode(password: string): Promise<string> {
     theme: localStorage.getItem('andromeda-theme') ?? undefined,
     lang: localStorage.getItem('andromeda-lang') ?? undefined,
     planetLog: loadPlanetLog(),
+    achievementsStore: loadAchievementsRaw(),
   }
 
   const encrypted = await encryptJson(JSON.stringify(backup), password)

@@ -7,7 +7,26 @@ import { Modal } from './ui'
 import AchievementsPanel from './AchievementsPanel'
 import PlanetCard from './PlanetCard'
 import { TelescopeIcon } from '../shared/icons'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
+
+const MONTH_NAMES = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic']
+
+function computePeriodFromOffset(offset: number, now: Date, payDay: number) {
+  const baseYear = now.getDate() >= payDay
+    ? now.getFullYear()
+    : now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear()
+  const baseMonth = now.getDate() >= payDay
+    ? now.getMonth()
+    : now.getMonth() === 0 ? 11 : now.getMonth() - 1
+  let year = baseYear
+  let month = baseMonth - offset
+  while (month < 0) { month += 12; year -= 1 }
+  const start = new Date(year, month, payDay)
+  const end = new Date(year, month + 1, payDay - 1)
+  const from = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`
+  return { year, month, start, end, from }
+}
 
 // ─── Mini planet catalog ──────────────────────────────────
 
@@ -108,31 +127,38 @@ function computeBadge(goals: SavingsGoal[]): number {
 export default function ResearchButton() {
   const [open, setOpen] = useState(false)
   const [tab, setTab] = useState<'ricerche' | 'pianeti'>('ricerche')
+  const [periodOffset, setPeriodOffset] = useState(0)
   const location = useLocation()
 
   // Chiudi il popup quando si naviga verso un'altra pagina
   useEffect(() => {
     setOpen(false)
     setTab('ricerche')
+    setPeriodOffset(0)
   }, [location.pathname])
 
-  // Compute period data for AchievementsPanel
   const now = new Date()
   const { payDay = 27 } = loadSettings()
-  const periodYear = now.getDate() >= payDay
-    ? now.getFullYear()
-    : now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear()
-  const periodMonth = now.getDate() >= payDay
-    ? now.getMonth()
-    : now.getMonth() === 0 ? 11 : now.getMonth() - 1
-  const periodStart = new Date(periodYear, periodMonth, payDay)
-  const periodEnd = new Date(periodYear, periodMonth + 1, payDay - 1)
-  const periodFrom = `${periodStart.getFullYear()}-${String(periodStart.getMonth() + 1).padStart(2, '0')}-${String(periodStart.getDate()).padStart(2, '0')}`
+  const { year: periodYear, month: periodMonth, start: periodStart, end: periodEnd, from: periodFrom } =
+    computePeriodFromOffset(periodOffset, now, payDay)
   const allTx = loadTransactions()
+
+  // Max navigable offset = period of earliest transaction
+  const maxOffset = (() => {
+    if (allTx.length === 0) return 0
+    const minDate = [...allTx].sort((a, b) => a.date.localeCompare(b.date))[0].date
+    const d = new Date(minDate + 'T00:00:00')
+    const minYear = d.getDate() >= payDay ? d.getFullYear() : (d.getMonth() === 0 ? d.getFullYear() - 1 : d.getFullYear())
+    const minMonth = d.getDate() >= payDay ? d.getMonth() : (d.getMonth() === 0 ? 11 : d.getMonth() - 1)
+    const { year: baseYear, month: baseMonth } = computePeriodFromOffset(0, now, payDay)
+    return Math.max(0, (baseYear - minYear) * 12 + (baseMonth - minMonth))
+  })()
+
   const periodTx = getTransactionsInPeriod(allTx, periodStart, periodEnd)
   const totalIncome = periodTx.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = periodTx.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
   const goals = loadGoals()
+  // Badge uses only current period
   const badgeCount = computeBadge(goals)
 
   return (
@@ -198,16 +224,45 @@ export default function ResearchButton() {
             </div>
 
             {tab === 'ricerche' ? (
-              <AchievementsPanel
-                periodTx={periodTx}
-                periodFrom={periodFrom}
-                totalIncome={totalIncome}
-                totalExpenses={totalExpenses}
-                goals={goals}
-                year={periodYear}
-                month={periodMonth}
-                onGoToPlanets={() => setTab('pianeti')}
-              />
+              <>
+                {/* Period navigator — visible only if there are past periods */}
+                {maxOffset > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                  <button
+                    onClick={() => setPeriodOffset((o) => Math.min(o + 1, maxOffset))}
+                    disabled={periodOffset >= maxOffset}
+                    style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px 10px', cursor: periodOffset >= maxOffset ? 'default' : 'pointer', color: periodOffset >= maxOffset ? 'var(--text-muted)' : 'var(--text-primary)', display: 'flex', alignItems: 'center', opacity: periodOffset >= maxOffset ? 0.4 : 1 }}
+                    className="active:scale-95"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {periodOffset === 0
+                      ? '📅 Periodo attuale'
+                      : `${MONTH_NAMES[periodMonth]} ${periodYear}`}
+                  </span>
+                  <button
+                    onClick={() => setPeriodOffset((o) => Math.max(0, o - 1))}
+                    disabled={periodOffset === 0}
+                    style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px 10px', cursor: periodOffset === 0 ? 'default' : 'pointer', color: periodOffset === 0 ? 'var(--text-muted)' : 'var(--text-primary)', display: 'flex', alignItems: 'center', opacity: periodOffset === 0 ? 0.4 : 1 }}
+                    className="active:scale-95"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+                )}
+                <AchievementsPanel
+                  key={`${periodYear}-${periodMonth}`}
+                  periodTx={periodTx}
+                  periodFrom={periodFrom}
+                  totalIncome={totalIncome}
+                  totalExpenses={totalExpenses}
+                  goals={goals}
+                  year={periodYear}
+                  month={periodMonth}
+                  onGoToPlanets={() => setTab('pianeti')}
+                />
+              </>
             ) : (
               <PlanetsMini />
             )}
