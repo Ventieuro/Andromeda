@@ -6,6 +6,49 @@
 
 ## [Sessione corrente]
 
+### TASK-163 (refactor): Ship skin system — varianti SVG per pezzo via switch
+**File creati/modificati:** `src/components/ship/types.ts` (nuovo), `src/components/ship/ShipEngine.tsx`, `src/components/ship/ShipBody.tsx`, `src/components/ship/ShipBodyJoin.tsx`, `src/components/ship/ShipWings.tsx`, `src/components/ship/ShipNose.tsx`, `src/components/ship/ShipCockpit.tsx`, `src/components/ship/index.ts`, `src/components/MissionCard.tsx`
+
+- ✅ `types.ts`: `ShipSkin = number`, `ShipSkins = Partial<Record<PieceKey, ShipSkin>>`
+- ✅ Ogni file pezzo: prop `skin?: ShipSkin` (default `0`), JSX avvolto in `switch(skin)` — `default` = grafica attuale, `case 1+` pronti per nuove skin
+- ✅ `ShipProps` in `MissionCard` esteso con `skins?: ShipSkins`; ogni pezzo riceve `skin={skins?.xxx}`
+- ✅ `index.ts` esporta `ShipSkin` e `ShipSkins`
+- ✅ Versione bump → `0.14.12`
+
+### TASK-162 (refactor): Ship SVG — split in file dedicati (`ship/`)
+**File creati:** `src/components/ship/GhostPiece.tsx`, `LaunchPad.tsx`, `ShipEngine.tsx`, `ShipBody.tsx`, `ShipBodyJoin.tsx`, `ShipWings.tsx`, `ShipNose.tsx`, `ShipCockpit.tsx`, `index.ts`
+**File modificati:** `src/components/MissionCard.tsx`
+
+- ✅ Ogni pezzo della navicella ha il suo file dedicato in `src/components/ship/`
+- ✅ `LaunchPad`: elementi ripetuti convertiti in array + `.map()` (colonne, traversini)
+- ✅ `MissionCard.tsx`: import da `./ship`, blocco definizioni inline rimosso
+- ✅ Versione bump → `0.14.11`
+
+### TASK-161 (ux): Limite maxOffset navigazione achievement ai mesi con dati
+**File modificati:** `src/components/ResearchButton.tsx`
+
+- ✅ `maxOffset` calcolato dalla data della prima transazione in localStorage
+- ✅ Navigazione non mostrata se nessuna transazione presente (`maxOffset === 0`)
+- ✅ Il limite si espande automaticamente quando viene caricato un backup con dati più vecchi
+- ✅ Versione bump → `0.14.10`
+
+### TASK-160 (feature): Navigazione periodo achievement (mesi precedenti)
+**File modificati:** `src/components/ResearchButton.tsx`
+
+- ✅ Stato `periodOffset` con frecce ChevronLeft / ChevronRight da `lucide-react`
+- ✅ Helper `computePeriodFromOffset(offset, now, payDay)` — gestisce wraparound anno
+- ✅ Etichetta mese/anno corrente mostrata tra le frecce
+- ✅ `AchievementsPanel` riceve `key={year-month}` per forzare remount completo al cambio periodo
+- ✅ Versione bump → `0.14.9`
+
+### TASK-159 (bugfix): Backup — achievementsStore e planetLog mancanti
+**File modificati:** `src/shared/storage.ts`, `src/shared/autoBackup.ts`
+
+- ✅ `AppBackup`: aggiunto campo `achievementsStore?: AchievementsStore`
+- ✅ `exportAllData()` + `applyBackup()` + entrambe funzioni QR transfer: includono `achievementsStore`
+- ✅ `autoBackup.ts` `buildBackupContent()`: aggiunti `planetLog` e `achievementsStore` (entrambi mancavano)
+- ✅ Versione bump (bundled) → `0.14.9`
+
 ### TASK-158 (feature): Auto-aggiornamento PWA silenzioso
 **File modificati:** `vite.config.ts`, `src/main.tsx`
 

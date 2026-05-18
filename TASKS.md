@@ -23,6 +23,38 @@
 
 ## Completati (sessione corrente)
 
+### ✅ TASK-163 — Ship skin system: varianti SVG per pezzo via switch
+- Completato 18/05/2026
+- `src/components/ship/types.ts` — `ShipSkin = number`, `ShipSkins = Partial<Record<PieceKey, ShipSkin>>`
+- Ogni file pezzo: prop `skin?: ShipSkin`, corpo avvolto in `switch(skin)` — caso `default` = attuale, `case 1+` per nuove grafiche
+- `MissionCard.tsx`: `ShipProps` + `skins?: ShipSkins`, passato a ogni pezzo
+- `ship/index.ts`: esporta `ShipSkin`, `ShipSkins`
+
+### ✅ TASK-162 — Ship SVG: split pezzi in file dedicati (`ship/`)
+- Completato 18/05/2026
+- Creata cartella `src/components/ship/` con 8 file: `GhostPiece`, `LaunchPad`, `ShipEngine`, `ShipBody`, `ShipBodyJoin`, `ShipWings`, `ShipNose`, `ShipCockpit`
+- `ship/index.ts` barrel export
+- `MissionCard.tsx`: import da `./ship`, definizioni inline rimosse
+
+### ✅ TASK-161 — Navigazione achievement: limite maxOffset ai mesi con transazioni
+- Completato 18/05/2026
+- `maxOffset` calcolato da data prima transazione: nessuna navigazione oltre quel mese
+- Se nessuna transazione: navigazione non mostrata affatto
+- Versione bump → `0.14.10`
+
+### ✅ TASK-160 — Navigazione periodo achievement (mesi precedenti)
+- Completato 18/05/2026
+- `ResearchButton.tsx`: stato `periodOffset`, frecce ChevronLeft/Right, etichetta mese/anno
+- `computePeriodFromOffset(offset, now, payDay)` helper con wraparound anno
+- `AchievementsPanel` riceve `key={year-month}` per forzare remount al cambio periodo
+- Versione bump → `0.14.9`
+
+### ✅ TASK-159 — Fix backup: achievementsStore + planetLog in autoBackup
+- Completato 18/05/2026
+- `storage.ts`: `achievementsStore` aggiunto a `AppBackup`, `exportAllData()`, `applyBackup()`, transfer QR
+- `autoBackup.ts`: `planetLog` e `achievementsStore` inclusi in `buildBackupContent()`
+- Versione bump (bundled con TASK-160) → `0.14.9`
+
 ### ✅ TASK-158 — Auto-aggiornamento PWA silenzioso
 - Completato 13/05/2026
 - skipWaiting + clientsClaim in workbox; controllerchange → reload; visibilitychange → reg.update()
