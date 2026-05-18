@@ -5,6 +5,7 @@ import { getAllPlanets } from '../shared/labels'
 import type { PlanetRarity } from '../shared/labels'
 import { ACHIEVEMENTS } from '../shared/labels'
 import { Button } from './ui'
+import { RotateCcw } from 'lucide-react'
 
 // ─── Achievement definitions ─────────────────────────────
 
@@ -324,8 +325,8 @@ export default function AchievementsPanel({
       )}
 
       {/* Reset hint */}
-      <p style={{ margin: '12px 0 0', fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center' }}>
-        🔄 {ACHIEVEMENTS.reset}
+      <p style={{ margin: '12px 0 0', fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+        <RotateCcw size={11} /> {ACHIEVEMENTS.reset}
       </p>
     </div>
   )

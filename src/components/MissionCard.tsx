@@ -814,11 +814,15 @@ export default function MissionCard({
             })}
           </div>
           <button onClick={confirmColor} style={{
-            background: `linear-gradient(135deg, ${accent}, ${accentLight})`,
+            background: 'var(--accent)',
             border: 'none', borderRadius: '8px',
             color: '#fff', fontWeight: 600, fontSize: '13px',
             padding: '8px 18px', cursor: 'pointer', width: '100%',
-          }}>
+            transition: 'opacity 0.15s',
+          }}
+            onMouseOver={(e) => (e.currentTarget.style.opacity = '0.85')}
+            onMouseOut={(e) => (e.currentTarget.style.opacity = '1')}
+          >
             {MISSIONS.applicaColore}
           </button>
         </div>
