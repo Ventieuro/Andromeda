@@ -1,6 +1,8 @@
 ﻿import { useState, useEffect, useRef } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { MISSIONS } from '../shared/labels'
+import { GhostPiece, LaunchPad, ShipEngine, ShipBody, ShipBodyJoin, ShipWings, ShipNose, ShipCockpit } from './ship'
+import type { ShipSkins } from './ship'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -203,86 +205,7 @@ const STYLES = `
 .mc-text-liftoff { animation: textFadeIn 0.4s ease-out forwards; transform-origin: 100px 22px; }
 `
 
-// ─── Launch Pad ───────────────────────────────────────────
-// showOpenArms: true durante la sequenza di lancio (le braccia si aprono)
-
-interface LaunchPadProps { showOpenArms?: boolean }
-
-function LaunchPad({ showOpenArms = false }: LaunchPadProps) {
-  return (
-    <g>
-      {/* support legs */}
-      <path d="M38 165 L22 192" stroke="#1e2a45" strokeWidth="5" strokeLinecap="round" fill="none"/>
-      <path d="M60 165 L46 192" stroke="#1e2a45" strokeWidth="5" strokeLinecap="round" fill="none"/>
-      <path d="M162 165 L178 192" stroke="#1e2a45" strokeWidth="5" strokeLinecap="round" fill="none"/>
-      <path d="M140 165 L154 192" stroke="#1e2a45" strokeWidth="5" strokeLinecap="round" fill="none"/>
-
-      {/* base platform */}
-      <rect x="28" y="163" width="144" height="14" rx="5" fill="#1e2a45"/>
-      <rect x="28" y="163" width="144" height="5" rx="5" fill="#2a3a6a" opacity="0.45"/>
-      <circle cx="35" cy="167" r="2.5" fill="#2a3a6a"/>
-      <circle cx="165" cy="167" r="2.5" fill="#2a3a6a"/>
-      <circle cx="35" cy="174" r="2.5" fill="#2a3a6a"/>
-      <circle cx="165" cy="174" r="2.5" fill="#2a3a6a"/>
-
-      {/* left column */}
-      <rect x="32" y="52" width="11" height="113" rx="3" fill="#1e2a45"/>
-      <line x1="37" y1="52" x2="37" y2="163" stroke="#2a3a5a" strokeWidth="0.8" strokeDasharray="3 5"/>
-      <rect x="31" y="60" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="31" y="74" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="31" y="88" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="31" y="102" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="31" y="116" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="31" y="130" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="31" y="144" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-
-      {/* right column */}
-      <rect x="157" y="52" width="11" height="113" rx="3" fill="#1e2a45"/>
-      <line x1="163" y1="52" x2="163" y2="163" stroke="#2a3a5a" strokeWidth="0.8" strokeDasharray="3 5"/>
-      <rect x="156" y="60" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="156" y="74" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="156" y="88" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="156" y="102" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="156" y="116" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="156" y="130" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-      <rect x="156" y="144" width="13" height="5" rx="1.5" fill="#2a3a6a"/>
-
-      {/* horizontal rungs */}
-      <line x1="43" y1="68" x2="157" y2="68" stroke="#2a3a6a" strokeWidth="1.5"/>
-      <line x1="43" y1="82" x2="157" y2="82" stroke="#2a3a6a" strokeWidth="1.5"/>
-      <line x1="43" y1="96" x2="157" y2="96" stroke="#2a3a6a" strokeWidth="1.5"/>
-      <line x1="43" y1="110" x2="157" y2="110" stroke="#2a3a6a" strokeWidth="1.5"/>
-      <line x1="43" y1="124" x2="157" y2="124" stroke="#2a3a6a" strokeWidth="1.5"/>
-      <line x1="43" y1="138" x2="157" y2="138" stroke="#2a3a6a" strokeWidth="1.5"/>
-      <line x1="43" y1="152" x2="157" y2="152" stroke="#2a3a6a" strokeWidth="1.5"/>
-
-      {/* arm braces — open during launch */}
-      <g className={showOpenArms ? 'mc-pad-arm-l' : ''}>
-        <path d="M43 52 Q62 36 100 30" stroke="#1e2a45" strokeWidth="7" fill="none" strokeLinecap="round"/>
-        <circle cx="43" cy="52" r="6" fill="#1e2a45"/>
-        <circle cx="43" cy="52" r="3" fill="#2a3a6a"/>
-      </g>
-      <g className={showOpenArms ? 'mc-pad-arm-r' : ''}>
-        <path d="M168 52 Q138 36 100 30" stroke="#1e2a45" strokeWidth="7" fill="none" strokeLinecap="round"/>
-        <circle cx="168" cy="52" r="6" fill="#1e2a45"/>
-        <circle cx="168" cy="52" r="3" fill="#2a3a6a"/>
-      </g>
-
-      {/* blinking red lights atop columns */}
-      <circle cx="37" cy="47" r="5" fill="#ff2222" className="mc-blink-pad"/>
-      <circle cx="37" cy="47" r="3" fill="#ff8888" className="mc-blink-pad"/>
-      <circle cx="163" cy="47" r="5" fill="#ff2222" className="mc-blink-pad-b"/>
-      <circle cx="163" cy="47" r="3" fill="#ff8888" className="mc-blink-pad-b"/>
-
-      {/* ground glow during launch */}
-      {showOpenArms && (
-        <ellipse cx="100" cy="175" rx="50" ry="12" fill="#ff6600" opacity="0.35"/>
-      )}
-    </g>
-  )
-}
-
-// ─── Spaceship SVG (sub-component) ───────────────────────
+// ─── Spaceship (assembles pieces) ────────────────────────
 
 interface ShipProps {
   colors: PieceColors
@@ -293,9 +216,10 @@ interface ShipProps {
   showFlames?: boolean
   bigFlames?: boolean
   igniting?: boolean
+  skins?: ShipSkins
 }
 
-function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, showFlames = false, bigFlames = false, igniting = false }: ShipProps) {
+function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, showFlames = false, bigFlames = false, igniting = false, skins }: ShipProps) {
   const isUnlocked = (piece: PieceKey) => pct >= THRESHOLDS[piece]
 
   function getColor(piece: PieceKey): string {
@@ -303,103 +227,47 @@ function Spaceship({ colors, pct, newlyUnlocked, previewColor, previewPiece, sho
     return colors[piece]
   }
 
-  function ghostPiece(piece: PieceKey, children: React.ReactNode) {
-    if (isUnlocked(piece)) return null
-    return (
-      <g opacity="0.15" style={{ pointerEvents: 'none' }}>
-        <g fill="none" stroke="#8899cc" strokeWidth="1.5" strokeDasharray="4 4">
-          {children}
-        </g>
-        <text x="100" y="100" textAnchor="middle" dominantBaseline="middle" fill="#8899cc" fontSize="18" opacity="0.5">?</text>
-      </g>
-    )
-  }
-
-  const engineColor = getColor('engine')
-  const bodyColor = getColor('body')
-  const wingsColor = getColor('wings')
-  const noseColor = getColor('nose')
-  const cockpitColor = getColor('cockpit')
-
-  const flameAClass = bigFlames ? 'mc-flame-big' : 'mc-flame-a'
-  const flameBClass = bigFlames ? 'mc-flame-big' : 'mc-flame-b'
-
   return (
     <>
       {newlyUnlocked && (
-        <circle cx="100" cy="110" r="4" fill="none" stroke="#fff" strokeWidth="2" className="mc-flash" />
+        <circle cx="100" cy="110" r="4" fill="none" stroke="#fff" strokeWidth="2" className="mc-flash"/>
       )}
 
-      {/* ─── ENGINE ─── */}
-      <g id="engine">
-        <ellipse cx="100" cy="175" rx="22" ry="10" fill={engineColor} stroke="#ffffff20" strokeWidth="1" opacity="0.9" />
-        <path d="M78 165 Q100 178 122 165 L116 155 Q100 162 84 155 Z" fill={engineColor} stroke="#ffffff20" strokeWidth="1" />
-        <rect x="78" y="155" width="8" height="14" rx="4" fill={engineColor} stroke="#ffffff20" strokeWidth="1" opacity="0.8" />
-        <rect x="114" y="155" width="8" height="14" rx="4" fill={engineColor} stroke="#ffffff20" strokeWidth="1" opacity="0.8" />
-        {showFlames && (
-          <g className={igniting ? 'mc-flame-appear' : ''}>
-            <ellipse cx="90" cy="185" rx={bigFlames ? 10 : 6} ry={bigFlames ? 20 : 10} fill="#ff8800" className={flameAClass} style={{ transformOrigin: '90px 175px' }}/>
-            <ellipse cx="110" cy="185" rx={bigFlames ? 9 : 5} ry={bigFlames ? 17 : 8} fill="#ffcc00" className={flameBClass} style={{ transformOrigin: '110px 175px' }}/>
-            <ellipse cx="100" cy="183" rx={bigFlames ? 7 : 4} ry={bigFlames ? 15 : 7} fill="#fff5aa" className={flameAClass} style={{ transformOrigin: '100px 175px' }}/>
-            <ellipse cx="100" cy="182" rx={bigFlames ? 26 : 14} ry={bigFlames ? 12 : 6} fill="#ff6600" opacity="0.25"/>
-          </g>
-        )}
-      </g>
+      {/* ─── Engine (sempre visibile, base della navicella) ─── */}
+      <ShipEngine
+        color={getColor('engine')}
+        anim={newlyUnlocked === 'engine'}
+        showFlames={showFlames}
+        bigFlames={bigFlames}
+        igniting={igniting}
+        skin={skins?.engine}
+      />
 
-      {/* ─── BODY ─── */}
-      {isUnlocked('body') ? (
-        <g id="body" className={newlyUnlocked === 'body' ? 'mc-unlock' : ''}>
-          <rect x="70" y="115" width="60" height="50" rx="16" fill={bodyColor} stroke="#ffffff20" strokeWidth="1" />
-          <line x1="72" y1="132" x2="128" y2="132" stroke="#ffffff22" strokeWidth="1" />
-          <line x1="72" y1="148" x2="128" y2="148" stroke="#ffffff22" strokeWidth="1" />
-          <line x1="88" y1="115" x2="88" y2="165" stroke="#ffffff15" strokeWidth="1" />
-          <line x1="112" y1="115" x2="112" y2="165" stroke="#ffffff15" strokeWidth="1" />
-          <circle cx="76" cy="138" r="4" fill="#ff4444" className="mc-blink-r" />
-          <circle cx="124" cy="138" r="4" fill="#44ff88" className="mc-blink-g" />
-          <rect x="78" y="120" width="20" height="8" rx="4" fill="#ffffff12" />
-        </g>
-      ) : ghostPiece('body', <rect x="70" y="115" width="60" height="50" rx="16" />)}
+      {/* ─── Body ─── */}
+      {isUnlocked('body')
+        ? <ShipBody color={getColor('body')} anim={newlyUnlocked === 'body'} skin={skins?.body}/>
+        : <GhostPiece><rect x="70" y="115" width="60" height="50" rx="16"/></GhostPiece>}
 
-      {/* ─── WINGS ─── */}
-      {isUnlocked('wings') ? (
-        <g id="wings" className={newlyUnlocked === 'wings' ? 'mc-unlock' : ''}>
-          <path d="M70 140 L30 170 L45 155 L70 158 Z" fill={wingsColor} stroke="#ffffff20" strokeWidth="1" />
-          <line x1="70" y1="140" x2="36" y2="165" stroke="#ffffff20" strokeWidth="1" />
-          <path d="M130 140 L170 170 L155 155 L130 158 Z" fill={wingsColor} stroke="#ffffff20" strokeWidth="1" />
-          <line x1="130" y1="140" x2="164" y2="165" stroke="#ffffff20" strokeWidth="1" />
-        </g>
-      ) : ghostPiece('wings', (
-        <>
-          <path d="M70 140 L30 170 L45 155 L70 158 Z" />
-          <path d="M130 140 L170 170 L155 155 L130 158 Z" />
-        </>
-      ))}
+      {/* ─── Wings ─── */}
+      {isUnlocked('wings')
+        ? <ShipWings color={getColor('wings')} anim={newlyUnlocked === 'wings'} skin={skins?.wings}/>
+        : <GhostPiece>
+            <path d="M70 140 L30 170 L45 155 L70 158 Z"/>
+            <path d="M130 140 L170 170 L155 155 L130 158 Z"/>
+          </GhostPiece>}
 
-      {/* ─── NOSE ─── */}
-      {isUnlocked('nose') ? (
-        <g id="nose" className={newlyUnlocked === 'nose' ? 'mc-unlock' : ''}>
-          <path d="M100 38 Q82 68 78 95 Q100 88 122 95 Q118 68 100 38 Z" fill={noseColor} stroke="#ffffff20" strokeWidth="1" />
-          <path d="M100 50 Q92 72 90 90" stroke="#ffffff25" strokeWidth="2" fill="none" />
-        </g>
-      ) : ghostPiece('nose', <path d="M100 38 Q82 68 78 95 Q100 88 122 95 Q118 68 100 38 Z" />)}
+      {/* ─── Nose ─── */}
+      {isUnlocked('nose')
+        ? <ShipNose color={getColor('nose')} anim={newlyUnlocked === 'nose'} skin={skins?.nose}/>
+        : <GhostPiece><path d="M100 38 Q82 68 78 95 Q100 88 122 95 Q118 68 100 38 Z"/></GhostPiece>}
 
-      {/* ─── BODY-NOSE JOIN ─── */}
-      {isUnlocked('body') ? (
-        <rect x="70" y="88" width="60" height="30" rx="14" fill={bodyColor} />
-      ) : (
-        <rect x="70" y="88" width="60" height="30" rx="14" fill="#8899cc" opacity="0.08" strokeDasharray="4 4" stroke="#8899cc" strokeWidth="1" />
-      )}
+      {/* ─── Body-nose join (colore body, sempre sopra il naso) ─── */}
+      <ShipBodyJoin color={getColor('body')} unlocked={isUnlocked('body')} skin={skins?.body}/>
 
-      {/* ─── COCKPIT — always on top ─── */}
-      {isUnlocked('cockpit') ? (
-        <g id="cockpit" className={newlyUnlocked === 'cockpit' ? 'mc-unlock' : ''}>
-          <circle cx="100" cy="112" r="21" fill={cockpitColor} stroke="#ffffff25" strokeWidth="1.5"/>
-          <circle cx="100" cy="112" r="16" fill="#0f1530" />
-          <circle cx="100" cy="112" r="16" fill={cockpitColor} opacity="0.18" />
-          <ellipse cx="93" cy="105" rx="6" ry="5" fill="#ffffff" opacity="0.45" transform="rotate(-20 93 105)" />
-          <ellipse cx="108" cy="116" rx="2.5" ry="2" fill="#ffffff" opacity="0.25" />
-        </g>
-      ) : ghostPiece('cockpit', <circle cx="100" cy="112" r="21" />)}
+      {/* ─── Cockpit (sempre in cima al rendering) ─── */}
+      {isUnlocked('cockpit')
+        ? <ShipCockpit color={getColor('cockpit')} anim={newlyUnlocked === 'cockpit'} skin={skins?.cockpit}/>
+        : <GhostPiece><circle cx="100" cy="112" r="21"/></GhostPiece>}
     </>
   )
 }
