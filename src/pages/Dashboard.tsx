@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
 import ReceiptDetailModal from '../components/ReceiptDetailModal'
@@ -255,7 +255,7 @@ function Dashboard() {
             cursor: 'pointer', fontSize: '14px',
           }}
           aria-label={DASHBOARD.periodoPrecedente}
-        >◀</button>
+        ><ChevronLeft size={20} /></button>
 
         <div style={{ textAlign: 'center' }}>
           <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, textTransform: 'capitalize', color: 'var(--text-primary)' }}>
@@ -275,7 +275,7 @@ function Dashboard() {
             cursor: 'pointer', fontSize: '14px',
           }}
           aria-label={DASHBOARD.periodoSuccessivo}
-        >▶</button>
+        ><ChevronRight size={20} /></button>
       </div>
 
       {/* Stipendio + Oggi inline sotto nav */}
